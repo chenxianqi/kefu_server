@@ -38,6 +38,8 @@
 
 MAC版下载：[马上体验][3]
 
+Linux64版下载：[马上体验][14]
+
 Windows版下载：[马上体验][4]
 
 客户端 H5网页版：[马上体验][2]
@@ -152,5 +154,6 @@ GO 》》》》》 [小米开放平台][6]
   [11]: https://github.com/chenxianqi/kefu_client
   [12]: https://github.com/chenxianqi/kefu_flutter
   [13]: https://github.com/chenxianqi/flutter_mimc
+  [14]: http://kf.aissz.com:666/static/app/linux-0.0.1.AppImage
 
 
