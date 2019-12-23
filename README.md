@@ -80,6 +80,7 @@ GO 》》》》》 [移步去GO官网][8]
     * go install
 
 安装 其他依赖库
+
     * go get github.com/astaxie/beego/cache
     * go get -u github.com/qiniu/api.v7
 
