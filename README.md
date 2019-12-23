@@ -129,6 +129,11 @@ GO 》》》》》 [小米开放平台][6]
 ##### 9.打包发布
     bee pack -be GOOS=linux
 
+> **静态资源目录:** 
+    本项目默认配置已打开静态资源目录，PC工作台与H5可直接打包放进相应的目录使用，也可以独立开设站点使用
+    本项目demo直接使用内置静态资源目录、
+    public/admin  工作台
+    public/client 客户端
 
 
   [1]: http://kf.aissz.com:666/admin/ 
