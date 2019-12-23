@@ -1,0 +1,2218 @@
+{
+	"info": {
+		"_postman_id": "80a9f14d-42ac-4ac4-892b-08479039de8a",
+		"name": "kefu_server",
+		"description": "the is a mimc product",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/v1/auth/login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\": \"cmp_keith\",\n\t\"password\": \"sr19890204\"\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/auth/login",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"auth",
+						"login"
+					]
+				},
+				"description": "用户登录"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/auth/logout",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/auth/logout",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"auth",
+						"logout"
+					]
+				},
+				"description": "退出登录"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/admin/me",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/v1/admin/me",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"admin",
+						"me"
+					]
+				},
+				"description": "获取当前登录用户信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/admin",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/v1/admin/1000",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"admin",
+						"1000"
+					]
+				},
+				"description": "获取用户信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/admin",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\n\t\"id\": 1002,\n\t\"username\": \"keith\",\n\t\"nickname\": \"玩车头条\",\n\t\"phone\": \"13800138000\"\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/admin",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"admin"
+					]
+				},
+				"description": "更新用户信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/admin",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\": \"keith00101\",\n\t\"password\": \"123456\"\n\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/admin",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"admin"
+					]
+				},
+				"description": "添加用户"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/admin/1",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/v1/admin/1001",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"admin",
+						"1001"
+					]
+				},
+				"description": "删除用户"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/admin/list",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"page_on\": 2,\n  \"page_size\": 5,\n  \"online\": 3,\n  \"keyword\": \"\"\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/admin/list",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"admin",
+						"list"
+					]
+				},
+				"description": "获取后台客服管理员列表"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/admin/current/user/10012",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/v1/admin/current/user/10286",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"admin",
+						"current",
+						"user",
+						"10286"
+					]
+				},
+				"description": "上报当前聊天对象"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/admin/online/1",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/v1/admin/online/1",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"admin",
+						"online",
+						"1"
+					]
+				},
+				"description": "获取当前登录用户信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/admin/password",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"old_password\": \"q123456\",\n  \"new_password\": \"123456\",\n  \"enter_password\": \"123456\"\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/admin/password",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"admin",
+						"password"
+					]
+				},
+				"description": "获取后台客服管理员列表"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/knowledge",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"uid\": 1000,\n\t\"title\": \"为什么显示\",\n\t\"sub_title\": \"不可办理|不能办理|不能下单|下单不了|支付不了\",\n\t\"content\": \"您好，显示不可办理的违章可以咨询人工客服！\",\n\t\"platform\": 1\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/knowledge",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"knowledge"
+					]
+				},
+				"description": "添加知识库"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/knowledge/1",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/v1/knowledge/8",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"knowledge",
+						"8"
+					]
+				},
+				"description": "获取单个问答"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/knowledge",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": 35,\n\t\"uid\": 1000,\n\t\"title\": \"为什么显示不可办理4\",\n\t\"sub_title\": \"不可办理|不能办理|不能下单|下单不了|支付不了\",\n\t\"content\": \"您好，显示不可办理的违章可以咨询人工客服！\",\n\t\"platform\": 1\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/knowledge",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"knowledge"
+					]
+				},
+				"description": "更新问答"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/knowledge",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/v1/knowledge/3",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"knowledge",
+						"3"
+					]
+				},
+				"description": "删除问答"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/knowledge/list",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"page_on\": 1,\n  \"page_size\": 10\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/knowledge/list",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"knowledge",
+						"list"
+					]
+				},
+				"description": "获取问答列表"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/knowledge/title",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"怎么取消单\"\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/knowledge/title",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"knowledge",
+						"title"
+					]
+				},
+				"description": "根据标题获取单个问答"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/robot",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"nickname\": \"keith\",\n\t\"avatar\": \"123456\",\n\t\"welcome\": \"欢迎语\",\n\t\"understand\": \"不明白语句\",\n\t\"artificial\": \"关键词转人工\",\n\t\"platform\": 0,\n\t\"switch\": 1\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/robot",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"robot"
+					]
+				},
+				"description": "添加机器人"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/robot/1",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/v1/robot/1",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"robot",
+						"1"
+					]
+				},
+				"description": "获取单个机器人信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/robot/list",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/v1/robot/list",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"robot",
+						"list"
+					]
+				},
+				"description": "获取机器人列表"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/robot",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": 1,\n\t\"nickname\": \"keith\",\n\t\"avatar\": \"123456\",\n\t\"welcome\": \"欢迎语\",\n\t\"understand\": \"不明白语句\",\n\t\"artificial\": \"关键词转人工\",\n\t\"switch\": 1\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/robot",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"robot"
+					]
+				},
+				"description": "更新机器人"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/robot/1",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/robot/1",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"robot",
+						"1"
+					]
+				},
+				"description": "添加机器人"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/company",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 1,\n    \"title\": \"广州车马炮网络科技有限公司\",\n    \"logo\": \"http://qiniu.cmp520.com/wanchetoutiao-logo2.png\",\n    \"service\": \"周一至周五 9:00-18:00\",\n    \"email\": \"chenyating@cmp520.com\",\n    \"tel\": \"400-852-7776\",\n    \"address\": \"广州市白云区西就街9号之一自编507房\",\n    \"update_at\": 0\n  }"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/company",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"company"
+					]
+				},
+				"description": "修改公司信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/user",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/v1/user/100000",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"user",
+						"100000"
+					]
+				},
+				"description": "获取用户信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/user",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 100000,\n    \"uid\": 0,\n    \"address\": \"广州\",\n    \"nickname\": \"keith\",\n    \"phone\": \"13800138000\",\n    \"platform\": 0,\n    \"online\": 0,\n    \"create_at\": 1563162250\n  }"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/user",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"user"
+					]
+				},
+				"description": "修改用户信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/user",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/user/10014",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"user",
+						"10014"
+					]
+				},
+				"description": "删除用户"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/user/list",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"page_on\": 1,\n  \"page_size\": 10,\n  \"keyword\": \"爱人与海\",\n  \"platform\": 1,\n  \"date_start\": \"\",\n  \"date_end\": \"\"\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/user/list",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"user",
+						"list"
+					]
+				},
+				"description": "获取用户列表"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/user/onlines",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/user/onlines",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"user",
+						"onlines"
+					]
+				},
+				"description": "查询多少人在线"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/public/company",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/public/company",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"public",
+						"company"
+					]
+				},
+				"description": "获取公司信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/public/activity/10012",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/public/activity/10001",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"public",
+						"activity",
+						"10001"
+					]
+				},
+				"description": "上报最后一次活动时间"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/public/register",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"type\": 0,\n\t\"uid\": 0,\n\t\"address\": \"广州\",\n\t\"platform\": 2,\n\t\"account_id\": 2154746\n}\n"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/public/register",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"public",
+						"register"
+					]
+				},
+				"description": "IM注册授权登录\ntype = 1   客服登录，必须带token\ntype = 0   用户注册，游客\nuid        用户对应业务平的唯一id\nplatform   用户所在平台\naccount_id 用户的唯一IM ID"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/public/push_msg",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"payload\": \"eyJmcm9tX2FjY291bnQiOjI3NDk3NSwidG9fYWNjb3VudCI6MTAxLCJiaXpfdHlwZSI6InRleHQiLCJ2ZXJzaW9uIjoiMCIsInRpbWVzdGFtcCI6MTU2OTU1MTM1MCwicmVhZCI6MCwicGxhdGZvcm0iOjUsInRyYW5zZmVyX2FjY291bnQiOjAsInBheWxvYWQiOiIyMzQifQ==\"\n}\n"
+				},
+				"url": {
+					"raw": "http://localhost:8080/v1/public/push_msg",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"public",
+						"push_msg"
+					]
+				},
+				"description": "接收mimc的推送"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/public/robot/{id}",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAwMCwidXNlcm5hbWUiOiJrZWl0aCIsIm5pY2tuYW1lIjoi546p6L2m5aS05p2hIiwicGFzc3dvcmQiOiIiLCJwaG9uZSI6IjEzODAwMTM4MDAwIiwidG9rZW4iOiJCZWFyZXIgZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBaQ0k2TVRBd01Dd2lkWE5sY201aGJXVWlPaUpyWldsMGFDSXNJbTVwWTJ0dVlXMWxJam9pNTQ2cDZMMm01YVMwNXAyaElpd2ljR0Z6YzNkdmNtUWlPaUlpTENKd2FHOXVaU0k2SWpFek9EQXdNVE00TURBd0lpd2lkRzlyWlc0aU9pSkNaV0Z5WlhJZ1pYbEthR0pIWTJsUGFVcEpWWHBKTVU1cFNYTkpibEkxWTBOSk5rbHJjRmhXUTBvNUxtVjVTbkJhUTBrMlRWTjNhV1JZVG14amJUVm9ZbGRWYVU5cFNuSmFWMnd3WVVOSmMwbHROWEJaTW5SMVdWY3hiRWxxYjJsSmFYZHBZMGRHZW1NelpIWmpiVkZwVDJsSmFVeERTbmRoUnpsMVdsTkpOa2xwU1hOSmJsSjJZVEpXZFVscWIybFJiVlpvWTIxV2VVbEhWalZUYldocFVqSk9jRlF5YkV0VFZsWTJVMVJHVDJGVmJIcFRWelZUVGxkT1JGTlVXa3BoTTBKWlZtdE9TMDlUTld4bFZYQjNWMnRPU2s1ck1WUmtNbXhyVjBVMWMxa3lNREZoUjBwWVZsZHNVR0ZWY0hsWGJHUnpUVWRHUkZOWVRrcGlWRlozVjFSS01HUldiRmhOVjNoS1lXMDVjRk5YYkROaFYwNUlVbTV3YWsweVVqSlpNakZTWVZVNWNGTlhiRTFSTUhBeldWVmpOV1JXY0ZSVFZGcEtZVlZzZWxOWE5WTmtiVVY1Vm01V1NtRnRPWEJUVjJ3ellWZE9kRlp0TldoWFJUUjNWMnhvUzFwc2JGbFZWMnhRWVZWc05WUlZVa1pPVlhoVlVWUk9UVlpGUlRGV2ExSkdUVVU1Y1ZGVVJsQmhhMFl6VXpOd1FrNUZPWEZSV0dSS1lWaGtjRmRzYUc5a01HeHhZak5vVDFaR2JEVlVNVkpTWkRBeE5sWlVSazFSTUhCM1YxWm9VbUZWT1hGU1ZFWlBZV3RyZVZRd1VrWmxSVFZWVmxoT1NtSlhlRFpaTTJ4S1RtdHNkR1JIZUdoWFJrcDJVMWMwZDB4c1dYcFdXR2hQVFZab01GVlhUa1ZZTWpRMVYxZEdWVmRyYUZKaGFrNVBaRlZrVlUweGNFVmlXRnAwV2pCb1UxTjZVbTlOYkZFeFZWWkZhVXhEU25sYVYyUndZek5TYkdOc09XaGtRMGsyU1dwSmQwMVVhM1JOUkdOMFRVUnNWVTFVVVRaTlJGVTJUVVJCY2sxRVp6Wk5SRUZwVEVOS2JHVklRV2xQYWtVeFRtcEpOVTVFUVhwT1ZHZHpTVzFzYUdSRFNUWk5WRlV5VFdwWk5FMVVSVEZQUTNkcFlWaE9la2xxYjJsaE1sWndaRWRuYVdaUkxtdHVUVUl4TjFCTU5VUTFVekV3WkZNM1RXVXRURlIxVlhob1IwRXphMk4zUzJ4eVpHTldOMHRCTkVraUxDSnlaV2RwYzNSbGNsOWhkQ0k2SWpJd01Ua3RNRGN0TURsVU1UUTZNRFU2TURBck1EZzZNREFpTENKbGVIQWlPakUxTmpNd01qQXpPVFVzSW1saGRDSTZNVFUyTWpjMk1URTVOU3dpYVhOeklqb2lhMlZwZEdnaWZRLnRIY0VrajdabVJnV1dpVHRKT1FVVTVRRkFEem8xZUxYaVJ4NVF6eTZaWEEiLCJyZWdpc3Rlcl9hdCI6IjIwMTktMDctMDlUMTQ6MDU6MDArMDg6MDAiLCJleHAiOjE1NjMwMjczMTcsImlhdCI6MTU2Mjc2ODExNywiaXNzIjoia2VpdGgifQ.ZVxQw75TOs8zseJtlnPNKu3PtROlNTXkoN6ftNGeYgM",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/public/robot/2",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"public",
+						"robot",
+						"2"
+					]
+				},
+				"description": "获取机器人ID\n用于分配一个机器人ID"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/public/read",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAwMCwidXNlcm5hbWUiOiJrZWl0aCIsIm5pY2tuYW1lIjoi546p6L2m5aS05p2hIiwicGFzc3dvcmQiOiIiLCJwaG9uZSI6IjEzODAwMTM4MDAwIiwidG9rZW4iOiJCZWFyZXIgZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBaQ0k2TVRBd01Dd2lkWE5sY201aGJXVWlPaUpyWldsMGFDSXNJbTVwWTJ0dVlXMWxJam9pNTQ2cDZMMm01YVMwNXAyaElpd2ljR0Z6YzNkdmNtUWlPaUlpTENKd2FHOXVaU0k2SWpFek9EQXdNVE00TURBd0lpd2lkRzlyWlc0aU9pSkNaV0Z5WlhJZ1pYbEthR0pIWTJsUGFVcEpWWHBKTVU1cFNYTkpibEkxWTBOSk5rbHJjRmhXUTBvNUxtVjVTbkJhUTBrMlRWTjNhV1JZVG14amJUVm9ZbGRWYVU5cFNuSmFWMnd3WVVOSmMwbHROWEJaTW5SMVdWY3hiRWxxYjJsSmFYZHBZMGRHZW1NelpIWmpiVkZwVDJsSmFVeERTbmRoUnpsMVdsTkpOa2xwU1hOSmJsSjJZVEpXZFVscWIybFJiVlpvWTIxV2VVbEhWalZUYldocFVqSk9jRlF5YkV0VFZsWTJVMVJHVDJGVmJIcFRWelZUVGxkT1JGTlVXa3BoTTBKWlZtdE9TMDlUTld4bFZYQjNWMnRPU2s1ck1WUmtNbXhyVjBVMWMxa3lNREZoUjBwWVZsZHNVR0ZWY0hsWGJHUnpUVWRHUkZOWVRrcGlWRlozVjFSS01HUldiRmhOVjNoS1lXMDVjRk5YYkROaFYwNUlVbTV3YWsweVVqSlpNakZTWVZVNWNGTlhiRTFSTUhBeldWVmpOV1JXY0ZSVFZGcEtZVlZzZWxOWE5WTmtiVVY1Vm01V1NtRnRPWEJUVjJ3ellWZE9kRlp0TldoWFJUUjNWMnhvUzFwc2JGbFZWMnhRWVZWc05WUlZVa1pPVlhoVlVWUk9UVlpGUlRGV2ExSkdUVVU1Y1ZGVVJsQmhhMFl6VXpOd1FrNUZPWEZSV0dSS1lWaGtjRmRzYUc5a01HeHhZak5vVDFaR2JEVlVNVkpTWkRBeE5sWlVSazFSTUhCM1YxWm9VbUZWT1hGU1ZFWlBZV3RyZVZRd1VrWmxSVFZWVmxoT1NtSlhlRFpaTTJ4S1RtdHNkR1JIZUdoWFJrcDJVMWMwZDB4c1dYcFdXR2hQVFZab01GVlhUa1ZZTWpRMVYxZEdWVmRyYUZKaGFrNVBaRlZrVlUweGNFVmlXRnAwV2pCb1UxTjZVbTlOYkZFeFZWWkZhVXhEU25sYVYyUndZek5TYkdOc09XaGtRMGsyU1dwSmQwMVVhM1JOUkdOMFRVUnNWVTFVVVRaTlJGVTJUVVJCY2sxRVp6Wk5SRUZwVEVOS2JHVklRV2xQYWtVeFRtcEpOVTVFUVhwT1ZHZHpTVzFzYUdSRFNUWk5WRlV5VFdwWk5FMVVSVEZQUTNkcFlWaE9la2xxYjJsaE1sWndaRWRuYVdaUkxtdHVUVUl4TjFCTU5VUTFVekV3WkZNM1RXVXRURlIxVlhob1IwRXphMk4zUzJ4eVpHTldOMHRCTkVraUxDSnlaV2RwYzNSbGNsOWhkQ0k2SWpJd01Ua3RNRGN0TURsVU1UUTZNRFU2TURBck1EZzZNREFpTENKbGVIQWlPakUxTmpNd01qQXpPVFVzSW1saGRDSTZNVFUyTWpjMk1URTVOU3dpYVhOeklqb2lhMlZwZEdnaWZRLnRIY0VrajdabVJnV1dpVHRKT1FVVTVRRkFEem8xZUxYaVJ4NVF6eTZaWEEiLCJyZWdpc3Rlcl9hdCI6IjIwMTktMDctMDlUMTQ6MDU6MDArMDg6MDAiLCJleHAiOjE1NjMwMjczMTcsImlhdCI6MTU2Mjc2ODExNywiaXNzIjoia2VpdGgifQ.ZVxQw75TOs8zseJtlnPNKu3PtROlNTXkoN6ftNGeYgM",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/public/read/10652",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"public",
+						"read",
+						"10652"
+					]
+				},
+				"description": "获取用户新消息统计"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/public/secret",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAwMCwidXNlcm5hbWUiOiJrZWl0aCIsIm5pY2tuYW1lIjoi546p6L2m5aS05p2hIiwicGFzc3dvcmQiOiIiLCJwaG9uZSI6IjEzODAwMTM4MDAwIiwidG9rZW4iOiJCZWFyZXIgZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBaQ0k2TVRBd01Dd2lkWE5sY201aGJXVWlPaUpyWldsMGFDSXNJbTVwWTJ0dVlXMWxJam9pNTQ2cDZMMm01YVMwNXAyaElpd2ljR0Z6YzNkdmNtUWlPaUlpTENKd2FHOXVaU0k2SWpFek9EQXdNVE00TURBd0lpd2lkRzlyWlc0aU9pSkNaV0Z5WlhJZ1pYbEthR0pIWTJsUGFVcEpWWHBKTVU1cFNYTkpibEkxWTBOSk5rbHJjRmhXUTBvNUxtVjVTbkJhUTBrMlRWTjNhV1JZVG14amJUVm9ZbGRWYVU5cFNuSmFWMnd3WVVOSmMwbHROWEJaTW5SMVdWY3hiRWxxYjJsSmFYZHBZMGRHZW1NelpIWmpiVkZwVDJsSmFVeERTbmRoUnpsMVdsTkpOa2xwU1hOSmJsSjJZVEpXZFVscWIybFJiVlpvWTIxV2VVbEhWalZUYldocFVqSk9jRlF5YkV0VFZsWTJVMVJHVDJGVmJIcFRWelZUVGxkT1JGTlVXa3BoTTBKWlZtdE9TMDlUTld4bFZYQjNWMnRPU2s1ck1WUmtNbXhyVjBVMWMxa3lNREZoUjBwWVZsZHNVR0ZWY0hsWGJHUnpUVWRHUkZOWVRrcGlWRlozVjFSS01HUldiRmhOVjNoS1lXMDVjRk5YYkROaFYwNUlVbTV3YWsweVVqSlpNakZTWVZVNWNGTlhiRTFSTUhBeldWVmpOV1JXY0ZSVFZGcEtZVlZzZWxOWE5WTmtiVVY1Vm01V1NtRnRPWEJUVjJ3ellWZE9kRlp0TldoWFJUUjNWMnhvUzFwc2JGbFZWMnhRWVZWc05WUlZVa1pPVlhoVlVWUk9UVlpGUlRGV2ExSkdUVVU1Y1ZGVVJsQmhhMFl6VXpOd1FrNUZPWEZSV0dSS1lWaGtjRmRzYUc5a01HeHhZak5vVDFaR2JEVlVNVkpTWkRBeE5sWlVSazFSTUhCM1YxWm9VbUZWT1hGU1ZFWlBZV3RyZVZRd1VrWmxSVFZWVmxoT1NtSlhlRFpaTTJ4S1RtdHNkR1JIZUdoWFJrcDJVMWMwZDB4c1dYcFdXR2hQVFZab01GVlhUa1ZZTWpRMVYxZEdWVmRyYUZKaGFrNVBaRlZrVlUweGNFVmlXRnAwV2pCb1UxTjZVbTlOYkZFeFZWWkZhVXhEU25sYVYyUndZek5TYkdOc09XaGtRMGsyU1dwSmQwMVVhM1JOUkdOMFRVUnNWVTFVVVRaTlJGVTJUVVJCY2sxRVp6Wk5SRUZwVEVOS2JHVklRV2xQYWtVeFRtcEpOVTVFUVhwT1ZHZHpTVzFzYUdSRFNUWk5WRlV5VFdwWk5FMVVSVEZQUTNkcFlWaE9la2xxYjJsaE1sWndaRWRuYVdaUkxtdHVUVUl4TjFCTU5VUTFVekV3WkZNM1RXVXRURlIxVlhob1IwRXphMk4zUzJ4eVpHTldOMHRCTkVraUxDSnlaV2RwYzNSbGNsOWhkQ0k2SWpJd01Ua3RNRGN0TURsVU1UUTZNRFU2TURBck1EZzZNREFpTENKbGVIQWlPakUxTmpNd01qQXpPVFVzSW1saGRDSTZNVFUyTWpjMk1URTVOU3dpYVhOeklqb2lhMlZwZEdnaWZRLnRIY0VrajdabVJnV1dpVHRKT1FVVTVRRkFEem8xZUxYaVJ4NVF6eTZaWEEiLCJyZWdpc3Rlcl9hdCI6IjIwMTktMDctMDlUMTQ6MDU6MDArMDg6MDAiLCJleHAiOjE1NjMwMjczMTcsImlhdCI6MTU2Mjc2ODExNywiaXNzIjoia2VpdGgifQ.ZVxQw75TOs8zseJtlnPNKu3PtROlNTXkoN6ftNGeYgM",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"platform\": 0\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/public/secret",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"public",
+						"secret"
+					]
+				},
+				"description": "获取上传配置信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/public/robot_info/{robotID}",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/public/robot_info/1000000000",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"public",
+						"robot_info",
+						"1000000000"
+					]
+				},
+				"description": "获取机器人信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/public/window/10518",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"window\": 1\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/public/window/10637",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"public",
+						"window",
+						"10637"
+					]
+				},
+				"description": "查询多少人在线"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/public/clean_read",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAwMCwidXNlcm5hbWUiOiJrZWl0aCIsIm5pY2tuYW1lIjoi546p6L2m5aS05p2hIiwicGFzc3dvcmQiOiIiLCJwaG9uZSI6IjEzODAwMTM4MDAwIiwidG9rZW4iOiJCZWFyZXIgZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBaQ0k2TVRBd01Dd2lkWE5sY201aGJXVWlPaUpyWldsMGFDSXNJbTVwWTJ0dVlXMWxJam9pNTQ2cDZMMm01YVMwNXAyaElpd2ljR0Z6YzNkdmNtUWlPaUlpTENKd2FHOXVaU0k2SWpFek9EQXdNVE00TURBd0lpd2lkRzlyWlc0aU9pSkNaV0Z5WlhJZ1pYbEthR0pIWTJsUGFVcEpWWHBKTVU1cFNYTkpibEkxWTBOSk5rbHJjRmhXUTBvNUxtVjVTbkJhUTBrMlRWTjNhV1JZVG14amJUVm9ZbGRWYVU5cFNuSmFWMnd3WVVOSmMwbHROWEJaTW5SMVdWY3hiRWxxYjJsSmFYZHBZMGRHZW1NelpIWmpiVkZwVDJsSmFVeERTbmRoUnpsMVdsTkpOa2xwU1hOSmJsSjJZVEpXZFVscWIybFJiVlpvWTIxV2VVbEhWalZUYldocFVqSk9jRlF5YkV0VFZsWTJVMVJHVDJGVmJIcFRWelZUVGxkT1JGTlVXa3BoTTBKWlZtdE9TMDlUTld4bFZYQjNWMnRPU2s1ck1WUmtNbXhyVjBVMWMxa3lNREZoUjBwWVZsZHNVR0ZWY0hsWGJHUnpUVWRHUkZOWVRrcGlWRlozVjFSS01HUldiRmhOVjNoS1lXMDVjRk5YYkROaFYwNUlVbTV3YWsweVVqSlpNakZTWVZVNWNGTlhiRTFSTUhBeldWVmpOV1JXY0ZSVFZGcEtZVlZzZWxOWE5WTmtiVVY1Vm01V1NtRnRPWEJUVjJ3ellWZE9kRlp0TldoWFJUUjNWMnhvUzFwc2JGbFZWMnhRWVZWc05WUlZVa1pPVlhoVlVWUk9UVlpGUlRGV2ExSkdUVVU1Y1ZGVVJsQmhhMFl6VXpOd1FrNUZPWEZSV0dSS1lWaGtjRmRzYUc5a01HeHhZak5vVDFaR2JEVlVNVkpTWkRBeE5sWlVSazFSTUhCM1YxWm9VbUZWT1hGU1ZFWlBZV3RyZVZRd1VrWmxSVFZWVmxoT1NtSlhlRFpaTTJ4S1RtdHNkR1JIZUdoWFJrcDJVMWMwZDB4c1dYcFdXR2hQVFZab01GVlhUa1ZZTWpRMVYxZEdWVmRyYUZKaGFrNVBaRlZrVlUweGNFVmlXRnAwV2pCb1UxTjZVbTlOYkZFeFZWWkZhVXhEU25sYVYyUndZek5TYkdOc09XaGtRMGsyU1dwSmQwMVVhM1JOUkdOMFRVUnNWVTFVVVRaTlJGVTJUVVJCY2sxRVp6Wk5SRUZwVEVOS2JHVklRV2xQYWtVeFRtcEpOVTVFUVhwT1ZHZHpTVzFzYUdSRFNUWk5WRlV5VFdwWk5FMVVSVEZQUTNkcFlWaE9la2xxYjJsaE1sWndaRWRuYVdaUkxtdHVUVUl4TjFCTU5VUTFVekV3WkZNM1RXVXRURlIxVlhob1IwRXphMk4zUzJ4eVpHTldOMHRCTkVraUxDSnlaV2RwYzNSbGNsOWhkQ0k2SWpJd01Ua3RNRGN0TURsVU1UUTZNRFU2TURBck1EZzZNREFpTENKbGVIQWlPakUxTmpNd01qQXpPVFVzSW1saGRDSTZNVFUyTWpjMk1URTVOU3dpYVhOeklqb2lhMlZwZEdnaWZRLnRIY0VrajdabVJnV1dpVHRKT1FVVTVRRkFEem8xZUxYaVJ4NVF6eTZaWEEiLCJyZWdpc3Rlcl9hdCI6IjIwMTktMDctMDlUMTQ6MDU6MDArMDg6MDAiLCJleHAiOjE1NjMwMjczMTcsImlhdCI6MTU2Mjc2ODExNywiaXNzIjoia2VpdGgifQ.ZVxQw75TOs8zseJtlnPNKu3PtROlNTXkoN6ftNGeYgM",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"platform\": 0\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/public/clean_read/10652",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"public",
+						"clean_read",
+						"10652"
+					]
+				},
+				"description": "获取用户新消息统计"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/public/upload",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAwMCwidXNlcm5hbWUiOiJrZWl0aCIsIm5pY2tuYW1lIjoi546p6L2m5aS05p2hIiwicGFzc3dvcmQiOiIiLCJwaG9uZSI6IjEzODAwMTM4MDAwIiwidG9rZW4iOiJCZWFyZXIgZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBaQ0k2TVRBd01Dd2lkWE5sY201aGJXVWlPaUpyWldsMGFDSXNJbTVwWTJ0dVlXMWxJam9pNTQ2cDZMMm01YVMwNXAyaElpd2ljR0Z6YzNkdmNtUWlPaUlpTENKd2FHOXVaU0k2SWpFek9EQXdNVE00TURBd0lpd2lkRzlyWlc0aU9pSkNaV0Z5WlhJZ1pYbEthR0pIWTJsUGFVcEpWWHBKTVU1cFNYTkpibEkxWTBOSk5rbHJjRmhXUTBvNUxtVjVTbkJhUTBrMlRWTjNhV1JZVG14amJUVm9ZbGRWYVU5cFNuSmFWMnd3WVVOSmMwbHROWEJaTW5SMVdWY3hiRWxxYjJsSmFYZHBZMGRHZW1NelpIWmpiVkZwVDJsSmFVeERTbmRoUnpsMVdsTkpOa2xwU1hOSmJsSjJZVEpXZFVscWIybFJiVlpvWTIxV2VVbEhWalZUYldocFVqSk9jRlF5YkV0VFZsWTJVMVJHVDJGVmJIcFRWelZUVGxkT1JGTlVXa3BoTTBKWlZtdE9TMDlUTld4bFZYQjNWMnRPU2s1ck1WUmtNbXhyVjBVMWMxa3lNREZoUjBwWVZsZHNVR0ZWY0hsWGJHUnpUVWRHUkZOWVRrcGlWRlozVjFSS01HUldiRmhOVjNoS1lXMDVjRk5YYkROaFYwNUlVbTV3YWsweVVqSlpNakZTWVZVNWNGTlhiRTFSTUhBeldWVmpOV1JXY0ZSVFZGcEtZVlZzZWxOWE5WTmtiVVY1Vm01V1NtRnRPWEJUVjJ3ellWZE9kRlp0TldoWFJUUjNWMnhvUzFwc2JGbFZWMnhRWVZWc05WUlZVa1pPVlhoVlVWUk9UVlpGUlRGV2ExSkdUVVU1Y1ZGVVJsQmhhMFl6VXpOd1FrNUZPWEZSV0dSS1lWaGtjRmRzYUc5a01HeHhZak5vVDFaR2JEVlVNVkpTWkRBeE5sWlVSazFSTUhCM1YxWm9VbUZWT1hGU1ZFWlBZV3RyZVZRd1VrWmxSVFZWVmxoT1NtSlhlRFpaTTJ4S1RtdHNkR1JIZUdoWFJrcDJVMWMwZDB4c1dYcFdXR2hQVFZab01GVlhUa1ZZTWpRMVYxZEdWVmRyYUZKaGFrNVBaRlZrVlUweGNFVmlXRnAwV2pCb1UxTjZVbTlOYkZFeFZWWkZhVXhEU25sYVYyUndZek5TYkdOc09XaGtRMGsyU1dwSmQwMVVhM1JOUkdOMFRVUnNWVTFVVVRaTlJGVTJUVVJCY2sxRVp6Wk5SRUZwVEVOS2JHVklRV2xQYWtVeFRtcEpOVTVFUVhwT1ZHZHpTVzFzYUdSRFNUWk5WRlV5VFdwWk5FMVVSVEZQUTNkcFlWaE9la2xxYjJsaE1sWndaRWRuYVdaUkxtdHVUVUl4TjFCTU5VUTFVekV3WkZNM1RXVXRURlIxVlhob1IwRXphMk4zUzJ4eVpHTldOMHRCTkVraUxDSnlaV2RwYzNSbGNsOWhkQ0k2SWpJd01Ua3RNRGN0TURsVU1UUTZNRFU2TURBck1EZzZNREFpTENKbGVIQWlPakUxTmpNd01qQXpPVFVzSW1saGRDSTZNVFUyTWpjMk1URTVOU3dpYVhOeklqb2lhMlZwZEdnaWZRLnRIY0VrajdabVJnV1dpVHRKT1FVVTVRRkFEem8xZUxYaVJ4NVF6eTZaWEEiLCJyZWdpc3Rlcl9hdCI6IjIwMTktMDctMDlUMTQ6MDU6MDArMDg6MDAiLCJleHAiOjE1NjMwMjczMTcsImlhdCI6MTU2Mjc2ODExNywiaXNzIjoia2VpdGgifQ.ZVxQw75TOs8zseJtlnPNKu3PtROlNTXkoN6ftNGeYgM",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/Users/chenxianqi/Downloads/avatar_default.png"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/public/upload",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"public",
+						"upload"
+					]
+				},
+				"description": "文件上传"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/shortcut",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\":\"违章办理\",\n  \"content\":\"违章代办是免费的6\"\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/shortcut",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"shortcut"
+					]
+				},
+				"description": "添加快捷语"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/shortcut",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"id\": 23,\n  \"title\": \"违章缴费1\",\n  \"content\":\"违章代办是免费的\"\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/shortcut",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"shortcut"
+					]
+				},
+				"description": "更新快捷语"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/shortcut",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/shortcut/1001",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"shortcut",
+						"1001"
+					]
+				},
+				"description": "获取单个快捷语"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/shortcut",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/shortcut/18",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"shortcut",
+						"18"
+					]
+				},
+				"description": "添加快捷语"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/shortcut/list",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/shortcut/list",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"shortcut",
+						"list"
+					]
+				},
+				"description": "添加快捷语"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/contact/list",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{HOST}}//v1/contact/list",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"",
+						"v1",
+						"contact",
+						"list"
+					]
+				},
+				"description": "客服获取会话列表"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/contact/{id}",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/contact/18",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"contact",
+						"18"
+					]
+				},
+				"description": "删除单个会话记录"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/system",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/system",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"system"
+					]
+				},
+				"description": "获取系统信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/system",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 1,\n    \"title\": \"玩车头条客服系统\",\n    \"logo\": \"http://qiniu.cmp520.com/wanchetoutiao-logo2.png\",\n    \"copy_right\": \"2019\",\n    \"upload_mode\": 1\n  }"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/system",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"system"
+					]
+				},
+				"description": "修改系统信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/qiniu",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/qiniu",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"qiniu"
+					]
+				},
+				"description": "获取七牛配置信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/qiniu",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 1,\n    \"bucket\": \"bucket\",\n    \"host\": \"https://upload.qiniup.com\",\n    \"access_key\": \"access_key\",\n    \"secret_key\": \"secret_key\"\n  }"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/qiniu",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"qiniu"
+					]
+				},
+				"description": "修改七牛配置信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/message/list",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"timestamp\": 1572920587,\n  \"page_size\": 10,\n  \"account\": 274993,\n  \"service\": 101\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/message/list",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"message",
+						"list"
+					]
+				},
+				"description": "客服端获取聊天记录"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/home/statistical",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"date_start\": \"2019-08-15\",\n  \"date_end\": \"2019-08-20\"\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/home/statistical",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"home",
+						"statistical"
+					]
+				},
+				"description": "首页统计"
+			},
+			"response": []
+		},
+		{
+			"name": "/home/today_statistical",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"date_start\": \"2019-12-05\",\n  \"date_end\": \"2019-12-05\"\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/home/today_statistical",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"home",
+						"today_statistical"
+					]
+				},
+				"description": "首页当天访问统计"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/platform/1",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/platform/1",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"platform",
+						"1"
+					]
+				},
+				"description": "获取单个平台数据"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/platform",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 8,\n    \"title\": \"支付宝小程序\",\n    \"alias\": \"alipay\",\n    \"system\": 1\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/platform",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"platform"
+					]
+				},
+				"description": "修改平台数据"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/platform",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 7,\n    \"title\": \"百度小程序\",\n    \"alias\": \"baidu\"\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/platform",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"platform"
+					]
+				},
+				"description": "添加平台数据"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/platform/8",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/platform/8",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"platform",
+						"8"
+					]
+				},
+				"description": "删除单个平台数据"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/platform/list",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/platform/list",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"platform",
+						"list"
+					]
+				},
+				"description": "获取所有平台数据"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/uploads/config",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/uploads/config",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"uploads",
+						"config"
+					]
+				},
+				"description": "获取上传配置"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/message/transfer",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"to_account\": 100,\n  \"user_account\": 10441\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/message/transfer",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"message",
+						"transfer"
+					]
+				},
+				"description": "客服端获取聊天记录"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/contact/clear",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/contact/clear",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"contact",
+						"clear"
+					]
+				},
+				"description": "清空聊天列表"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/services_statistical/list",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"page_on\": 1,\n  \"page_size\": 10,\n  \"is_de_weighting\": true,\n  \"cid\": 101,\n  \"date\": \"2019-11-05\"\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/services_statistical/list",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"services_statistical",
+						"list"
+					]
+				},
+				"description": "获取服务列表"
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
