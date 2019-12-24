@@ -16,6 +16,7 @@ package models
 // 12 welcome			欢迎语
 // 13 system			系统消息
 // 14 search_knowledge	检索关键词知识库消息
+// 15 key				消息key
 type Message struct {
 	ID              int64  `orm:"auto;pk;column(id)" json:"id"`                                  // 消息ID
 	FromAccount     int64  `orm:"type(bigint);column(from_account)" json:"from_account"`         // 发送人账号
