@@ -283,6 +283,7 @@ func MessageP2P(message models.Message) {
 	callbackMessage.FromAccount = message.ToAccount
 	callbackMessage.Timestamp = time.Now().Unix() + 1
 	callbackMessage.ToAccount = message.FromAccount
+	callbackMessage.Key = time.Now().Unix()
 	callbackMessage.Payload = messageContent
 	messageJSON, _ := json.Marshal(callbackMessage)
 	messageString := base64.StdEncoding.EncodeToString([]byte(messageJSON))

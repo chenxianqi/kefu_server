@@ -144,6 +144,7 @@ func appTask() {
 					message.FromAccount = appAccount
 					message.ToAccount = contact.FromAccount
 					message.BizType = "text"
+					message.Key = time.Now().Unix()
 					message.Payload = robotData.TimeoutText
 					messageJSON, _ = json.Marshal(message)
 					messageString = base64.StdEncoding.EncodeToString([]byte(messageJSON))
