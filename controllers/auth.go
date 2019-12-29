@@ -50,6 +50,10 @@ func (c *AuthController) Login() {
 
 	}
 
+	//  else if queryAdmin.Token != "" {
+	// 	c.Data["json"] = utils.ResponseError(c.Ctx, "该用户已登录，请稍后再试哦！", nil)
+	// }
+
 	o := orm.NewOrm()
 	queryAdmin := models.Admin{UserName: admin.UserName}
 	err := o.Read(&queryAdmin, "UserName")

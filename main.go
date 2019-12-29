@@ -164,6 +164,16 @@ func appTask() {
 		return nil
 	})
 
+	// 任务调度（30分钟会执行一次删除客户token）
+	// deleteAdminTokenTk := toolbox.NewTask("deleteAdminToken", "0 */30 * * * *", func() error {
+	// 	o := o.QueryTable(new(models.Admin))
+	// 	o.Filter("root", 0).Update(orm.Params{
+	// 		"token": "",
+	// 	})
+	// 	return nil
+	// })
+	// toolbox.AddTask("deleteAdminToken", deleteAdminTokenTk)
+
 	toolbox.AddTask("checkOnLine", checkOnLineTk)
 }
 
