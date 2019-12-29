@@ -19,10 +19,10 @@ func MessageInto(message models.Message, isKF bool) {
 		return
 	}
 
-	// 判断是否是撤回消息（删掉数据库消息）
+	// 判断是否是撤回消息（软删除）
 	if message.BizType == "cancel" {
 		key, _ := strconv.ParseInt(message.Payload, 10, 64)
-		_, _ = o.Raw("DELETE FROM message WHERE from_account = ? AND to_account = ? AND `key` = ?", message.FromAccount, message.ToAccount, key).Exec()
+		_, _ = o.Raw("UPDATE message  SET `delete` = 1 WHERE from_account = ? AND to_account = ? AND `key` = ?", message.FromAccount, message.ToAccount, key).Exec()
 	}
 
 	// message create time

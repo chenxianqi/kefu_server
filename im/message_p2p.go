@@ -93,6 +93,8 @@ func MessageP2P(message models.Message) {
 
 	// 不处理的消息类型
 	if message.BizType == "cancel" {
+		key, _ := strconv.ParseInt(message.Payload, 10, 64)
+		_, _ = o.Raw("UPDATE message SET `delete` = 1 WHERE from_account = ? AND to_account = ? AND `key` = ?", message.FromAccount, message.ToAccount, key).Exec()
 		return
 	}
 

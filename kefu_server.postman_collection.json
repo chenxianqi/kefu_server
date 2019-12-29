@@ -1030,7 +1030,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"type\": 0,\n\t\"uid\": 0,\n\t\"address\": \"广州\",\n\t\"platform\": 2,\n\t\"account_id\": 2154746\n}\n"
+					"raw": "{\n\t\"type\": 0,\n\t\"uid\": 0,\n\t\"address\": \"广州\",\n\t\"platform\": 2,\n\t\"account_id\": 10186\n}\n"
 				},
 				"url": {
 					"raw": "{{HOST}}/v1/public/register",
@@ -1351,6 +1351,11 @@
 							"key": "file",
 							"type": "file",
 							"src": "/Users/chenxianqi/Downloads/avatar_default.png"
+						},
+						{
+							"key": "file_name",
+							"value": "sdfsdfsdf.jpg",
+							"type": "text"
 						}
 					]
 				},
@@ -1366,6 +1371,42 @@
 					]
 				},
 				"description": "文件上传"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/public/messages",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"type": "text",
+						"value": "bJRLeg7AgtSh0T13YjL/IFDdK0JTjCJG4KdSfB9L7c0N56uq0EiflNyh2H5qmlOwqeOEcudSjEicejSfy+BJz2ui/bkYYYPpT9rKkuChjVDMAXpIv1L7ItYzsCaYjygYQD/FuVQ+0xiiFJqDudzL2vHwjH/X7NJbH7JCqycZkfW1zemCFfMmd2X/MaLFoNJViuwJ2SSX9LBI38wn1xjcB5vdf/iemXgkphP/681AbulvHLRLZ66k+UlpgCdSARnyRYH9FpopjYrwJP3szMd6RU0It7bQ5/sveyu7f/+hKdXvxQOCwP/Kvr6f3GTz8HDk6Q8Mi7sUArG3HKxxpY1Q8ItJk/KjE+pORbjJ9mc5QP7jfqICozzHGsKs30rQVIHn2Rm4HLToaQs9V+58inqH+hwDyomOK4JqKNfY4ZTsWP7k/qUEf4euSwFRp56NyKHjhTG333qEitsojbGZiH3HSg=="
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"timestamp\": 1572347076,\n  \"page_size\": 10,\n  \"account\": 10186\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/public/messages",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"public",
+						"messages"
+					]
+				},
+				"description": "获取聊天记录"
 			},
 			"response": []
 		},
