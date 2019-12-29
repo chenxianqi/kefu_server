@@ -17,6 +17,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
+	"github.com/astaxie/beego/validation"
 	"github.com/qiniu/api.v7/auth/qbox"
 	"github.com/qiniu/api.v7/storage"
 )
@@ -45,6 +46,8 @@ func (c *PublicController) Register() {
 		return
 	}
 
+	imToken := new(models.IMToken)
+
 	o := orm.NewOrm()
 
 	var (
@@ -66,14 +69,22 @@ func (c *PublicController) Register() {
 		user = models.User{ID: sessionRequest.AccountID, UID: sessionRequest.UID, Platform: sessionRequest.Platform, Address: sessionRequest.Address}
 
 		/// old user
-		if err := o.QueryTable(new(models.User)).Filter("platform", sessionRequest.Platform).Filter("id", sessionRequest.AccountID).One(&user); err == nil {
+		if err := o.QueryTable(new(models.User)).Filter("id", sessionRequest.AccountID).One(&user); err == nil {
+			fetchResult, fetchError = im.GetMiMcToken(strconv.FormatInt(user.ID, 10))
+			if err := json.Unmarshal([]byte(fetchResult), &imToken); err != nil {
+				c.Data["json"] = utils.ResponseError(c.Ctx, "注册失败!", &err)
+				c.ServeJSON()
+				return
+			}
 			user.Online = 1
 			user.UID = sessionRequest.UID
 			user.Address = sessionRequest.Address
+			user.Address = sessionRequest.Address
 			user.Platform = sessionRequest.Platform
 			user.LastActivity = time.Now().Unix()
+			user.Token = imToken.Data.Token
+			logs.Info("imToken.Data.Token==", imToken.Data.Token)
 			_, _ = o.Update(&user)
-			fetchResult, fetchError = im.GetMiMcToken(strconv.FormatInt(user.ID, 10))
 		} else {
 			// create new user
 			user.CreateAt = time.Now().Unix()
@@ -82,9 +93,15 @@ func (c *PublicController) Register() {
 			user.LastActivity = time.Now().Unix()
 			user.Address = sessionRequest.Address
 			if accountID, err := o.Insert(&user); err == nil {
+				fetchResult, fetchError = im.GetMiMcToken(strconv.FormatInt(accountID, 10))
+				if err := json.Unmarshal([]byte(fetchResult), &imToken); err != nil {
+					c.Data["json"] = utils.ResponseError(c.Ctx, "注册失败!", &err)
+					c.ServeJSON()
+					return
+				}
+				user.Token = imToken.Data.Token
 				user.NickName = "访客" + strconv.FormatInt(accountID, 10)
 				_, _ = o.Update(&user)
-				fetchResult, fetchError = im.GetMiMcToken(strconv.FormatInt(accountID, 10))
 			} else {
 				logs.Info(err)
 				c.Data["json"] = utils.ResponseError(c.Ctx, "服务异常,请稍后重试!", err)
@@ -114,9 +131,8 @@ func (c *PublicController) Register() {
 		c.ServeJSON()
 		return
 	}
-	imToken := new(models.IMToken)
 	if err := json.Unmarshal([]byte(fetchResult), &imToken); err != nil {
-		logs.Info(err)
+		logs.Error(err)
 		c.Data["json"] = utils.ResponseError(c.Ctx, "注册失败!", &err)
 		c.ServeJSON()
 		return
@@ -424,4 +440,95 @@ func (c *PublicController) Upload() {
 	c.Data["json"] = utils.ResponseSuccess(c.Ctx, "上传成功", &fileName)
 	c.ServeJSON()
 
+}
+
+// GetMessageHistoryList get user messages
+func (c *PublicController) GetMessageHistoryList() {
+
+	o := orm.NewOrm()
+
+	messagePaginationData := models.MessagePaginationData{}
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &messagePaginationData); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "参数错误!", nil)
+		c.ServeJSON()
+		return
+	}
+
+	token := c.Ctx.Input.Header("token")
+	if token == "" {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "参数错误!", nil)
+		c.ServeJSON()
+		return
+	}
+
+	// validation
+	valid := validation.Validation{}
+	valid.Required(messagePaginationData.Account, "account").Message("account不能为空！")
+	valid.Required(messagePaginationData.PageSize, "page_size").Message("page_size不能为空！")
+	valid.Required(messagePaginationData.Timestamp, "timestamp").Message("timestamp不能为空！")
+	if valid.HasErrors() {
+		for _, err := range valid.Errors {
+			c.Data["json"] = utils.ResponseError(c.Ctx, err.Message, nil)
+			break
+		}
+		c.ServeJSON()
+		return
+	}
+
+	// exist user
+	user := models.User{ID: messagePaginationData.Account}
+	if err := o.Read(&user); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "查询失败，用户不存在", err)
+		c.ServeJSON()
+		return
+	}
+
+	/// validation TOKEN
+	if token != user.Token {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "查询失败，用户不存在", nil)
+		c.ServeJSON()
+		return
+	}
+
+	// Timestamp == 0
+	if messagePaginationData.Timestamp == 0 {
+		messagePaginationData.Timestamp = time.Now().Unix()
+	}
+
+	// join string
+	var messages []*models.Message
+	uid := strconv.FormatInt(user.ID, 10)
+	timestamp := strconv.FormatInt(messagePaginationData.Timestamp, 10)
+	type MessageCount struct {
+		Count int64
+	}
+	var messageCount MessageCount
+	o.Raw("SELECT COUNT(*) AS `count` FROM `message` WHERE (`to_account` = ? OR `from_account` = ?) AND `timestamp` < ? AND `delete` = 0", uid, uid, timestamp).QueryRow(&messageCount)
+	var end = messageCount.Count
+	start := int(messageCount.Count) - messagePaginationData.PageSize
+	if start <= 0 {
+		start = 0
+	}
+	if messageCount.Count > 0 {
+		_, err := o.Raw("SELECT * FROM `message` WHERE (`to_account` = ? OR `from_account` = ?) AND `timestamp` < ? AND `delete` = 0 ORDER BY `timestamp` ASC												 LIMIT ?,?", uid, uid, timestamp, start, end).QueryRows(&messages)
+		qs := o.QueryTable(new(models.Message))
+		_, _ = qs.Filter("from_account", uid).Update(orm.Params{"read": 0})
+		if err != nil {
+			c.Data["json"] = utils.ResponseError(c.Ctx, "查询失败！", &err)
+			c.ServeJSON()
+			return
+		}
+		o.Raw("SELECT COUNT(*) AS `count` FROM `message` WHERE (`to_account` = ? OR `from_account` = ?) AND `delete` = 0", uid, uid).QueryRow(&messageCount)
+		messagePaginationData.List = messages
+		messagePaginationData.Total = messageCount.Count
+	} else {
+		messagePaginationData.List = []models.Message{}
+		messagePaginationData.Total = 0
+	}
+	for index, msg := range messages {
+		payload, _ := base64.StdEncoding.DecodeString(msg.Payload)
+		messages[index].Payload = string(payload)
+	}
+	c.Data["json"] = utils.ResponseSuccess(c.Ctx, "查询成功！", &messagePaginationData)
+	c.ServeJSON()
 }

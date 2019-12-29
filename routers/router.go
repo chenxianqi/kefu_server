@@ -45,6 +45,7 @@ func init() {
 			beego.NSRouter("/clean_read/:id", &controllers.PublicController{}, "get:CleanRead"),
 			beego.NSRouter("/window/:id", &controllers.PublicController{}, "put:Window"),
 			beego.NSRouter("/upload", &controllers.PublicController{}, "post:Upload"),
+			beego.NSRouter("/messages", &controllers.PublicController{}, "post:GetMessageHistoryList"),
 		),
 
 		// knowledge_base

@@ -20,22 +20,12 @@ type MessageController struct {
 	beego.Controller
 }
 
-// MessagePaginationData struct
-type MessagePaginationData struct {
-	PageSize  int         `json:"page_size"`
-	Total     int64       `json:"total"`
-	Account   int64       `json:"account"`
-	Service   int64       `json:"service"`
-	Timestamp int64       `json:"timestamp"`
-	List      interface{} `json:"list"`
-}
-
 // List get messages
 func (c *MessageController) List() {
 
 	o := orm.NewOrm()
 
-	messagePaginationData := MessagePaginationData{}
+	messagePaginationData := models.MessagePaginationData{}
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &messagePaginationData); err != nil {
 		c.Data["json"] = utils.ResponseError(c.Ctx, "参数错误!", nil)
 		c.ServeJSON()
@@ -106,7 +96,7 @@ func (c *MessageController) List() {
 			c.ServeJSON()
 			return
 		}
-		total, _ := qs.Filter("to_account__in", accounts).Filter("from_account__in", accounts).Count()
+		total, _ := qs.Filter("to_account__in", accounts).Filter("from_account__in", accounts).Filter("delete", 0).Count()
 		messagePaginationData.List = messages
 		messagePaginationData.Total = total
 	} else {

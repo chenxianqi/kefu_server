@@ -7,7 +7,8 @@ type User struct {
 	Avatar       string `orm:"type(char);null;column(avatar)" json:"avatar"`            // 用户头像
 	Address      string `orm:"type(char);null;column(address)" json:"address"`          // 用户所在地
 	NickName     string `orm:"type(char);null;column(nickname)" json:"nickname"`        // 用户昵称
-	UserToken    string `orm:"type(text);null;column(token)" json:"token"`              // 对应业务平台的用户的token（保留字段）
+	Token        string `orm:"type(text);null;column(token)" json:"token"`              // im token
+	UserToken    string `orm:"type(text);null;column(user_token)" json:"user_token"`    // 对应业务平台的用户的user_token（保留字段）
 	Phone        string `orm:"type(char);null;column(phone)" json:"phone"`              // 用户联系电话
 	Platform     int64  `orm:"type(bigint);column(platform)" json:"platform"`           // 用户所在渠道（平台）
 	Online       int    `orm:"default(0);column(online)" json:"online"`                 // 用户是否在线
