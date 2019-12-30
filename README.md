@@ -34,17 +34,20 @@
 - 支付宝小程序版客户端（待定）
 
 ## 体验客服系统
-客服端工作台网页版：[马上体验][1]
+客服端-工作台网页版：[马上体验][1]
 
-MAC版下载：[马上体验][3]
+客服端-MAC版下载：[马上体验][3]
 
-Linux64版下载：[马上体验][14]
+客服端-Linux64版下载：[马上体验][14]
 
-Windows版下载：[马上体验][4]
+客服端-Windows版下载：[马上体验][4]
 
-客户端 H5网页版：[马上体验][2]
+客户端-H5网页版：[马上体验][2]
 
-Example PC网页版：[马上体验][5]
+客户端-Example PC网页版：[马上体验][5]
+
+客户端-Android APP：[下载APP体验][15]
+客户端-IOS APP：    由于IOS需要购买开发者账号才能获得证书，请自行clone代码build体验 [go clone][12]
 
 ### 客服测试账号
 | 账号      |    密码 |
@@ -155,5 +158,6 @@ GO 》》》》》 [小米开放平台][6]
   [12]: https://github.com/chenxianqi/kefu_flutter
   [13]: https://github.com/chenxianqi/flutter_mimc
   [14]: http://kf.aissz.com:666/static/app/linux-0.0.1.AppImage
+  [15]: http://kf.aissz.com:666/static/app/app-release.apk
 
 
