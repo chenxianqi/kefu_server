@@ -1,3 +1,5 @@
+客服系统开发者QQ交流群： 623661658
+
 # 欢迎使用本客服系统
 
 ![客服系统](http://qiniu.cmp520.com/kefuxitonh.jpg)
