@@ -57,6 +57,7 @@ func (c *PublicController) Register() {
 
 	// user
 	var user models.User
+	var admin models.Admin
 	if sessionRequest.Type == 0 {
 
 		// platfrom id exist
@@ -116,7 +117,7 @@ func (c *PublicController) Register() {
 		token := c.Ctx.Input.Header("Authorization")
 
 		// admin
-		admin := models.Admin{Token: token}
+		admin = models.Admin{Token: token}
 		if err := o.Read(&admin, "Token"); err != nil {
 			c.Data["json"] = utils.ResponseError(c.Ctx, "客服不存在!", err)
 			c.ServeJSON()
@@ -145,7 +146,7 @@ func (c *PublicController) Register() {
 	if sessionRequest.Type == 0 {
 		resData = successData{Token: &imToken, User: &user}
 	} else {
-		resData = successData{Token: &imToken, User: nil}
+		resData = successData{Token: &imToken, User: &admin}
 	}
 	c.Data["json"] = utils.ResponseSuccess(c.Ctx, "获取成功!", &resData)
 	c.ServeJSON()

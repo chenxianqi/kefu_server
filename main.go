@@ -88,7 +88,8 @@ func appTask() {
 		logs.Info("清理登录超时用户,有", count, "个用户被强制下线")
 		// 检查Admin
 		_, _ = aqs.Filter("online__in", 1, 2).Filter("last_activity__lte", adminOffLineUnixTimer).Update(orm.Params{
-			"online": 0,
+			"online":           0,
+			"current_con_user": 0,
 		})
 
 		// 2.判断用户是否超时无应答
@@ -167,7 +168,7 @@ func appTask() {
 	// 任务调度（30分钟会执行一次删除客户token）
 	// deleteAdminTokenTk := toolbox.NewTask("deleteAdminToken", "0 */30 * * * *", func() error {
 	// 	o := o.QueryTable(new(models.Admin))
-	// 	o.Filter("root", 0).Update(orm.Params{
+	// 	o.Update(orm.Params{
 	// 		"token": "",
 	// 	})
 	// 	return nil
