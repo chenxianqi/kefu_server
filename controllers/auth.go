@@ -86,6 +86,7 @@ func (c *AuthController) Logout() {
 	_ = o.Read(&admin, "Token")
 	admin.Token = ""
 	admin.CurrentConUser = 0
+	admin.Online = 0
 	if _, err := o.Update(&admin); err != nil {
 		logs.Error(err)
 		c.Data["json"] = utils.ResponseError(c.Ctx, "退出失败！", nil)
