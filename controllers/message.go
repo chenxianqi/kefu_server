@@ -152,9 +152,9 @@ func (c *MessageController) Remove() {
 
 	_, err := o.Raw("UPDATE message SET `delete` = 1 WHERE from_account = ? AND to_account = ? AND `key` = ?", removeRequestData.FromAccount, removeRequestData.ToAccount, removeRequestData.Key).Exec()
 	if err != nil{
-		utils.ResponseError(c.Ctx, "删除失败!", &err)
+		c.Data["json"] = utils.ResponseError(c.Ctx, "删除失败!", &err)
 	}else{
-		utils.ResponseSuccess(c.Ctx, "删除成功", nil)
+		c.Data["json"] = utils.ResponseSuccess(c.Ctx, "删除成功", nil)
 	}
 	c.ServeJSON()
 }
