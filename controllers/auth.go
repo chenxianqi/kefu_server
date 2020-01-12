@@ -66,7 +66,8 @@ func (c *AuthController) Login() {
 	} else {
 		queryAdmin.Password = ""
 		queryAdmin.Token = utils.GenerateToken(queryAdmin)
-		_, err := o.Update(&queryAdmin)
+		_, err := o.Update(&queryAdmin, "Token")
+		queryAdmin.Password = ""
 		if err != nil {
 			logs.Error(err)
 			c.Data["json"] = utils.ResponseError(c.Ctx, "登录失败，请稍后再试！", queryAdmin)
