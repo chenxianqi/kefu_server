@@ -67,6 +67,7 @@ func init() {
 			beego.NSBefore(filters.FilterToken),
 			beego.NSRouter("/list", &controllers.MessageController{}, "post:List"),
 			beego.NSRouter("/transfer", &controllers.MessageController{}, "post:Transfer"),
+			beego.NSRouter("/remove", &controllers.MessageController{}, "post:Remove"),
 		),
 
 		// admin

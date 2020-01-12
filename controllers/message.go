@@ -111,6 +111,54 @@ func (c *MessageController) List() {
 	c.ServeJSON()
 }
 
+// RemoveRequestData struct
+type RemoveRequestData struct {
+	FromAccount int64 `json:"from_account"`
+	ToAccount   int64 `json:"to_account"`
+	Key int64 `json:"key"`
+}
+// Remove one message
+func (c *MessageController) Remove() {
+	o := orm.NewOrm()
+	token := c.Ctx.Input.Header("Authorization")
+	admin := models.Admin{Token: token}
+	if err := o.Read(&admin, "Token"); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "无权限操作", err)
+		c.ServeJSON()
+		return
+	}
+
+	// request body
+	removeRequestData := RemoveRequestData{}
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &removeRequestData); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "参数错误!", nil)
+		c.ServeJSON()
+		return
+	}
+
+	// validation
+	valid := validation.Validation{}
+	valid.Required(removeRequestData.ToAccount, "to_account").Message("to_account不能为空！")
+	valid.Required(removeRequestData.FromAccount, "from_account").Message("from_account不能为空！")
+	valid.Required(removeRequestData.Key, "key").Message("key不能为空！")
+	if valid.HasErrors() {
+		for _, err := range valid.Errors {
+			c.Data["json"] = utils.ResponseError(c.Ctx, err.Message, nil)
+			break
+		}
+		c.ServeJSON()
+		return
+	}
+
+	_, err := o.Raw("UPDATE message SET `delete` = 1 WHERE from_account = ? AND to_account = ? AND `key` = ?", removeRequestData.FromAccount, removeRequestData.ToAccount, removeRequestData.Key).Exec()
+	if err != nil{
+		utils.ResponseError(c.Ctx, "删除失败!", &err)
+	}else{
+		utils.ResponseSuccess(c.Ctx, "删除成功", nil)
+	}
+	c.ServeJSON()
+}
+
 // TransferRequestData struct
 type TransferRequestData struct {
 	ToAccount   int64 `json:"to_account"`   // 转接给谁
