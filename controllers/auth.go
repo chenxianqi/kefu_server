@@ -64,7 +64,6 @@ func (c *AuthController) Login() {
 	} else if admin.UserName != queryAdmin.UserName {
 		c.Data["json"] = utils.ResponseError(c.Ctx, "用户不存在！", nil)
 	} else {
-		queryAdmin.Password = ""
 		queryAdmin.Token = utils.GenerateToken(queryAdmin)
 		_, err := o.Update(&queryAdmin, "Token")
 		queryAdmin.Password = ""
