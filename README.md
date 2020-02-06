@@ -49,6 +49,10 @@
 
 客服端-Windows版下载：[马上体验][4]
 
+客服端-Android版下载 APP：：[下载APP体验][17]
+
+客服端-Ios版下载 APP：由于IOS需要购买开发者账号才能获得证书，请自行clone代码build体验 [go clone][16]
+
 客户端-H5网页版：[马上体验][2]
 
 客户端-Example PC网页版：[马上体验][5]
@@ -167,5 +171,7 @@ GO 》》》》》 [小米开放平台][6]
   [13]: https://github.com/chenxianqi/flutter_mimc
   [14]: http://kf.aissz.com:666/static/app/linux-0.0.1.AppImage
   [15]: http://kf.aissz.com:666/static/app/app-release.apk
+  [16]: https://github.com/chenxianqi/kefu_workbench
+  [17]: http://qiniu.cmp520.com/kefu_workbench.apk
 
 
