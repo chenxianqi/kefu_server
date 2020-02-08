@@ -173,6 +173,6 @@ GO 》》》》》 [小米开放平台][6]
   [14]: http://kf.aissz.com:666/static/app/linux-0.0.1.AppImage
   [15]: http://kf.aissz.com:666/static/app/app-release.apk
   [16]: https://github.com/chenxianqi/kefu_workbench
-  [17]: http://qiniu.cmp520.com/kefu_workbench.apk
+  [17]: http://kf.aissz.com:666/static/app/kefu_workbench.apk
 
 

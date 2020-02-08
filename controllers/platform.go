@@ -37,8 +37,14 @@ func (c *PlatformController) Put() {
 
 	o := orm.NewOrm()
 	token := c.Ctx.Input.Header("Authorization")
-	_admin := models.Admin{Token: token}
-	_ = o.Read(&_admin, "Token")
+	_auth := models.Auths{Token: token}
+	if err := o.Read(&_auth, "Token"); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
+		c.ServeJSON()
+		return
+	}
+	_admin := models.Admin{ID: _auth.UID}
+	_ = o.Read(&_admin)
 
 	// is admin ?
 	if _admin.Root != 1 {
@@ -111,8 +117,14 @@ func (c *PlatformController) Post() {
 
 	o := orm.NewOrm()
 	token := c.Ctx.Input.Header("Authorization")
-	_admin := models.Admin{Token: token}
-	_ = o.Read(&_admin, "Token")
+	_auth := models.Auths{Token: token}
+	if err := o.Read(&_auth, "Token"); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
+		c.ServeJSON()
+		return
+	}
+	_admin := models.Admin{ID: _auth.UID}
+	_ = o.Read(&_admin)
 	if _admin.Root != 1 {
 		c.Data["json"] = utils.ResponseError(c.Ctx, "您没有权限添加平台!", nil)
 		c.ServeJSON()
@@ -173,8 +185,14 @@ func (c *PlatformController) Delete() {
 	o := orm.NewOrm()
 	id, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
 	token := c.Ctx.Input.Header("Authorization")
-	_admin := models.Admin{Token: token}
-	_ = o.Read(&_admin, "Token")
+	_auth := models.Auths{Token: token}
+	if err := o.Read(&_auth, "Token"); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
+		c.ServeJSON()
+		return
+	}
+	_admin := models.Admin{ID: _auth.UID}
+	_ = o.Read(&_admin)
 	if _admin.Root != 1 {
 		c.Data["json"] = utils.ResponseError(c.Ctx, "您没有权限删除平台!", nil)
 		c.ServeJSON()

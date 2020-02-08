@@ -23,8 +23,14 @@ type ShortcutController struct {
 func (c *ShortcutController) Get() {
 	o := orm.NewOrm()
 	token := c.Ctx.Input.Header("Authorization")
-	_admin := models.Admin{Token: token}
-	_ = o.Read(&_admin, "Token")
+	_auth := models.Auths{Token: token}
+	if err := o.Read(&_auth, "Token"); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
+		c.ServeJSON()
+		return
+	}
+	_admin := models.Admin{ID: _auth.UID}
+	_ = o.Read(&_admin)
 
 	id, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
 	shortcut := models.Shortcut{ID: id}
@@ -50,8 +56,14 @@ func (c *ShortcutController) Put() {
 	o := orm.NewOrm()
 
 	token := c.Ctx.Input.Header("Authorization")
-	_admin := models.Admin{Token: token}
-	_ = o.Read(&_admin, "Token")
+	_auth := models.Auths{Token: token}
+	if err := o.Read(&_auth, "Token"); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
+		c.ServeJSON()
+		return
+	}
+	_admin := models.Admin{ID: _auth.UID}
+	_ = o.Read(&_admin)
 
 	// request body
 	shortcut := models.Shortcut{}
@@ -100,8 +112,14 @@ func (c *ShortcutController) Post() {
 
 	o := orm.NewOrm()
 	token := c.Ctx.Input.Header("Authorization")
-	_admin := models.Admin{Token: token}
-	_ = o.Read(&_admin, "Token")
+	_auth := models.Auths{Token: token}
+	if err := o.Read(&_auth, "Token"); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
+		c.ServeJSON()
+		return
+	}
+	_admin := models.Admin{ID: _auth.UID}
+	_ = o.Read(&_admin)
 
 	// request body
 	var shortcut models.Shortcut
@@ -149,8 +167,14 @@ func (c *ShortcutController) Delete() {
 
 	o := orm.NewOrm()
 	token := c.Ctx.Input.Header("Authorization")
-	_admin := models.Admin{Token: token}
-	_ = o.Read(&_admin, "Token")
+	_auth := models.Auths{Token: token}
+	if err := o.Read(&_auth, "Token"); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
+		c.ServeJSON()
+		return
+	}
+	_admin := models.Admin{ID: _auth.UID}
+	_ = o.Read(&_admin)
 
 	id, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
 
@@ -180,8 +204,14 @@ func (c *ShortcutController) List() {
 	qs := o.QueryTable(shortcut)
 
 	token := c.Ctx.Input.Header("Authorization")
-	_admin := models.Admin{Token: token}
-	_ = o.Read(&_admin, "Token")
+	_auth := models.Auths{Token: token}
+	if err := o.Read(&_auth, "Token"); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
+		c.ServeJSON()
+		return
+	}
+	_admin := models.Admin{ID: _auth.UID}
+	_ = o.Read(&_admin)
 
 	// query
 	var lists []models.Shortcut

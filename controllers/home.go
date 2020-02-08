@@ -30,8 +30,14 @@ func (c *HomeController) Statistical() {
 	o := orm.NewOrm()
 
 	token := c.Ctx.Input.Header("Authorization")
-	admin := models.Admin{Token: token}
-	if err := o.Read(&admin, "Token"); err != nil {
+	_auth := models.Auths{Token: token}
+	if err := o.Read(&_auth, "Token"); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
+		c.ServeJSON()
+		return
+	}
+	admin := models.Admin{ID: _auth.UID}
+	if err := o.Read(&admin); err != nil {
 		c.Data["json"] = utils.ResponseError(c.Ctx, "查询失败，用户不存在", err)
 		c.ServeJSON()
 		return
@@ -110,8 +116,14 @@ func (c *HomeController) TodayActionStatistical() {
 	o := orm.NewOrm()
 
 	token := c.Ctx.Input.Header("Authorization")
-	admin := models.Admin{Token: token}
-	if err := o.Read(&admin, "Token"); err != nil {
+	_auth := models.Auths{Token: token}
+	if err := o.Read(&_auth, "Token"); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
+		c.ServeJSON()
+		return
+	}
+	admin := models.Admin{ID: _auth.UID}
+	if err := o.Read(&admin); err != nil {
 		c.Data["json"] = utils.ResponseError(c.Ctx, "查询失败，用户不存在", err)
 		c.ServeJSON()
 		return

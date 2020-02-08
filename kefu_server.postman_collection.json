@@ -20,7 +20,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"username\": \"cmp_keith\",\n\t\"password\": \"sr19890204\"\n}"
+					"raw": "{\n\t\"auth_type\": 3,\n\t\"username\": \"cmp_keith\",\n\t\"password\": \"qwe123456\"\n}\t"
 				},
 				"url": {
 					"raw": "{{HOST}}/v1/auth/login",
@@ -50,6 +50,11 @@
 						"name": "Content-Type",
 						"type": "text",
 						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -302,7 +307,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{HOST}}/v1/admin/online/1",
+					"raw": "{{HOST}}/v1/admin/online/0",
 					"host": [
 						"{{HOST}}"
 					],
@@ -310,10 +315,10 @@
 						"v1",
 						"admin",
 						"online",
-						"1"
+						"0"
 					]
 				},
-				"description": "获取当前登录用户信息"
+				"description": "更新用户状态"
 			},
 			"response": []
 		},
@@ -343,7 +348,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"old_password\": \"q123456\",\n  \"new_password\": \"123456\",\n  \"enter_password\": \"123456\"\n}"
+					"raw": "{\n  \"old_password\": \"qwe123456\",\n  \"new_password\": \"chenxinqi\",\n  \"enter_password\": \"chenxinqi\"\n}"
 				},
 				"url": {
 					"raw": "{{HOST}}/v1/admin/password",
@@ -508,7 +513,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"page_on\": 1,\n  \"page_size\": 10\n}"
+					"raw": "{\n  \"page_on\": 3,\n  \"page_size\": 10\n}"
 				},
 				"url": {
 					"raw": "{{HOST}}/v1/knowledge/list",
@@ -1017,20 +1022,23 @@
 					{
 						"key": "Authorization",
 						"type": "text",
-						"value": "{{TOKEN}}",
-						"disabled": true
+						"value": "{{TOKEN}}"
 					},
 					{
 						"key": "Content-Type",
 						"name": "Content-Type",
 						"type": "text",
-						"value": "application/json",
-						"disabled": true
+						"value": "application/json"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"type\": 0,\n\t\"uid\": 0,\n\t\"address\": \"广州\",\n\t\"platform\": 2,\n\t\"account_id\": 10186\n}\n"
+					"raw": "{\n\t\"type\": 1,\n\t\"uid\": 0,\n\t\"address\": \"广州\",\n\t\"platform\": 2,\n\t\"account_id\": 100\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
 				},
 				"url": {
 					"raw": "{{HOST}}/v1/public/register",
@@ -1281,7 +1289,7 @@
 						"10637"
 					]
 				},
-				"description": "查询多少人在线"
+				"description": "设置用户是否在窗口页面"
 			},
 			"response": []
 		},
@@ -1308,7 +1316,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"platform\": 0\n}"
+					"raw": ""
 				},
 				"url": {
 					"raw": "{{HOST}}/v1/public/clean_read/10652",
@@ -1322,7 +1330,7 @@
 						"10652"
 					]
 				},
-				"description": "获取用户新消息统计"
+				"description": "清除未读消息"
 			},
 			"response": []
 		},
@@ -1350,7 +1358,7 @@
 						{
 							"key": "file",
 							"type": "file",
-							"src": "/Users/chenxianqi/Downloads/avatar_default.png"
+							"src": "/Users/chenxianqi/Downloads/未标题-1.jpg"
 						},
 						{
 							"key": "file_name",
@@ -1382,7 +1390,7 @@
 					{
 						"key": "token",
 						"type": "text",
-						"value": "bJRLeg7AgtSh0T13YjL/IFDdK0JTjCJG4KdSfB9L7c0N56uq0EiflNyh2H5qmlOwqeOEcudSjEicejSfy+BJz2ui/bkYYYPpT9rKkuChjVDMAXpIv1L7ItYzsCaYjygYQD/FuVQ+0xiiFJqDudzL2vHwjH/X7NJbH7JCqycZkfW1zemCFfMmd2X/MaLFoNJViuwJ2SSX9LBI38wn1xjcB5vdf/iemXgkphP/681AbulvHLRLZ66k+UlpgCdSARnyRYH9FpopjYrwJP3szMd6RU0It7bQ5/sveyu7f/+hKdXvxQOCwP/Kvr6f3GTz8HDk6Q8Mi7sUArG3HKxxpY1Q8ItJk/KjE+pORbjJ9mc5QP7jfqICozzHGsKs30rQVIHn2Rm4HLToaQs9V+58inqH+hwDyomOK4JqKNfY4ZTsWP7k/qUEf4euSwFRp56NyKHjhTG333qEitsojbGZiH3HSg=="
+						"value": "bJRLeg7AgtSh0T13YjL/IDlYdxk/PPVP4KKNz2PDl7d11RrRYxVB8+c/7AyjzdwfL/rvv7dN8/triQjZFWRqmFdMZ8DkPFpEsyMjItWCNn50DJve6tLvjDdGBAIbTcLOU0fwVzvHtRSM9h/xshqR7+rJ0Gk4mnICBxkVwvcnk6M3eNgHE5nsoCIhgIaMaPhoKFkB8pO+fQOzr5Nc63UMzg9C0ZUMdg9Ih0h3r+p+ylhBGo0M6VcD+PD2L3prD5exiOrLY4v8Dr3cY627TD4iRkTfasSR5JNEP9OVkShKfNOt7kdoFK7zC2L44xKN8WhX4rLVkI1HArB/nfx3NdtG0a3StrqzxDrt+vAnoW4KMvKJ/oMcTc6n5EE6n+B3wc/GdTIByK50wP35nD4dNcGnVsRCu0IwbAsIMxfWeZQRti3bGAv0PEKCeNnA1cT1w/vMopWZ/c8QiDNiO8OOXFd58Q=="
 					},
 					{
 						"key": "Content-Type",
@@ -1393,7 +1401,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"timestamp\": 1572347076,\n  \"page_size\": 10,\n  \"account\": 10186\n}"
+					"raw": "{\n  \"timestamp\": 1577627004,\n  \"page_size\": 10,\n  \"account\": 10246\n}"
 				},
 				"url": {
 					"raw": "{{HOST}}/v1/public/messages",
@@ -1768,13 +1776,14 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{HOST}}/v1/qiniu",
+					"raw": "{{HOST}}/v1/qiniu/",
 					"host": [
 						"{{HOST}}"
 					],
 					"path": [
 						"v1",
-						"qiniu"
+						"qiniu",
+						""
 					]
 				},
 				"description": "获取七牛配置信息"
@@ -1835,7 +1844,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"timestamp\": 1572920587,\n  \"page_size\": 10,\n  \"account\": 274993,\n  \"service\": 101\n}"
+					"raw": "{\n  \"timestamp\": 1578922086,\n  \"page_size\": 20,\n  \"account\": 10315,\n  \"service\": 100\n}"
 				},
 				"url": {
 					"raw": "{{HOST}}/v1/message/list",
@@ -1846,6 +1855,78 @@
 						"v1",
 						"message",
 						"list"
+					]
+				},
+				"description": "客服端获取聊天记录"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/message/remove",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"to_account\": 10315,\n  \"from_account\": 100,\n  \"key\": 1578841923887\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/message/remove",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"message",
+						"remove"
+					]
+				},
+				"description": "移除单条消息"
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/message/transfer",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"to_account\": 100,\n  \"user_account\": 10441\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/v1/message/transfer",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"v1",
+						"message",
+						"transfer"
 					]
 				},
 				"description": "客服端获取聊天记录"
@@ -1871,7 +1952,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"date_start\": \"2019-08-15\",\n  \"date_end\": \"2019-08-20\"\n}"
+					"raw": "{\n  \"date_start\": \"2019-08-20\",\n  \"date_end\": \"2019-08-20\"\n}"
 				},
 				"url": {
 					"raw": "{{HOST}}/v1/home/statistical",
@@ -2017,7 +2098,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"id\": 7,\n    \"title\": \"百度小程序\",\n    \"alias\": \"baidu\"\n}"
+					"raw": "{\n    \"title\": \"百度小程序\",\n    \"alias\": \"baidu\"\n}"
 				},
 				"url": {
 					"raw": "{{HOST}}/v1/platform",
@@ -2144,42 +2225,6 @@
 					]
 				},
 				"description": "获取上传配置"
-			},
-			"response": []
-		},
-		{
-			"name": "/v1/message/transfer",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "{{TOKEN}}"
-					},
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"type": "text",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"to_account\": 100,\n  \"user_account\": 10441\n}"
-				},
-				"url": {
-					"raw": "{{HOST}}/v1/message/transfer",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"v1",
-						"message",
-						"transfer"
-					]
-				},
-				"description": "客服端获取聊天记录"
 			},
 			"response": []
 		},

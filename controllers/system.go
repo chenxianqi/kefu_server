@@ -47,8 +47,14 @@ func (c *SystemController) Put() {
 	o := orm.NewOrm()
 
 	token := c.Ctx.Input.Header("Authorization")
-	_admin := models.Admin{Token: token}
-	_ = o.Read(&_admin, "Token")
+	_auth := models.Auths{Token: token}
+	if err := o.Read(&_auth, "Token"); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
+		c.ServeJSON()
+		return
+	}
+	_admin := models.Admin{ID: _auth.UID}
+	_ = o.Read(&_admin)
 	if _admin.Root != 1 {
 		c.Data["json"] = utils.ResponseError(c.Ctx, "您没有权限修改系统设置!", nil)
 		c.ServeJSON()

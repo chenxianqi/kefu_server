@@ -47,6 +47,8 @@ func initDB() {
 	orm.RegisterModel(new(models.QiniuSetting))
 	orm.RegisterModel(new(models.UploadsConfig))
 	orm.RegisterModel(new(models.ServicesStatistical))
+	orm.RegisterModel(new(models.AuthTypes))
+	orm.RegisterModel(new(models.Auths))
 
 	// 创建表
 	_ = orm.RunSyncdb("default", false, true)
@@ -75,6 +77,7 @@ func appTask() {
 	o := orm.NewOrm()
 	// 任务调度（1分钟会执行一次）
 	checkOnLineTk := toolbox.NewTask("checkOnLine", "0 */1 * * * *", func() error {
+		im.RobotInit()
 		userOffLineUnixTimer := time.Now().Unix() - (60 * 10)  // 用户最后活动时间T出在线状态规则
 		adminOffLineUnixTimer := time.Now().Unix() - (60 * 30) // 最后回复消息时间清理回话规则
 		lastMessageUnixTimer := time.Now().Unix() - (60 * 8)   // 判断用户是否超过一定时间不使用，强制其下线
@@ -164,16 +167,6 @@ func appTask() {
 		}
 		return nil
 	})
-
-	// 任务调度（30分钟会执行一次删除客户token）
-	// deleteAdminTokenTk := toolbox.NewTask("deleteAdminToken", "0 */30 * * * *", func() error {
-	// 	o := o.QueryTable(new(models.Admin))
-	// 	o.Update(orm.Params{
-	// 		"token": "",
-	// 	})
-	// 	return nil
-	// })
-	// toolbox.AddTask("deleteAdminToken", deleteAdminTokenTk)
 
 	toolbox.AddTask("checkOnLine", checkOnLineTk)
 }

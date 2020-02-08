@@ -36,11 +36,11 @@ var FilterToken = func(ctx *context.Context) {
 		err401(ctx)
 		return
 	}
+	o := orm.NewOrm()
+	auth := models.Auths{Token: oldToken}
 	if isExistInSlice == false && oldToken != "" {
 		token := strings.Split(oldToken, " ")[1]
-		admin := models.Admin{Token: oldToken}
-		o := orm.NewOrm()
-		if err := o.Read(&admin, "Token"); err != nil {
+		if err := o.Read(&auth, "Token"); err != nil {
 			err401(ctx)
 			return
 		}
@@ -65,6 +65,8 @@ var FilterToken = func(ctx *context.Context) {
 	// 该换token了
 	if time.Now().Unix()+60*60*2 >= exp {
 		if newToken, err := utils.RefreshToken(token); err == nil {
+			auth.Token = newToken
+			o.Update(&auth)
 			ctx.Output.Header("Authorization", newToken)
 		}
 	}

@@ -88,6 +88,10 @@ func MessageP2P(message models.Message) {
 		if isKF {
 			PushNewContacts(intoMessage.ToAccount, robot)
 		}
+		admin1 := models.Admin{ID: intoMessage.FromAccount}
+		if err := o.Read(&admin1); err == nil {
+			PushNewContacts(intoMessage.FromAccount, robot)
+		}
 		return
 	}
 
@@ -197,17 +201,14 @@ func MessageP2P(message models.Message) {
 			if len(admins) <= 0 {
 				messageContent = robotData.NoServices
 			} else {
-				bizType = "transfer"
 				// 平均分配客服
 				admin := admins[0]
-				callbackMessage.TransferAccount = admin.ID
 				adminDataJSON, _ := json.Marshal(adminData{ID: admin.ID, NickName: admin.NickName, Avatar: admin.Avatar})
 				messageContent = string(adminDataJSON)
 
-				// 设置为已删除消息，避免客服端显示两条消息
-				callbackMessage.Delete = 1
-
 				// 发送一条消息告诉客服端
+				var newMsgJSON []byte
+				var newMsgBase64 string
 				newMsg := models.Message{}
 				newMsg.BizType = "transfer"
 				newMsg.FromAccount = message.FromAccount
@@ -215,19 +216,38 @@ func MessageP2P(message models.Message) {
 				newMsg.Timestamp = time.Now().Unix()
 				newMsg.TransferAccount = admin.ID
 				newMsg.Payload = "系统将客户分配给您"
-				newMsgJSON, _ := json.Marshal(newMsg)
-				newMsgBase64 := base64.StdEncoding.EncodeToString([]byte(newMsgJSON))
+				newMsgJSON, _ = json.Marshal(newMsg)
+				newMsgBase64 = base64.StdEncoding.EncodeToString([]byte(newMsgJSON))
 
 				// 消息入库
 				MessageInto(newMsg, true)
-				PushNewContacts(admin.ID, robot)
-
-				// 发给用户
 				robot.SendMessage(strconv.FormatInt(admin.ID, 10), []byte(newMsgBase64))
+				newMsg.FromAccount = robotID
+				newMsg.ToAccount = message.FromAccount
+				newMsg.Payload = messageContent
+				newMsgJSON, _ = json.Marshal(newMsg)
+				newMsgBase64 = base64.StdEncoding.EncodeToString([]byte(newMsgJSON))
+				robot.SendMessage(strconv.FormatInt(message.FromAccount, 10), []byte(newMsgBase64))
+
+				// 帮助客服发送欢迎语
+				newMsg.BizType = "text"
+				newMsg.Payload = admin.AutoReply
+				newMsg.ToAccount = message.FromAccount
+				newMsg.FromAccount = admin.ID
+				newMsgJSON, _ = json.Marshal(newMsg)
+				newMsgBase64 = base64.StdEncoding.EncodeToString([]byte(newMsgJSON))
+
+				// 消息入库
+				MessageInto(newMsg, true)
+				robot.SendMessage(strconv.FormatInt(admin.ID, 10), []byte(newMsgBase64))
+				robot.SendMessage(strconv.FormatInt(message.FromAccount, 10), []byte(newMsgBase64))
+
+				PushNewContacts(admin.ID, robot)
 
 				// 转接入库用于统计服务次数
 				servicesStatistical := models.ServicesStatistical{UserAccount: message.FromAccount, ServiceAccount: admin.ID, Platform: message.Platform, TransferAccount: robotID, CreateAt: time.Now().Unix()}
 				_, _ = o.Insert(&servicesStatistical)
+				return
 			}
 
 			// 不符合去查知识库

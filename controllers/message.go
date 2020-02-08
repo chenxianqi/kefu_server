@@ -37,8 +37,14 @@ func (c *MessageController) List() {
 
 	if messagePaginationData.Service == 0 {
 		token := c.Ctx.Input.Header("Authorization")
-		admin := models.Admin{Token: token}
-		if err := o.Read(&admin, "Token"); err != nil {
+		_auth := models.Auths{Token: token}
+		if err := o.Read(&_auth, "Token"); err != nil {
+			c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
+			c.ServeJSON()
+			return
+		}
+		admin := models.Admin{ID: _auth.UID}
+		if err := o.Read(&admin); err != nil {
 			c.Data["json"] = utils.ResponseError(c.Ctx, "查询失败，用户不存在", err)
 			c.ServeJSON()
 			return
@@ -107,6 +113,9 @@ func (c *MessageController) List() {
 		payload, _ := base64.StdEncoding.DecodeString(msg.Payload)
 		messages[index].Payload = string(payload)
 	}
+	if len(im.Robots) > 0 {
+		im.PushNewContacts(serviceID, im.Robots[0])
+	}
 	c.Data["json"] = utils.ResponseSuccess(c.Ctx, "查询成功！", &messagePaginationData)
 	c.ServeJSON()
 }
@@ -115,14 +124,21 @@ func (c *MessageController) List() {
 type RemoveRequestData struct {
 	FromAccount int64 `json:"from_account"`
 	ToAccount   int64 `json:"to_account"`
-	Key int64 `json:"key"`
+	Key         int64 `json:"key"`
 }
+
 // Remove one message
 func (c *MessageController) Remove() {
 	o := orm.NewOrm()
 	token := c.Ctx.Input.Header("Authorization")
-	admin := models.Admin{Token: token}
-	if err := o.Read(&admin, "Token"); err != nil {
+	_auth := models.Auths{Token: token}
+	if err := o.Read(&_auth, "Token"); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
+		c.ServeJSON()
+		return
+	}
+	admin := models.Admin{ID: _auth.UID}
+	if err := o.Read(&admin); err != nil {
 		c.Data["json"] = utils.ResponseError(c.Ctx, "无权限操作", err)
 		c.ServeJSON()
 		return
@@ -151,9 +167,9 @@ func (c *MessageController) Remove() {
 	}
 
 	_, err := o.Raw("UPDATE message SET `delete` = 1 WHERE from_account = ? AND to_account = ? AND `key` = ?", removeRequestData.FromAccount, removeRequestData.ToAccount, removeRequestData.Key).Exec()
-	if err != nil{
+	if err != nil {
 		c.Data["json"] = utils.ResponseError(c.Ctx, "删除失败!", &err)
-	}else{
+	} else {
 		c.Data["json"] = utils.ResponseSuccess(c.Ctx, "删除成功", nil)
 	}
 	c.ServeJSON()
@@ -170,8 +186,14 @@ func (c *MessageController) Transfer() {
 
 	o := orm.NewOrm()
 	token := c.Ctx.Input.Header("Authorization")
-	admin := models.Admin{Token: token}
-	if err := o.Read(&admin, "Token"); err != nil {
+	_auth := models.Auths{Token: token}
+	if err := o.Read(&_auth, "Token"); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
+		c.ServeJSON()
+		return
+	}
+	admin := models.Admin{ID: _auth.UID}
+	if err := o.Read(&admin); err != nil {
 		c.Data["json"] = utils.ResponseError(c.Ctx, "查询失败，用户不存在", err)
 		c.ServeJSON()
 		return
@@ -242,8 +264,8 @@ func (c *MessageController) Transfer() {
 	im.MessageInto(message, true)
 
 	// send to user
-	message.ToAccount = transferRequestData.UserAccount
 	message.FromAccount = robotID
+	message.ToAccount = transferRequestData.UserAccount
 	message.Delete = 1
 	message.Payload = string(toAdminJSON)
 	messageJSONThree, _ := json.Marshal(message)

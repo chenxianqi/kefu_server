@@ -20,7 +20,7 @@ const (
 // HEADER PAYLOAD SIGNATURE
 // This struct is the PAYLOAD
 type MyCustomClaims struct {
-	models.Admin
+	models.JwtKey
 	jwt.StandardClaims
 }
 
@@ -39,16 +39,17 @@ func RefreshToken(tokenString string) (string, error) {
 	mySigningKey := []byte(KEY)
 	expireAt := time.Now().Add(time.Second * time.Duration(DEFAULT_EXPIRE_SECONDS)).Unix()
 	newClaims := MyCustomClaims{
-		claims.Admin,
+		claims.JwtKey,
 		jwt.StandardClaims{
 			ExpiresAt: expireAt,
-			Issuer:    claims.Admin.UserName,
+			Issuer:    claims.JwtKey.UserName,
 			IssuedAt:  time.Now().Unix(),
 		},
 	}
 	// generate new token with new claims
 	newToken := jwt.NewWithClaims(jwt.SigningMethodHS256, newClaims)
 	tokenStr, err := newToken.SignedString(mySigningKey)
+	logs.Info(tokenStr)
 	if err != nil {
 		logs.Error("generate new fresh json web token failed !! error :", err)
 		return "", err
@@ -88,7 +89,7 @@ func DecodeToken(token string) (map[string]interface{}, error) {
 }
 
 // GenerateToken 生成token
-func GenerateToken(admin models.Admin) (tokenString string) {
+func GenerateToken(jwtKey models.JwtKey) (tokenString string) {
 	var expiredSeconds int
 	expiredSeconds = 259200
 	if expiredSeconds == 0 {
@@ -97,13 +98,12 @@ func GenerateToken(admin models.Admin) (tokenString string) {
 	// Create the Claims
 	mySigningKey := []byte(KEY)
 	expireAt := time.Now().Add(time.Second * time.Duration(expiredSeconds)).Unix()
-	fmt.Println("token will be expired at ", time.Unix(expireAt, 0))
 	// pass parameter to this func or not
 	claims := MyCustomClaims{
-		admin,
+		jwtKey,
 		jwt.StandardClaims{
 			ExpiresAt: expireAt,
-			Issuer:    admin.UserName,
+			Issuer:    jwtKey.UserName,
 			IssuedAt:  time.Now().Unix(),
 		},
 	}

@@ -117,8 +117,14 @@ func (c *PublicController) Register() {
 		token := c.Ctx.Input.Header("Authorization")
 
 		// admin
-		admin = models.Admin{Token: token}
-		if err := o.Read(&admin, "Token"); err != nil {
+		_auth := models.Auths{Token: token}
+		if err := o.Read(&_auth, "Token"); err != nil {
+			c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
+			c.ServeJSON()
+			return
+		}
+		admin := models.Admin{ID: _auth.UID}
+		if err := o.Read(&admin); err != nil {
 			c.Data["json"] = utils.ResponseError(c.Ctx, "客服不存在!", err)
 			c.ServeJSON()
 			return
@@ -327,8 +333,14 @@ func (c *PublicController) LastActivity() {
 
 		// token
 		token := c.Ctx.Input.Header("Authorization")
-		admin := models.Admin{Token: token}
-		if err := o.Read(&admin, "Token"); err != nil {
+		_auth := models.Auths{Token: token}
+		if err := o.Read(&_auth, "Token"); err != nil {
+			c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
+			c.ServeJSON()
+			return
+		}
+		admin := models.Admin{ID: _auth.UID}
+		if err := o.Read(&admin); err != nil {
 			c.Data["json"] = utils.ResponseError(c.Ctx, "用户不存在!", nil)
 			c.ServeJSON()
 			return
@@ -450,14 +462,14 @@ func (c *PublicController) GetMessageHistoryList() {
 
 	messagePaginationData := models.MessagePaginationData{}
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &messagePaginationData); err != nil {
-		c.Data["json"] = utils.ResponseError(c.Ctx, "参数错误!", nil)
+		c.Data["json"] = utils.ResponseError(c.Ctx, "参数错误1!", nil)
 		c.ServeJSON()
 		return
 	}
 
 	token := c.Ctx.Input.Header("token")
 	if token == "" {
-		c.Data["json"] = utils.ResponseError(c.Ctx, "参数错误!", nil)
+		c.Data["json"] = utils.ResponseError(c.Ctx, "参数错误2!", nil)
 		c.ServeJSON()
 		return
 	}

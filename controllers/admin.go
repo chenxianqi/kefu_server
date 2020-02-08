@@ -24,12 +24,17 @@ type AdminController struct {
 func (c *AdminController) GetMeInfo() {
 	o := orm.NewOrm()
 	token := c.Ctx.Input.Header("Authorization")
-	admin := models.Admin{Token: token}
-	if err := o.Read(&admin, "Token"); err != nil {
+	_auth := models.Auths{Token: token}
+	if err := o.Read(&_auth, "Token"); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
+		c.ServeJSON()
+		return
+	}
+	admin := models.Admin{ID: _auth.UID}
+	if err := o.Read(&admin); err != nil {
 		c.Data["json"] = utils.ResponseError(c.Ctx, "查询失败，用户不存在", err)
 	} else {
 		admin.Password = "******"
-		admin.Token = "******"
 		c.Data["json"] = utils.ResponseSuccess(c.Ctx, "查询成功！", &admin)
 	}
 	c.ServeJSON()
@@ -40,8 +45,18 @@ func (c *AdminController) Get() {
 	o := orm.NewOrm()
 
 	token := c.Ctx.Input.Header("Authorization")
-	_admin := models.Admin{Token: token}
-	_ = o.Read(&_admin, "Token")
+	_auth := models.Auths{Token: token}
+	if err := o.Read(&_auth, "Token"); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
+		c.ServeJSON()
+		return
+	}
+	_admin := models.Admin{ID: _auth.UID}
+	if err := o.Read(&_admin); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "查询失败，用户不存在", err)
+		c.ServeJSON()
+		return
+	}
 
 	id, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
 
@@ -56,7 +71,6 @@ func (c *AdminController) Get() {
 		c.Data["json"] = utils.ResponseError(c.Ctx, "查询失败，用户不存在", err)
 	} else {
 		admin.Password = "******"
-		admin.Token = "******"
 		c.Data["json"] = utils.ResponseSuccess(c.Ctx, "查询成功！", &admin)
 	}
 	c.ServeJSON()
@@ -67,8 +81,12 @@ func (c *AdminController) Put() {
 	o := orm.NewOrm()
 
 	token := c.Ctx.Input.Header("Authorization")
-	_admin := models.Admin{Token: token}
-	_ = o.Read(&_admin, "Token")
+	_auth := models.Auths{Token: token}
+	if err := o.Read(&_auth, "Token"); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
+		c.ServeJSON()
+		return
+	}
 
 	// get request
 	admin := models.Admin{}
@@ -81,14 +99,15 @@ func (c *AdminController) Put() {
 	}
 
 	// admin exist
-	if err := o.Read(&models.Admin{ID: admin.ID}); err != nil {
+	_oldAdmin := models.Admin{ID: _auth.UID}
+	if err := o.Read(&_oldAdmin); err != nil {
 		c.Data["json"] = utils.ResponseError(c.Ctx, "更新失败，用户不存在", err)
 		c.ServeJSON()
 		return
 	}
 
 	// is admin
-	if _admin.ID != admin.ID && _admin.Root != 1 {
+	if _auth.UID != admin.ID && _oldAdmin.Root != 1 {
 		c.Data["json"] = utils.ResponseError(c.Ctx, "您没有权限修改该客服资料！", nil)
 		c.ServeJSON()
 		return
@@ -112,11 +131,9 @@ func (c *AdminController) Put() {
 
 	// update
 	if _, err := o.Update(&admin, "Phone", "NickName", "UpdateAt", "Avatar", "AutoReply"); err != nil {
-		logs.Error(err)
 		c.Data["json"] = utils.ResponseError(c.Ctx, "更新失败", err)
 	} else {
 		admin.Password = "******"
-		admin.Token = "******"
 		c.Data["json"] = utils.ResponseSuccess(c.Ctx, "更新成功！", &admin)
 	}
 	c.ServeJSON()
@@ -129,8 +146,18 @@ func (c *AdminController) Post() {
 
 	// is admin ?
 	token := c.Ctx.Input.Header("Authorization")
-	_admin := models.Admin{Token: token}
-	_ = o.Read(&_admin, "Token")
+	_auth := models.Auths{Token: token}
+	if err := o.Read(&_auth, "Token"); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
+		c.ServeJSON()
+		return
+	}
+	_admin := models.Admin{ID: _auth.UID}
+	if err := o.Read(&_admin); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "更新失败，用户不存在", err)
+		c.ServeJSON()
+		return
+	}
 	if _admin.Root != 1 {
 		c.Data["json"] = utils.ResponseError(c.Ctx, "您没有权限添加用户", nil)
 		c.ServeJSON()
@@ -199,8 +226,14 @@ func (c *AdminController) Delete() {
 	id, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
 
 	token := c.Ctx.Input.Header("Authorization")
-	_admin := models.Admin{Token: token}
-	_ = o.Read(&_admin, "Token")
+	_auth := models.Auths{Token: token}
+	if err := o.Read(&_auth, "Token"); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
+		c.ServeJSON()
+		return
+	}
+	_admin := models.Admin{ID: _auth.UID}
+	_ = o.Read(&_admin)
 	if _admin.Root != 1 {
 		c.Data["json"] = utils.ResponseError(c.Ctx, "您没有权限删除客服!", nil)
 		c.ServeJSON()
@@ -249,7 +282,6 @@ func (c *AdminController) List() {
 	// request body
 	var paginationData AdminPaginationData
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &paginationData); err != nil {
-		logs.Error(err)
 		c.Data["json"] = utils.ResponseError(c.Ctx, "参数错误!", err)
 		c.ServeJSON()
 		return
@@ -276,7 +308,6 @@ func (c *AdminController) List() {
 	}
 	total, _ := qs.Count()
 	for index := range lists {
-		lists[index].Token = "******"
 		lists[index].Password = "******"
 	}
 	paginationData.Total = total
@@ -307,8 +338,14 @@ func (c *AdminController) UpdatePassword() {
 
 	// get token
 	token := c.Ctx.Input.Header("Authorization")
-	oldAdmin := models.Admin{Token: token}
-	_ = o.Read(&oldAdmin, "Token")
+	_auth := models.Auths{Token: token}
+	if err := o.Read(&_auth, "Token"); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
+		c.ServeJSON()
+		return
+	}
+	oldAdmin := models.Admin{ID: _auth.UID}
+	_ = o.Read(&oldAdmin)
 
 	// validation
 	valid := validation.Validation{}
@@ -376,8 +413,14 @@ func (c *AdminController) ChangeCurrentUser() {
 
 	// get admin token
 	token := c.Ctx.Input.Header("Authorization")
-	admin := models.Admin{Token: token}
-	_ = o.Read(&admin, "Token")
+	_auth := models.Auths{Token: token}
+	if err := o.Read(&_auth, "Token"); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
+		c.ServeJSON()
+		return
+	}
+	admin := models.Admin{ID: _auth.UID}
+	_ = o.Read(&admin)
 
 	uid, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
 	user := models.User{ID: uid}
@@ -411,8 +454,15 @@ func (c *AdminController) Online() {
 		online = 0
 	}
 
-	admin := models.Admin{Token: token}
-	if err := o.Read(&admin, "Token"); err != nil {
+	_auth := models.Auths{Token: token}
+	if err := o.Read(&_auth, "Token"); err != nil {
+		c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
+		c.ServeJSON()
+		return
+	}
+
+	admin := models.Admin{ID: _auth.UID}
+	if err := o.Read(&admin); err != nil {
 		c.Data["json"] = utils.ResponseError(c.Ctx, "客服不存在!", err)
 		c.ServeJSON()
 		return
