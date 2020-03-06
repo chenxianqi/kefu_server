@@ -2,7 +2,6 @@ package utils
 
 import (
 	"io/ioutil"
-	"kefu_server/models"
 	"math/rand"
 	"net/http"
 	"strings"
@@ -32,14 +31,21 @@ func GetRandomUserAgent() string {
 	return userAgentList[r.Intn(len(userAgentList))]
 }
 
+// HTTPResponse struct
+type HTTPResponse struct {
+	Code    int         `json:"code"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
+}
+
 // HTTPRequest ...
 // url  访问的链接
 // method post, get 等
 // data  body 数据
 // token 授权token
-func HTTPRequest(url string, method string, bodyData string, token string) *models.Response {
+func HTTPRequest(url string, method string, bodyData string, token string) *HTTPResponse {
 	client := &http.Client{}
-	response := new(models.Response)
+	response := new(HTTPResponse)
 	req, err := http.NewRequest(method, url, strings.NewReader(bodyData))
 	if err != nil {
 		response.Code = 500

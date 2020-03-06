@@ -132,7 +132,7 @@ func init() {
 			beego.NSBefore(filters.FilterToken),
 			beego.NSRouter("/?:id", &controllers.ContactController{}),
 			beego.NSRouter("/list", &controllers.ContactController{}, "get:GetContacts"),
-			beego.NSRouter("/clear", &controllers.ContactController{}, "delete:Clear"),
+			beego.NSRouter("/clear", &controllers.ContactController{}, "delete:DeleteAll"),
 		),
 
 		// platform

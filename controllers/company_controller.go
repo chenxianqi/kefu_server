@@ -2,32 +2,40 @@ package controllers
 
 import (
 	"encoding/json"
+	"kefu_server/configs"
 	"kefu_server/models"
-	"kefu_server/utils"
+	"kefu_server/services"
 	"time"
 
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego/validation"
 )
 
 // CompanyController struct
 type CompanyController struct {
-	beego.Controller
+	BaseController
+	CompanyRepository *services.CompanyRepository
 }
+
+// Prepare More like construction method
+func (c *CompanyController) Prepare() {
+
+	// init CompanyRepository
+	c.CompanyRepository = new(services.CompanyRepository)
+	c.CompanyRepository.Init(new(models.Company))
+
+}
+
+// Finish Comparison like destructor
+func (c *CompanyController) Finish() {}
 
 // Get get conpany info
 func (c *CompanyController) Get() {
-	o := orm.NewOrm()
-	company := models.Company{ID: 1}
-	if err := o.Read(&company); err != nil {
-		logs.Error(err)
-		c.Data["json"] = utils.ResponseError(c.Ctx, "查询失败!", err)
-	} else {
-		c.Data["json"] = utils.ResponseSuccess(c.Ctx, "查询成功！", &company)
+	company := c.CompanyRepository.GetCompany(1)
+	if company == nil {
+		c.JSON(configs.ResponseFail, "查询失败!", nil)
 	}
-	c.ServeJSON()
+	c.JSON(configs.ResponseSucess, "查询成功！", &company)
 }
 
 // Put update conpany info
@@ -36,10 +44,7 @@ func (c *CompanyController) Put() {
 	company := models.Company{}
 	company.UpdateAt = time.Now().Unix()
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &company); err != nil {
-		logs.Error(err)
-		c.Data["json"] = utils.ResponseError(c.Ctx, "参数错误!", nil)
-		c.ServeJSON()
-		return
+		c.JSON(configs.ResponseFail, "参数错误!", nil)
 	}
 
 	// validation
@@ -53,23 +58,22 @@ func (c *CompanyController) Put() {
 	valid.MaxSize(company.Tel, 50, "tel").Message("公司电话长度不能超过50个字符！")
 	if valid.HasErrors() {
 		for _, err := range valid.Errors {
-			logs.Error(err)
-			c.Data["json"] = &models.Response{Code: 400, Message: err.Message, Data: nil}
-			break
+			c.JSON(configs.ResponseFail, err.Message, nil)
 		}
-		c.ServeJSON()
-		return
 	}
 
 	// orm
-	o := orm.NewOrm()
-	company.ID = 1
-	company.UpdateAt = time.Now().Unix()
-	if _, err := o.Update(&company); err != nil {
-		logs.Error(err)
-		c.Data["json"] = utils.ResponseError(c.Ctx, "更新失败!", err)
-	} else {
-		c.Data["json"] = utils.ResponseSuccess(c.Ctx, "更新成功！", &company)
+	row, err := c.CompanyRepository.UpdateParams(1, orm.Params{
+		"Title":    company.Title,
+		"Address":  company.Address,
+		"Email":    company.Email,
+		"UpdateAt": time.Now().Unix(),
+		"Logo":     company.Logo,
+		"Service":  company.Service,
+		"Tel":      company.Tel,
+	})
+	if err != nil {
+		c.JSON(configs.ResponseFail, "更新失败!", nil)
 	}
-	c.ServeJSON()
+	c.JSON(configs.ResponseSucess, "更新成功!", row)
 }

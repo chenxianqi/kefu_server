@@ -16,6 +16,7 @@ import (
 	"kefu_server/im"
 	"kefu_server/models"
 	_ "kefu_server/routers"
+	"kefu_server/utils"
 	"strconv"
 	"time"
 )
@@ -130,7 +131,7 @@ func appTask() {
 				messageJSON, _ = json.Marshal(message)
 				messageString = base64.StdEncoding.EncodeToString([]byte(messageJSON))
 				robot.SendMessage(strconv.FormatInt(contact.ToAccount, 10), []byte(messageString))
-				im.MessageInto(message, true)
+				utils.MessageInto(message, true)
 
 				// 超时后消息
 				// 数据库获取机器人配置信息
@@ -180,9 +181,9 @@ func main() {
 	initLog()
 
 	// 启动任务
-	appTask()
-	toolbox.StartTask()
-	defer toolbox.StopTask()
+	// appTask()
+	// toolbox.StartTask()
+	// defer toolbox.StopTask()
 
 	/// 静态文件配置
 	beego.SetStaticPath("/", "public/client")
@@ -193,7 +194,7 @@ func main() {
 	beego.ErrorController(&controllers.ErrorController{})
 
 	// 启动机器人
-	im.RobotInit()
+	// im.RobotInit()
 
 	// 初始化beeGo
 	beego.Run()

@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"kefu_server/models"
+	"kefu_server/utils"
 	"strconv"
 	"strings"
 	"time"
@@ -84,7 +85,7 @@ func MessageP2P(message models.Message) {
 				intoMessage.Read = 1
 			}
 		}
-		MessageInto(intoMessage, isKF)
+		utils.MessageInto(intoMessage, isKF)
 		if isKF {
 			PushNewContacts(intoMessage.ToAccount, robot)
 		}
@@ -220,7 +221,7 @@ func MessageP2P(message models.Message) {
 				newMsgBase64 = base64.StdEncoding.EncodeToString([]byte(newMsgJSON))
 
 				// 消息入库
-				MessageInto(newMsg, true)
+				utils.MessageInto(newMsg, true)
 				robot.SendMessage(strconv.FormatInt(admin.ID, 10), []byte(newMsgBase64))
 				newMsg.FromAccount = robotID
 				newMsg.ToAccount = message.FromAccount
@@ -238,7 +239,7 @@ func MessageP2P(message models.Message) {
 				newMsgBase64 = base64.StdEncoding.EncodeToString([]byte(newMsgJSON))
 
 				// 消息入库
-				MessageInto(newMsg, true)
+				utils.MessageInto(newMsg, true)
 				robot.SendMessage(strconv.FormatInt(admin.ID, 10), []byte(newMsgBase64))
 				robot.SendMessage(strconv.FormatInt(message.FromAccount, 10), []byte(newMsgBase64))
 
@@ -314,6 +315,6 @@ func MessageP2P(message models.Message) {
 	robot.SendMessage(strconv.FormatInt(message.FromAccount, 10), []byte(messageString))
 
 	// 消息入库
-	MessageInto(callbackMessage, false)
+	utils.MessageInto(callbackMessage, false)
 
 }

@@ -1,16 +1,13 @@
 package controllers
 
-import (
-	"github.com/astaxie/beego"
-)
+import "kefu_server/configs"
 
 // ErrorController  struct
 type ErrorController struct {
-	beego.Controller
+	BaseController
 }
 
 // Error404  Controller public fun
 func (c *ErrorController) Error404() {
-	c.Data["content"] = "page not found"
-	c.TplName = "404.tpl"
+	c.JSON(configs.ResponseNotFound, "Sorry The Page Not Found~", nil)
 }

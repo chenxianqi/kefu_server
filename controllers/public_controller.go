@@ -403,7 +403,7 @@ func (c *PublicController) PushMessage() {
 	msgContent, _ := base64.StdEncoding.DecodeString(pushMessage.Payload)
 	msgContent, _ = base64.StdEncoding.DecodeString(string(msgContent))
 	json.Unmarshal(msgContent, &getMessage)
-	im.MessageInto(getMessage, false)
+	utils.MessageInto(getMessage, false)
 	c.ServeJSON()
 
 }
