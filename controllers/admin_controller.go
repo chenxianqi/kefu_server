@@ -24,9 +24,8 @@ type AdminController struct {
 // Prepare More like construction method
 func (c *AdminController) Prepare() {
 
-	// init AdminRepository
-	c.AdminRepository = new(services.AdminRepository)
-	c.AdminRepository.Init(new(models.Admin))
+	// AdminRepository instance
+	c.AdminRepository = services.GetAdminRepositoryInstance()
 
 }
 
@@ -38,13 +37,12 @@ func (c *AdminController) GetMeInfo() {
 
 	// GetAuthInfo
 	auth := c.GetAuthInfo()
-
 	admin := c.AdminRepository.GetAdmin(auth.UID)
 	if admin == nil {
-		c.JSON(configs.ResponseFail, "查询失败，用户不存在!", nil)
+		c.JSON(configs.ResponseFail, "fail，用户不存在!", nil)
 	}
 
-	c.JSON(configs.ResponseSucess, "查询成功!", &admin)
+	c.JSON(configs.ResponseSucess, "success", &admin)
 }
 
 // Get admin
@@ -52,10 +50,9 @@ func (c *AdminController) Get() {
 
 	// GetAuthInfo
 	auth := c.GetAuthInfo()
-
 	admin := c.AdminRepository.GetAdmin(auth.UID)
 	if admin == nil {
-		c.JSON(configs.ResponseFail, "查询失败，用户不存在!", nil)
+		c.JSON(configs.ResponseFail, "fail，用户不存在!", nil)
 	}
 
 	id, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
@@ -65,11 +62,11 @@ func (c *AdminController) Get() {
 
 	retrunAdmin := c.AdminRepository.GetAdmin(id)
 	if retrunAdmin == nil {
-		c.JSON(configs.ResponseFail, "查询失败，用户不存在!", nil)
+		c.JSON(configs.ResponseFail, "fail，用户不存在!", nil)
 	}
 
 	retrunAdmin.Password = "******"
-	c.JSON(configs.ResponseSucess, "查询成功！", &retrunAdmin)
+	c.JSON(configs.ResponseSucess, "success", &retrunAdmin)
 }
 
 // Put update admin
@@ -80,10 +77,9 @@ func (c *AdminController) Put() {
 
 	// get request
 	admin := models.Admin{}
-	admin.UpdateAt = time.Now().Unix()
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &admin); err != nil {
 		logs.Warn("Put update admin error------------", err)
-		c.JSON(configs.ResponseFail, "参数错误！", &err)
+		c.JSON(configs.ResponseFail, "参数有误，请检查！", &err)
 	}
 
 	// admin exist
@@ -114,10 +110,10 @@ func (c *AdminController) Put() {
 	}
 
 	// update
-	if _, err := c.AdminRepository.UpdateParams(admin.ID, orm.Params{
+	if _, err := c.AdminRepository.Update(admin.ID, orm.Params{
 		"Phone":     admin.Phone,
 		"NickName":  admin.NickName,
-		"UpdateAt":  admin.UpdateAt,
+		"UpdateAt":  time.Now().Unix(),
 		"Avatar":    admin.Avatar,
 		"AutoReply": admin.AutoReply,
 	}); err != nil {
@@ -146,7 +142,7 @@ func (c *AdminController) Post() {
 	var newAdmin models.Admin
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &newAdmin); err != nil {
 		logs.Info("Post add new admin error------------", err)
-		c.JSON(configs.ResponseFail, "参数错误！", nil)
+		c.JSON(configs.ResponseFail, "参数有误，请检查！", nil)
 	}
 
 	// validation
@@ -217,18 +213,18 @@ func (c *AdminController) Delete() {
 func (c *AdminController) List() {
 
 	// request body
-	var paginationData services.AdminPaginationData
-	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &paginationData); err != nil {
-		c.JSON(configs.ResponseFail, "参数错误!", &err)
+	var paginationDto services.AdminPaginationDto
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &paginationDto); err != nil {
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", &err)
 	}
 
-	data, err := c.AdminRepository.GetAdmins(&paginationData)
+	data, err := c.AdminRepository.GetAdmins(&paginationDto)
 
 	if err != nil {
-		c.JSON(configs.ResponseFail, "查询失败!", &err)
+		c.JSON(configs.ResponseFail, "fail", &err)
 	}
 
-	c.JSON(configs.ResponseSucess, "查询成功!", &data)
+	c.JSON(configs.ResponseSucess, "success", &data)
 }
 
 // UpdatePassword update password
@@ -236,7 +232,7 @@ func (c *AdminController) UpdatePassword() {
 
 	request := services.UpdatePasswordRequest{}
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &request); err != nil {
-		c.JSON(configs.ResponseFail, "参数错误!", &err)
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", &err)
 	}
 
 	// GetAuthInfo
@@ -245,7 +241,7 @@ func (c *AdminController) UpdatePassword() {
 	// oldAdmin
 	oldAdmin := c.AdminRepository.GetAdmin(auth.UID)
 	if oldAdmin == nil {
-		c.JSON(configs.ResponseFail, "查询失败，暂时无法更新!", nil)
+		c.JSON(configs.ResponseFail, "fail，暂时无法更新!", nil)
 	}
 
 	// validation
@@ -290,7 +286,7 @@ func (c *AdminController) UpdatePassword() {
 	}
 
 	// Update
-	if _, err := c.AdminRepository.UpdateParams(newAdmin.ID, orm.Params{
+	if _, err := c.AdminRepository.Update(newAdmin.ID, orm.Params{
 		"Password": newAdmin.Password,
 		"UpdateAt": newAdmin.UpdateAt,
 	}); err != nil {
@@ -315,7 +311,7 @@ func (c *AdminController) ChangeCurrentUser() {
 	uid, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
 
 	// Update
-	if _, err := c.AdminRepository.UpdateParams(admin.ID, orm.Params{
+	if _, err := c.AdminRepository.Update(admin.ID, orm.Params{
 		"CurrentConUser": uid,
 	}); err != nil {
 		logs.Info("ChangeCurrentUser current connect user Warn------------", err)
@@ -341,7 +337,7 @@ func (c *AdminController) Online() {
 	}
 
 	// Update
-	if _, err := c.AdminRepository.UpdateParams(admin.ID, orm.Params{
+	if _, err := c.AdminRepository.Update(admin.ID, orm.Params{
 		"Online": online,
 	}); err != nil {
 		c.JSON(configs.ResponseFail, "更新在线状态失败!", &err)

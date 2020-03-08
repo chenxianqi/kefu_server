@@ -11,9 +11,9 @@ import (
 // ContactRepositoryInterface interface
 type ContactRepositoryInterface interface {
 	GetContact(id int64) *models.Contact
-	GetContacts(uid int64) ([]models.ContactData, error)
+	GetContacts(uid int64) ([]models.ContactDto, error)
 	UpdateIsSessionEnd(usersID []int64, isSessionEnd int) (int64, error)
-	UpdateParams(id int64, params *orm.Params) (int64, error)
+	Update(id int64, params *orm.Params) (int64, error)
 	Delete(id int64, uid int64) (int64, error)
 	DeleteAll(uid int64) (int64, error)
 	Add(contact *models.Contact) (int64, error)
@@ -23,6 +23,13 @@ type ContactRepositoryInterface interface {
 // ContactRepository struct
 type ContactRepository struct {
 	BaseRepository
+}
+
+// GetContactRepositoryInstance get instance
+func GetContactRepositoryInstance() *ContactRepository {
+	instance := new(ContactRepository)
+	instance.Init(new(models.Contact))
+	return instance
 }
 
 // Add add a Contact
@@ -66,19 +73,19 @@ func (r *ContactRepository) UpdateIsSessionEnd(usersID []int64, isSessionEnd int
 }
 
 // GetContacts get Contacts
-func (r *ContactRepository) GetContacts(uid int64) ([]models.ContactData, error) {
-	var contactData []models.ContactData
-	_, err := r.o.Raw("SELECT c.id AS cid,c.to_account,c.is_session_end, c.last_message,c.last_message_type,c.from_account, c.create_at AS contact_create_at,u.*, IFNULL(m.`count`,0) AS `read` FROM  `contact` c LEFT JOIN `user` u ON c.from_account = u.id LEFT JOIN (SELECT to_account,from_account, COUNT(*) as `count` FROM message WHERE `read` = 1 GROUP BY to_account,from_account) m ON m.to_account = c.to_account AND m.from_account = c.from_account WHERE c.to_account = ? AND c.delete = 0 ORDER BY c.create_at DESC", uid).QueryRows(&contactData)
+func (r *ContactRepository) GetContacts(uid int64) ([]models.ContactDto, error) {
+	var contactDto []models.ContactDto
+	_, err := r.o.Raw("SELECT c.id AS cid,c.to_account,c.is_session_end, c.last_message,c.last_message_type,c.from_account, c.create_at AS contact_create_at,u.*, IFNULL(m.`count`,0) AS `read` FROM  `contact` c LEFT JOIN `user` u ON c.from_account = u.id LEFT JOIN (SELECT to_account,from_account, COUNT(*) as `count` FROM message WHERE `read` = 1 GROUP BY to_account,from_account) m ON m.to_account = c.to_account AND m.from_account = c.from_account WHERE c.to_account = ? AND c.delete = 0 ORDER BY c.create_at DESC", uid).QueryRows(&contactDto)
 	if err != nil {
 		logs.Warn("GetContacts get Contacts------------", err)
 		return nil, err
 	}
 	// content base 64 decode
-	for index, contact := range contactData {
+	for index, contact := range contactDto {
 		payload, _ := base64.StdEncoding.DecodeString(contact.LastMessage)
-		contactData[index].LastMessage = string(payload)
+		contactDto[index].LastMessage = string(payload)
 	}
-	return contactData, nil
+	return contactDto, nil
 }
 
 // Delete delete a Contact
@@ -103,11 +110,11 @@ func (r *ContactRepository) DeleteAll(uid int64) (int64, error) {
 
 }
 
-// UpdateParams update contact
-func (r *ContactRepository) UpdateParams(id int64, params orm.Params) (int64, error) {
+// Update contact
+func (r *ContactRepository) Update(id int64, params orm.Params) (int64, error) {
 	index, err := r.q.Filter("id", id).Update(params)
 	if err != nil {
-		logs.Warn("UpdateParams update contact------------", err)
+		logs.Warn("Update contact------------", err)
 	}
 	return index, err
 }

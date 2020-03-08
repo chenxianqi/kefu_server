@@ -20,9 +20,8 @@ type CompanyController struct {
 // Prepare More like construction method
 func (c *CompanyController) Prepare() {
 
-	// init CompanyRepository
-	c.CompanyRepository = new(services.CompanyRepository)
-	c.CompanyRepository.Init(new(models.Company))
+	// CompanyRepository instance
+	c.CompanyRepository = services.GetCompanyRepositoryInstance()
 
 }
 
@@ -33,9 +32,9 @@ func (c *CompanyController) Finish() {}
 func (c *CompanyController) Get() {
 	company := c.CompanyRepository.GetCompany(1)
 	if company == nil {
-		c.JSON(configs.ResponseFail, "查询失败!", nil)
+		c.JSON(configs.ResponseFail, "fail", nil)
 	}
-	c.JSON(configs.ResponseSucess, "查询成功！", &company)
+	c.JSON(configs.ResponseSucess, "success", &company)
 }
 
 // Put update conpany info
@@ -44,7 +43,7 @@ func (c *CompanyController) Put() {
 	company := models.Company{}
 	company.UpdateAt = time.Now().Unix()
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &company); err != nil {
-		c.JSON(configs.ResponseFail, "参数错误!", nil)
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", nil)
 	}
 
 	// validation
@@ -63,7 +62,7 @@ func (c *CompanyController) Put() {
 	}
 
 	// orm
-	row, err := c.CompanyRepository.UpdateParams(1, orm.Params{
+	row, err := c.CompanyRepository.Update(1, orm.Params{
 		"Title":    company.Title,
 		"Address":  company.Address,
 		"Email":    company.Email,

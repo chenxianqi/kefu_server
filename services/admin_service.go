@@ -11,14 +11,14 @@ import (
 type AdminRepositoryInterface interface {
 	GetAdmin(id int64) *models.Admin
 	GetAdminWithUserName(userName string) *models.Admin
-	UpdateParams(id int64, params *orm.Params) (int64, error)
+	Update(id int64, params *orm.Params) (int64, error)
 	Add(admin *models.Admin, col1 string) (bool, int64, error)
 	Delete(id int64) (int64, error)
-	GetAdmins(request *AdminPaginationData) (*AdminPaginationData, error)
+	GetAdmins(request *AdminPaginationDto) (*AdminPaginationDto, error)
 }
 
-// AdminPaginationData  a struct
-type AdminPaginationData struct {
+// AdminPaginationDto  a struct
+type AdminPaginationDto struct {
 	PageSize int         `json:"page_size"`
 	PageOn   int         `json:"page_on"`
 	Keyword  string      `json:"keyword"`
@@ -37,6 +37,13 @@ type UpdatePasswordRequest struct {
 // AdminRepository struct
 type AdminRepository struct {
 	BaseRepository
+}
+
+// GetAdminRepositoryInstance get instance
+func GetAdminRepositoryInstance() *AdminRepository {
+	instance := new(AdminRepository)
+	instance.Init(new(models.Admin))
+	return instance
 }
 
 // GetAdmin get one admin with id
@@ -59,11 +66,11 @@ func (r *AdminRepository) GetAdminWithUserName(userName string) *models.Admin {
 	return &admin
 }
 
-// UpdateParams update admin
-func (r *AdminRepository) UpdateParams(id int64, params orm.Params) (int64, error) {
+// Update admin
+func (r *AdminRepository) Update(id int64, params orm.Params) (int64, error) {
 	index, err := r.q.Filter("id", id).Update(params)
 	if err != nil {
-		logs.Warn("UpdateParams update admin------------", err)
+		logs.Warn("Update admin------------", err)
 	}
 	return index, err
 }
@@ -87,7 +94,7 @@ func (r *AdminRepository) Delete(id int64) (int64, error) {
 }
 
 // GetAdmins get admin list
-func (r *AdminRepository) GetAdmins(request *AdminPaginationData) (*AdminPaginationData, error) {
+func (r *AdminRepository) GetAdmins(request *AdminPaginationDto) (*AdminPaginationDto, error) {
 
 	var lists []models.Admin
 

@@ -16,6 +16,13 @@ type AuthTypesRepository struct {
 	BaseRepository
 }
 
+// GetAuthTypesRepositoryInstance get instance
+func GetAuthTypesRepositoryInstance() *AuthTypesRepository {
+	instance := new(AuthTypesRepository)
+	instance.Init(new(models.AuthTypes))
+	return instance
+}
+
 // GetAuthType get a authType
 func (r *AuthTypesRepository) GetAuthType(id int64) *models.AuthTypes {
 	var authType models.AuthTypes

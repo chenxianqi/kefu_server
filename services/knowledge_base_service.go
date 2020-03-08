@@ -11,16 +11,23 @@ import (
 // KnowledgeBaseRepositoryInterface interface
 type KnowledgeBaseRepositoryInterface interface {
 	GetKnowledgeBase(id int64) *models.KnowledgeBase
-	GetKnowledgeBases(request models.PaginationData) (*models.PaginationData, error)
+	GetKnowledgeBases(request models.KnowledgePaginationDto) (*models.KnowledgePaginationDto, error)
 	GetKnowledgeBaseWithTitle(title string) *models.KnowledgeBase
 	Add(knowledgeBase *models.KnowledgeBase, col1 string) (bool, int64, error)
-	UpdateParams(id int64, params *orm.Params) (int64, error)
+	Update(id int64, params *orm.Params) (int64, error)
 	Delete(id int64) (int64, error)
 }
 
 // KnowledgeBaseRepository struct
 type KnowledgeBaseRepository struct {
 	BaseRepository
+}
+
+// GetKnowledgeBaseRepositoryInstance get instance
+func GetKnowledgeBaseRepositoryInstance() *KnowledgeBaseRepository {
+	instance := new(KnowledgeBaseRepository)
+	instance.Init(new(models.KnowledgeBase))
+	return instance
 }
 
 // Add create a knowledgeBase
@@ -36,11 +43,11 @@ func (r *KnowledgeBaseRepository) Add(knowledgeBase *models.KnowledgeBase, col1 
 	return _bool, index, err
 }
 
-// UpdateParams update knowledgeBase
-func (r *KnowledgeBaseRepository) UpdateParams(id int64, params orm.Params) (int64, error) {
+// Update knowledgeBase
+func (r *KnowledgeBaseRepository) Update(id int64, params orm.Params) (int64, error) {
 	index, err := r.q.Filter("id", id).Update(params)
 	if err != nil {
-		logs.Warn("UpdateParams update knowledgeBase------------", index, err)
+		logs.Warn("Update knowledgeBase------------", index, err)
 	}
 	return index, err
 }
@@ -57,7 +64,7 @@ func (r *KnowledgeBaseRepository) GetKnowledgeBase(id int64) *models.KnowledgeBa
 }
 
 // GetKnowledgeBases get one KnowledgeBases
-func (r *KnowledgeBaseRepository) GetKnowledgeBases(request *models.PaginationData) (*models.PaginationData, error) {
+func (r *KnowledgeBaseRepository) GetKnowledgeBases(request *models.KnowledgePaginationDto) (*models.KnowledgePaginationDto, error) {
 
 	if request.PageSize < MinPageSize {
 		request.PageSize = MinPageSize

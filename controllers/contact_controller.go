@@ -17,13 +17,11 @@ type ContactController struct {
 // Prepare More like construction method
 func (c *ContactController) Prepare() {
 
-	// init ContactRepository
-	c.ContactRepository = new(services.ContactRepository)
-	c.ContactRepository.Init(new(models.Contact))
+	// ContactRepository instance
+	c.ContactRepository = services.GetContactRepositoryInstance()
 
-	// init AdminRepository
-	c.AdminRepository = new(services.AdminRepository)
-	c.AdminRepository.Init(new(models.Admin))
+	// AdminRepository instance
+	c.AdminRepository = services.GetAdminRepositoryInstance()
 
 }
 
@@ -36,15 +34,15 @@ func (c *ContactController) GetContacts() {
 	// GetAuthInfo
 	auth := c.GetAuthInfo()
 
-	contactData, err := c.ContactRepository.GetContacts(auth.UID)
+	contactDto, err := c.ContactRepository.GetContacts(auth.UID)
 
 	if err != nil {
-		c.JSON(configs.ResponseFail, "查询失败!", &err)
+		c.JSON(configs.ResponseFail, "fail", &err)
 	}
-	if len(contactData) == 0 {
-		contactData = []models.ContactData{}
+	if len(contactDto) == 0 {
+		contactDto = []models.ContactDto{}
 	}
-	c.JSON(configs.ResponseSucess, "查询成功！", &contactData)
+	c.JSON(configs.ResponseSucess, "success", &contactDto)
 
 }
 

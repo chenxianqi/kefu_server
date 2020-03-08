@@ -10,21 +10,21 @@ import (
 )
 
 // KEY ...
-// DEFAULT_EXPIRE_SECONDS ...
+// DEFAULTEXPIRESECONDS ...
 const (
-	KEY                    string = "JWT-ARY-STARK"
-	DEFAULT_EXPIRE_SECONDS int    = 259200
+	KEY                  string = "JWT-ARY-STARK"
+	DEFAULTEXPIRESECONDS int    = 259200
 )
 
 // MyCustomClaims JWT -- json web token
 // HEADER PAYLOAD SIGNATURE
 // This struct is the PAYLOAD
 type MyCustomClaims struct {
-	models.JwtKey
+	models.JwtKeyDto
 	jwt.StandardClaims
 }
 
-// RefreshToken 刷新token
+// RefreshToken Refresh token
 func RefreshToken(tokenString string) (string, error) {
 	// first get previous token
 	token, err := jwt.ParseWithClaims(
@@ -37,12 +37,12 @@ func RefreshToken(tokenString string) (string, error) {
 		return "", err
 	}
 	mySigningKey := []byte(KEY)
-	expireAt := time.Now().Add(time.Second * time.Duration(DEFAULT_EXPIRE_SECONDS)).Unix()
+	expireAt := time.Now().Add(time.Second * time.Duration(DEFAULTEXPIRESECONDS)).Unix()
 	newClaims := MyCustomClaims{
-		claims.JwtKey,
+		claims.JwtKeyDto,
 		jwt.StandardClaims{
 			ExpiresAt: expireAt,
-			Issuer:    claims.JwtKey.UserName,
+			Issuer:    claims.JwtKeyDto.UserName,
 			IssuedAt:  time.Now().Unix(),
 		},
 	}
@@ -89,21 +89,21 @@ func DecodeToken(token string) (map[string]interface{}, error) {
 }
 
 // GenerateToken 生成token
-func GenerateToken(jwtKey models.JwtKey) (tokenString string) {
+func GenerateToken(jwtKeyDto models.JwtKeyDto) (tokenString string) {
 	var expiredSeconds int
 	expiredSeconds = 259200
 	if expiredSeconds == 0 {
-		expiredSeconds = DEFAULT_EXPIRE_SECONDS
+		expiredSeconds = DEFAULTEXPIRESECONDS
 	}
 	// Create the Claims
 	mySigningKey := []byte(KEY)
 	expireAt := time.Now().Add(time.Second * time.Duration(expiredSeconds)).Unix()
 	// pass parameter to this func or not
 	claims := MyCustomClaims{
-		jwtKey,
+		jwtKeyDto,
 		jwt.StandardClaims{
 			ExpiresAt: expireAt,
-			Issuer:    jwtKey.UserName,
+			Issuer:    jwtKeyDto.UserName,
 			IssuedAt:  time.Now().Unix(),
 		},
 	}

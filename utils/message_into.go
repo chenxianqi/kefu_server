@@ -18,14 +18,13 @@ func MessageInto(message models.Message, isKF bool) {
 		return
 	}
 
-	// init MessageRepository
-	messageRepository := new(services.MessageRepository)
-	messageRepository.Init(new(models.Message))
+	// MessageRepository instance
+	messageRepository := services.GetMessageRepositoryInstance()
 
 	// 判断是否是撤回消息（软删除）
 	if message.BizType == "cancel" {
 		key, _ := strconv.ParseInt(message.Payload, 10, 64)
-		_, _ = messageRepository.Delete(models.RemoveMessageRequestData{FromAccount: message.FromAccount, ToAccount: message.ToAccount, Key: key})
+		_, _ = messageRepository.Delete(models.RemoveMessageRequestDto{FromAccount: message.FromAccount, ToAccount: message.ToAccount, Key: key})
 	}
 
 	// message create time
@@ -38,9 +37,10 @@ func MessageInto(message models.Message, isKF bool) {
 	if !(message.BizType == "handshake") {
 
 		if !isKF {
-			// init UserRepository
-			userRepository := new(services.UserRepository)
-			userRepository.Init(new(models.User))
+
+			// UserRepository instance
+			userRepository := services.GetUserRepositoryInstance()
+
 			// 默认已读消息
 			message.Read = 0
 			user := userRepository.GetUser(message.ToAccount)
@@ -62,18 +62,16 @@ func MessageInto(message models.Message, isKF bool) {
 
 	}
 
-	// init RobotRepository
-	robotRepository := new(services.RobotRepository)
-	robotRepository.Init(new(models.Robot))
+	// RobotRepository instance
+	robotRepository := services.GetRobotRepositoryInstance()
 
 	// 判断是否机器人对话（不处理聊天列表）
 	if rbts, _ := robotRepository.GetRobotWithInIds(message.ToAccount, message.FromAccount); len(rbts) > 0 {
 		return
 	}
 
-	// init ContactRepository
-	contactRepository := new(services.ContactRepository)
-	contactRepository.Init(new(models.Contact))
+	// ContactRepository instance
+	contactRepository := services.GetContactRepositoryInstance()
 
 	// 处理客服聊天列表
 	if contact, err := contactRepository.GetContactWithIds(message.ToAccount, message.FromAccount); err != nil {
@@ -88,7 +86,7 @@ func MessageInto(message models.Message, isKF bool) {
 		if message.BizType == "end" || message.BizType == "timeout" {
 			isSessionEnd = 1
 		}
-		_, _ = contactRepository.UpdateParams(contact.ID, orm.Params{
+		_, _ = contactRepository.Update(contact.ID, orm.Params{
 			"LastMessageType": message.BizType,
 			"CreateAt":        time.Now().Unix(),
 			"LastMessage":     message.Payload,

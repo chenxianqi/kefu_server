@@ -14,12 +14,19 @@ type AuthsRepositoryInterface interface {
 	GetAdminOnlineCount(uid int64) int64
 	Delete(id int64) (int64, error)
 	Add(id *models.Auths) (int64, error)
-	UpdateParams(id int64, params orm.Params) (int64, error)
+	Update(id int64, params orm.Params) (int64, error)
 }
 
 // AuthsRepository struct
 type AuthsRepository struct {
 	BaseRepository
+}
+
+// GetAuthsRepositoryInstance get instance
+func GetAuthsRepositoryInstance() *AuthsRepository {
+	instance := new(AuthsRepository)
+	instance.Init(new(models.Auths))
+	return instance
 }
 
 // GetAuthInfo get a auth info
@@ -62,11 +69,11 @@ func (r *AuthsRepository) Delete(id int64) (int64, error) {
 	return row, nil
 }
 
-// UpdateParams update admin
-func (r *AuthsRepository) UpdateParams(id int64, params orm.Params) (int64, error) {
+// Update admin
+func (r *AuthsRepository) Update(id int64, params orm.Params) (int64, error) {
 	index, err := r.q.Filter("id", id).Update(params)
 	if err != nil {
-		logs.Warn("UpdateParams update admin------------", err)
+		logs.Warn("Update admin------------", err)
 	}
 	return index, err
 }

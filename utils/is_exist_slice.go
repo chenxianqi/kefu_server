@@ -1,6 +1,6 @@
 package utils
 
-// InExistInSlice 检查内容是否在slice中存在
+// InExistInSlice Check if content exists in slice
 func InExistInSlice(input string, slice []string) bool {
 	for _, v := range slice {
 		if v == input {

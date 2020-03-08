@@ -2,12 +2,11 @@ package im
 
 import (
 	"kefu_server/models"
+	"kefu_server/services"
 	"strconv"
-	"strings"
 
 	"github.com/Xiaomi-mimc/mimc-go-sdk"
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
 )
 
 // Robots 工作中的机器人
@@ -26,18 +25,12 @@ func CreateRobot(appAccount string) *mimc.MCUser {
 
 // GetRobots get robot all
 func GetRobots() []models.Robot {
-	// orm instance
-	o := orm.NewOrm()
-	robot := new(models.Robot)
-	qs := o.QueryTable(robot)
-
-	// 查询
-	var lists []models.Robot
-	_, _ = qs.OrderBy("-create_at").All(&lists)
-	for index := range lists {
-		lists[index].Artificial = strings.Trim(lists[index].Artificial, "|")
-	}
-	return lists
+	
+	// RobotRepository instance
+	robotRepository := services.GetRobotRepositoryInstance()
+	var robots []models.Robot
+	robots, _ = robotRepository.GetRobots()
+	return robots
 }
 
 // RobotInit 初始化机器人

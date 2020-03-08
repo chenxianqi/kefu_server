@@ -25,17 +25,14 @@ type AuthController struct {
 // Prepare More like construction method
 func (c *AuthController) Prepare() {
 
-	// init AuthTypes
-	c.AuthTypesRepository = new(services.AuthTypesRepository)
-	c.AuthTypesRepository.Init(new(models.AuthTypes))
+	// AuthTypes instance
+	c.AuthTypesRepository = services.GetAuthTypesRepositoryInstance()
 
-	// init AdminRepository
-	c.AdminRepository = new(services.AdminRepository)
-	c.AdminRepository.Init(new(models.Admin))
+	// AdminRepository instance
+	c.AdminRepository = services.GetAdminRepositoryInstance()
 
-	// init AuthsRepository
-	c.AuthsRepository = new(services.AuthsRepository)
-	c.AuthsRepository.Init(new(models.Auths))
+	// AuthsRepository instance
+	c.AuthsRepository = services.GetAuthsRepositoryInstance()
 
 }
 
@@ -59,7 +56,7 @@ func (c *AuthController) Login() {
 	valid := validation.Validation{}
 
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &request); err != nil {
-		c.JSON(configs.ResponseFail, "参数错误", nil)
+		c.JSON(configs.ResponseFail, "参数有误，请检查", nil)
 	}
 
 	// valid
@@ -97,7 +94,7 @@ func (c *AuthController) Login() {
 	}
 
 	// create token
-	newToken := utils.GenerateToken(models.JwtKey{ID: queryAdmin.ID, UserName: queryAdmin.UserName, AuthType: authType.ID})
+	newToken := utils.GenerateToken(models.JwtKeyDto{ID: queryAdmin.ID, UserName: queryAdmin.UserName, AuthType: authType.ID})
 	auth := c.AuthsRepository.GetAuthInfoWithTypeAndUID(request.AuthType, queryAdmin.ID)
 	if auth == nil {
 
@@ -114,7 +111,7 @@ func (c *AuthController) Login() {
 
 	} else {
 
-		_, err := c.AuthsRepository.UpdateParams(auth.ID, orm.Params{
+		_, err := c.AuthsRepository.Update(auth.ID, orm.Params{
 			"Token":    newToken,
 			"UpdateAt": time.Now().Unix(),
 		})
@@ -137,7 +134,7 @@ func (c *AuthController) Logout() {
 
 	if count := c.AuthsRepository.GetAdminOnlineCount(auth.UID); count <= 1 {
 
-		if _, err := c.AdminRepository.UpdateParams(auth.UID, orm.Params{
+		if _, err := c.AdminRepository.Update(auth.UID, orm.Params{
 			"CurrentConUser": 0,
 			"Online":         0,
 		}); err != nil {

@@ -2,79 +2,69 @@ package controllers
 
 import (
 	"encoding/json"
+	"kefu_server/configs"
 	"kefu_server/models"
-	"kefu_server/utils"
+	"kefu_server/services"
 	"time"
 
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego/validation"
 )
 
 // QiniuController struct
 type QiniuController struct {
-	beego.Controller
+	BaseController
+	QiniuRepository *services.QiniuRepository
+	AdminRepository *services.AdminRepository
 }
+
+// Prepare More like construction method
+func (c *QiniuController) Prepare() {
+
+	// QiniuRepository instance
+	c.QiniuRepository = services.GetQiniuRepositoryInstance()
+
+	// AdminRepository instance
+	c.AdminRepository = services.GetAdminRepositoryInstance()
+
+}
+
+// Finish Comparison like destructor
+func (c *QiniuController) Finish() {}
 
 // Get get qiniu config info
 func (c *QiniuController) Get() {
 
-	o := orm.NewOrm()
-	token := c.Ctx.Input.Header("Authorization")
-	_auth := models.Auths{Token: token}
-	if err := o.Read(&_auth, "Token"); err != nil {
-		c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
-		c.ServeJSON()
-		return
-	}
-	_admin := models.Admin{ID: _auth.UID}
-	_ = o.Read(&_admin)
-
-	if _admin.Root != 1 {
-		c.Data["json"] = utils.ResponseError(c.Ctx, "您没有权限获取配置!", nil)
-		c.ServeJSON()
-		return
+	// GetAuthInfo
+	auth := c.GetAuthInfo()
+	admin := c.AdminRepository.GetAdmin(auth.UID)
+	if admin.Root != 1 {
+		c.JSON(configs.ResponseFail, "您没有权限获取配置!", nil)
 	}
 
-	qiniuSetting := models.QiniuSetting{ID: 1}
-	if err := o.Read(&qiniuSetting); err != nil {
-		logs.Error(err)
-		c.Data["json"] = utils.ResponseError(c.Ctx, "查询失败!", err)
-	} else {
-		c.Data["json"] = utils.ResponseSuccess(c.Ctx, "查询成功！", &qiniuSetting)
+	// get qiniu config info
+	qiniuSetting := c.QiniuRepository.GetQiniuConfigInfo()
+	if qiniuSetting == nil {
+		c.JSON(configs.ResponseFail, "fail", nil)
 	}
 
-	c.ServeJSON()
+	// return
+	c.JSON(configs.ResponseSucess, "success", &qiniuSetting)
 }
 
 // Put update
 func (c *QiniuController) Put() {
 
 	qiniuSetting := models.QiniuSetting{}
-	qiniuSetting.UpdateAt = time.Now().Unix()
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &qiniuSetting); err != nil {
-		logs.Error(err)
-		c.Data["json"] = utils.ResponseError(c.Ctx, "参数错误!", nil)
-		c.ServeJSON()
-		return
+		c.JSON(configs.ResponseFail, "fail", nil)
 	}
 
-	o := orm.NewOrm()
-
-	token := c.Ctx.Input.Header("Authorization")
-	_auth := models.Auths{Token: token}
-	if err := o.Read(&_auth, "Token"); err != nil {
-		c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
-		c.ServeJSON()
-		return
-	}
-	_admin := models.Admin{ID: _auth.UID}
-	_ = o.Read(&_admin)
-	if _admin.Root != 1 {
-		c.Data["json"] = utils.ResponseError(c.Ctx, "您没有权限设置!", nil)
-		c.ServeJSON()
-		return
+	// GetAuthInfo
+	auth := c.GetAuthInfo()
+	admin := c.AdminRepository.GetAdmin(auth.UID)
+	if admin.Root != 1 {
+		c.JSON(configs.ResponseFail, "您没有权限获取配置!", nil)
 	}
 
 	// validation
@@ -89,21 +79,20 @@ func (c *QiniuController) Put() {
 	valid.MaxSize(qiniuSetting.Host, 100, "host").Message("host不能超过100字符！")
 	if valid.HasErrors() {
 		for _, err := range valid.Errors {
-			logs.Error(err)
-			c.Data["json"] = utils.ResponseError(c.Ctx, err.Message, nil)
-			break
+			c.JSON(configs.ResponseFail, err.Message, nil)
 		}
-		c.ServeJSON()
-		return
 	}
 
-	qiniuSetting.ID = 1
-	qiniuSetting.UpdateAt = time.Now().Unix()
-	if _, err := o.Update(&qiniuSetting); err != nil {
-		logs.Error(err)
-		c.Data["json"] = utils.ResponseError(c.Ctx, "更新失败!", err)
-	} else {
-		c.Data["json"] = utils.ResponseSuccess(c.Ctx, "更新成功！", &qiniuSetting)
+	// update
+	if _, err := c.QiniuRepository.Update(orm.Params{
+		"Bucket":    qiniuSetting.Bucket,
+		"AccessKey": qiniuSetting.AccessKey,
+		"SecretKey": qiniuSetting.SecretKey,
+		"Host":      qiniuSetting.Host,
+		"UpdateAt":  time.Now().Unix(),
+	}); err != nil {
+		c.JSON(configs.ResponseFail, "更新失败!", &err)
 	}
-	c.ServeJSON()
+
+	c.JSON(configs.ResponseSucess, "更新成功!", &qiniuSetting)
 }

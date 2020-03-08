@@ -30,7 +30,7 @@ func (c *BaseController) JSON(status configs.ResponseStatusType, message string,
 		msg = "sorry server error"
 		data = nil
 	}
-	c.Data["json"] = &models.Response{Code: status, Message: msg, Data: &data}
+	c.Data["json"] = &models.ResponseDto{Code: status, Message: msg, Data: &data}
 	c.ServeJSON()
 	c.StopRun()
 }
@@ -38,8 +38,7 @@ func (c *BaseController) JSON(status configs.ResponseStatusType, message string,
 // GetAuthInfo get current anth user that AuthInfo
 func (c *BaseController) GetAuthInfo() *models.Auths {
 	token := c.Ctx.Input.Header("Authorization")
-	var authsRepository = new(services.AuthsRepository)
-	authsRepository.Init(new(models.Auths))
+	var authsRepository = services.GetAuthsRepositoryInstance()
 	auth := authsRepository.GetAuthInfo(token)
 	if auth == nil {
 		logs.Warn("GetAuthInfo fun error------------登录已失效！")

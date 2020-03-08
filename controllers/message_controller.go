@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 
+	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/validation"
 
 	"kefu_server/configs"
@@ -24,10 +25,8 @@ type MessageController struct {
 // Prepare More like construction method
 func (c *MessageController) Prepare() {
 
-	// init MessageRepository
-	c.MessageRepository = new(services.MessageRepository)
-	c.MessageRepository.Init(new(models.Message))
-
+	// MessageRepository instance
+	c.MessageRepository = services.GetMessageRepositoryInstance()
 }
 
 // Finish Comparison like destructor
@@ -36,75 +35,66 @@ func (c *MessageController) Finish() {}
 // List get messages
 func (c *MessageController) List() {
 
-	messagePaginationData := models.MessagePaginationData{}
-	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &messagePaginationData); err != nil {
-		c.JSON(configs.ResponseFail, "参数错误!", nil)
+	messagePaginationDto := models.MessagePaginationDto{}
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &messagePaginationDto); err != nil {
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", nil)
 	}
 
-	// service ID
-	var serviceID int64
-
-	if messagePaginationData.Service == 0 {
-
-		// GetAuthInfo
-		auth := c.GetAuthInfo()
-		serviceID = auth.UID
-
-	} else {
-		serviceID = messagePaginationData.Service
-	}
+	// GetAuthInfo
+	auth := c.GetAuthInfo()
+	messagePaginationDto.Service = auth.UID
 
 	// Timestamp == 0
-	if messagePaginationData.Timestamp == 0 {
-		messagePaginationData.Timestamp = time.Now().Unix()
+	if messagePaginationDto.Timestamp == 0 {
+		messagePaginationDto.Timestamp = time.Now().Unix()
 	}
 
 	// validation
 	valid := validation.Validation{}
-	valid.Required(messagePaginationData.Account, "account").Message("account不能为空！")
-	valid.Required(messagePaginationData.PageSize, "page_size").Message("page_size不能为空！")
-	valid.Required(messagePaginationData.Timestamp, "timestamp").Message("timestamp不能为空！")
+	valid.Required(messagePaginationDto.Account, "account").Message("account不能为空！")
+	valid.Required(messagePaginationDto.PageSize, "page_size").Message("page_size不能为空！")
+	valid.Required(messagePaginationDto.Timestamp, "timestamp").Message("timestamp不能为空！")
 	if valid.HasErrors() {
 		for _, err := range valid.Errors {
 			c.JSON(configs.ResponseFail, err.Message, nil)
 		}
 	}
 
-	// query message
-	returnMessagePaginationData, err := c.MessageRepository.GetMessages(serviceID, messagePaginationData)
+	// query messages
+	returnMessagePaginationDto, err := c.MessageRepository.GetAdminMessages(messagePaginationDto)
 	if err != nil {
-		c.JSON(configs.ResponseFail, "查询失败！", &err)
+		c.JSON(configs.ResponseFail, "fail", &err)
 	}
 
 	// push notify update current service contacts list
 	if len(im.Robots) > 0 {
-		im.PushNewContacts(serviceID, im.Robots[0])
+		im.PushNewContacts(auth.UID, im.Robots[0])
 	}
 
-	c.JSON(configs.ResponseSucess, "查询成功！", &returnMessagePaginationData)
+	c.JSON(configs.ResponseSucess, "success", &returnMessagePaginationDto)
 }
 
 // Remove one message
 func (c *MessageController) Remove() {
 
 	// request body
-	removeRequestData := models.RemoveMessageRequestData{}
-	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &removeRequestData); err != nil {
-		c.JSON(configs.ResponseFail, "参数错误!", nil)
+	removeRequestDto := models.RemoveMessageRequestDto{}
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &removeRequestDto); err != nil {
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", nil)
 	}
 
 	// validation
 	valid := validation.Validation{}
-	valid.Required(removeRequestData.ToAccount, "to_account").Message("to_account不能为空！")
-	valid.Required(removeRequestData.FromAccount, "from_account").Message("from_account不能为空！")
-	valid.Required(removeRequestData.Key, "key").Message("key不能为空！")
+	valid.Required(removeRequestDto.ToAccount, "to_account").Message("to_account不能为空！")
+	valid.Required(removeRequestDto.FromAccount, "from_account").Message("from_account不能为空！")
+	valid.Required(removeRequestDto.Key, "key").Message("key不能为空！")
 	if valid.HasErrors() {
 		for _, err := range valid.Errors {
 			c.JSON(configs.ResponseFail, err.Message, nil)
 		}
 	}
 
-	row, err := c.MessageRepository.Delete(removeRequestData)
+	row, err := c.MessageRepository.Delete(removeRequestDto)
 	if err != nil || row == 0 {
 		c.JSON(configs.ResponseFail, "删除失败!", &err)
 	}
@@ -117,20 +107,19 @@ func (c *MessageController) Transfer() {
 
 	// GetAuthInfo
 	auth := c.GetAuthInfo()
-	adminRepository := new(services.AdminRepository)
-	adminRepository.Init(new(models.Admin))
+	adminRepository := services.GetAdminRepositoryInstance()
 	admin := adminRepository.GetAdmin(auth.UID)
 
 	// request body
-	var transferRequestData *models.TransferRequestData
-	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &transferRequestData); err != nil {
-		c.JSON(configs.ResponseFail, "参数错误!", nil)
+	var transferDto *models.TransferDto
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &transferDto); err != nil {
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", nil)
 	}
 
 	// validation
 	valid := validation.Validation{}
-	valid.Required(transferRequestData.ToAccount, "to_account").Message("to_account不能为空！")
-	valid.Required(transferRequestData.UserAccount, "user_account").Message("user不能为空！")
+	valid.Required(transferDto.ToAccount, "to_account").Message("to_account不能为空！")
+	valid.Required(transferDto.UserAccount, "user_account").Message("user不能为空！")
 	if valid.HasErrors() {
 		for _, err := range valid.Errors {
 			c.JSON(configs.ResponseFail, err.Message, nil)
@@ -145,15 +134,16 @@ func (c *MessageController) Transfer() {
 		NickName string `json:"nickname"`
 		Avatar   string `json:"avatar"`
 	}
-	toAdmin := adminRepository.GetAdmin(transferRequestData.ToAccount)
+	toAdmin := adminRepository.GetAdmin(transferDto.ToAccount)
 	if toAdmin == nil {
 		c.JSON(configs.ResponseFail, "转接失败，转接客服不存在!", nil)
 	}
 	toAdminJSON, _ := json.Marshal(adminData{ID: toAdmin.ID, Avatar: toAdmin.Avatar, NickName: toAdmin.NickName})
 
-	userRepository := new(services.UserRepository)
-	userRepository.Init(new(models.User))
-	user := userRepository.GetUser(transferRequestData.UserAccount)
+	// UserRepository instance
+	userRepository := services.GetUserRepositoryInstance()
+
+	user := userRepository.GetUser(transferDto.UserAccount)
 	if user == nil {
 		c.JSON(configs.ResponseFail, "转接失败用户ID不存在!", nil)
 	}
@@ -161,9 +151,9 @@ func (c *MessageController) Transfer() {
 	// message
 	message := models.Message{}
 	message.BizType = "transfer"
-	message.FromAccount = transferRequestData.UserAccount
+	message.FromAccount = transferDto.UserAccount
 	message.Timestamp = time.Now().Unix()
-	message.TransferAccount = transferRequestData.ToAccount
+	message.TransferAccount = transferDto.ToAccount
 
 	// Send to forwarder
 	message.ToAccount = admin.ID
@@ -174,27 +164,27 @@ func (c *MessageController) Transfer() {
 	utils.MessageInto(message, true)
 
 	// Send to forwarded customer service
-	message.ToAccount = transferRequestData.ToAccount
+	message.ToAccount = transferDto.ToAccount
 	message.Payload = admin.NickName + "将" + user.NickName + "转接给您"
 	messageJSONTwo, _ := json.Marshal(message)
 	messageStringTwo := base64.StdEncoding.EncodeToString([]byte(messageJSONTwo))
-	robot.SendMessage(strconv.FormatInt(transferRequestData.ToAccount, 10), []byte(messageStringTwo))
+	robot.SendMessage(strconv.FormatInt(transferDto.ToAccount, 10), []byte(messageStringTwo))
 	utils.MessageInto(message, true)
 
 	// send to user
 	message.FromAccount = robotID
-	message.ToAccount = transferRequestData.UserAccount
+	message.ToAccount = transferDto.UserAccount
 	message.Delete = 1
 	message.Payload = string(toAdminJSON)
 	messageJSONThree, _ := json.Marshal(message)
 	messageString3 := base64.StdEncoding.EncodeToString([]byte(messageJSONThree))
-	robot.SendMessage(strconv.FormatInt(transferRequestData.UserAccount, 10), []byte(messageString3))
+	robot.SendMessage(strconv.FormatInt(transferDto.UserAccount, 10), []byte(messageString3))
 	utils.MessageInto(message, false)
 
 	// Transfer to the library for counting service times
-	servicesStatistical := models.ServicesStatistical{UserAccount: transferRequestData.UserAccount, ServiceAccount: transferRequestData.ToAccount, TransferAccount: admin.ID, Platform: user.Platform, CreateAt: time.Now().Unix()}
-	statisticalRepository := new(services.StatisticalRepository)
-	statisticalRepository.Init(new(models.ServicesStatistical))
+	servicesStatistical := models.ServicesStatistical{UserAccount: transferDto.UserAccount, ServiceAccount: transferDto.ToAccount, TransferAccount: admin.ID, Platform: user.Platform, CreateAt: time.Now().Unix()}
+	// StatisticalRepository instance
+	statisticalRepository := services.GetStatisticalRepositoryInstance()
 	_, err := statisticalRepository.Add(&servicesStatistical)
 	if err != nil {
 	}
@@ -203,11 +193,14 @@ func (c *MessageController) Transfer() {
 	tk := time.NewTimer(1 * time.Second)
 	select {
 	case <-tk.C:
-		usersID := []int64{admin.ID, transferRequestData.UserAccount}
-		contactRepository := new(services.ContactRepository)
-		contactRepository.Init(new(models.Contact))
+		usersID := []int64{admin.ID, transferDto.UserAccount}
+
+		// ContactRepository instance
+		contactRepository := services.GetContactRepositoryInstance()
 		_, err := contactRepository.UpdateIsSessionEnd(usersID, 1)
+
 		if err != nil {
+			logs.Info(err)
 		}
 	}
 

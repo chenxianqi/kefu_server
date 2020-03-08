@@ -10,12 +10,19 @@ import (
 // CompanyRepositoryInterface interface
 type CompanyRepositoryInterface interface {
 	GetCompany(id int64) *models.Company
-	UpdateParams(id int64, params *orm.Params) (int64, error)
+	Update(id int64, params *orm.Params) (int64, error)
 }
 
 // CompanyRepository struct
 type CompanyRepository struct {
 	BaseRepository
+}
+
+// GetCompanyRepositoryInstance get instance
+func GetCompanyRepositoryInstance() *CompanyRepository {
+	instance := new(CompanyRepository)
+	instance.Init(new(models.Company))
+	return instance
 }
 
 // GetCompany get one company
@@ -28,11 +35,11 @@ func (r *CompanyRepository) GetCompany(id int64) *models.Company {
 	return &company
 }
 
-// UpdateParams update company
-func (r *CompanyRepository) UpdateParams(id int64, params orm.Params) (int64, error) {
+// Update company
+func (r *CompanyRepository) Update(id int64, params orm.Params) (int64, error) {
 	index, err := r.q.Filter("id", id).Update(params)
 	if err != nil {
-		logs.Warn("UpdateParams update company------------", err)
+		logs.Warn("Update company------------", err)
 	}
 	return index, err
 }

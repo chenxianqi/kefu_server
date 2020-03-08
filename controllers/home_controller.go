@@ -3,7 +3,6 @@ package controllers
 import (
 	"encoding/json"
 	"kefu_server/configs"
-	"kefu_server/models"
 	"kefu_server/services"
 
 	"github.com/astaxie/beego/validation"
@@ -18,9 +17,8 @@ type HomeController struct {
 // Prepare More like construction method
 func (c *HomeController) Prepare() {
 
-	// init StatisticalRepository
-	c.StatisticalRepository = new(services.StatisticalRepository)
-	c.StatisticalRepository.Init(new(models.ServicesStatistical))
+	// StatisticalRepository instance
+	c.StatisticalRepository = services.GetStatisticalRepositoryInstance()
 
 }
 
@@ -39,7 +37,7 @@ func (c *HomeController) Statistical() {
 	// request body
 	statisticalRequest := StatisticalRequest{}
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &statisticalRequest); err != nil {
-		c.JSON(configs.ResponseFail, "参数错误!", &err)
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", &err)
 	}
 
 	// validation
@@ -57,7 +55,7 @@ func (c *HomeController) Statistical() {
 		c.JSON(configs.ResponseFail, err.Error(), &err)
 	}
 
-	c.JSON(configs.ResponseSucess, "查询成功！", &countsArr)
+	c.JSON(configs.ResponseSucess, "success", &countsArr)
 
 }
 
@@ -67,7 +65,7 @@ func (c *HomeController) TodayActionStatistical() {
 	// request body
 	statisticalRequest := StatisticalRequest{}
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &statisticalRequest); err != nil {
-		c.JSON(configs.ResponseFail, "参数错误!", &err)
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", &err)
 	}
 
 	// validation
@@ -85,6 +83,6 @@ func (c *HomeController) TodayActionStatistical() {
 		c.JSON(configs.ResponseFail, err.Error(), &err)
 	}
 
-	c.JSON(configs.ResponseSucess, "查询成功！", &statisticalData)
+	c.JSON(configs.ResponseSucess, "success", &statisticalData)
 
 }

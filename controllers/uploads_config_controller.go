@@ -1,28 +1,31 @@
 package controllers
 
 import (
-	"kefu_server/models"
-	"kefu_server/utils"
-
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
+	"kefu_server/configs"
+	"kefu_server/services"
 )
 
 // UploadsConfigController struct
 type UploadsConfigController struct {
-	beego.Controller
+	BaseController
+	UploadsConfigRepository *services.UploadsConfigRepository
 }
 
-// Config get upload config
+// Prepare More like construction method
+func (c *UploadsConfigController) Prepare() {
+
+	// UploadsConfigRepository instance
+	c.UploadsConfigRepository = services.GetUploadsConfigRepositoryInstance()
+
+}
+
+// Finish Comparison like destructor
+func (c *UploadsConfigController) Finish() {}
+
+// Config get upload config all
 func (c *UploadsConfigController) Config() {
 
-	o := orm.NewOrm()
-	var configs []models.UploadsConfig
-	if _, err := o.QueryTable(new(models.UploadsConfig)).All(&configs); err != nil {
-		c.Data["json"] = utils.ResponseError(c.Ctx, "查询失败", err)
-	} else {
-		c.Data["json"] = utils.ResponseSuccess(c.Ctx, "查询成功！", &configs)
-	}
-	c.ServeJSON()
+	uploadsConfigs := c.UploadsConfigRepository.GetUploadsConfigs()
+	c.JSON(configs.ResponseSucess, "success", &uploadsConfigs)
 
 }

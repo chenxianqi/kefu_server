@@ -23,13 +23,11 @@ type KnowledgeBaseController struct {
 // Prepare More like construction method
 func (c *KnowledgeBaseController) Prepare() {
 
-	// init StatisticalRepository
-	c.KnowledgeBaseRepository = new(services.KnowledgeBaseRepository)
-	c.KnowledgeBaseRepository.Init(new(models.KnowledgeBase))
+	// StatisticalRepository instance
+	c.KnowledgeBaseRepository = services.GetKnowledgeBaseRepositoryInstance()
 
-	// init PlatformRepository
-	c.PlatformRepository = new(services.PlatformRepository)
-	c.PlatformRepository.Init(new(models.Platform))
+	// PlatformRepository instance
+	c.PlatformRepository = services.GetPlatformRepositoryInstance()
 
 }
 
@@ -41,16 +39,16 @@ func (c *KnowledgeBaseController) Get() {
 
 	id, err := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
 	if err != nil {
-		c.JSON(configs.ResponseFail, "查询失败！", &err)
+		c.JSON(configs.ResponseFail, "fail", &err)
 	}
 
 	knowledgeBase := c.KnowledgeBaseRepository.GetKnowledgeBase(id)
 
 	if knowledgeBase == nil {
-		c.JSON(configs.ResponseFail, "查询失败！", nil)
+		c.JSON(configs.ResponseFail, "fail", nil)
 	}
 
-	c.JSON(configs.ResponseFail, "查询成功！", &knowledgeBase)
+	c.JSON(configs.ResponseFail, "success", &knowledgeBase)
 }
 
 // Post add a  knowledge Base
@@ -60,7 +58,7 @@ func (c *KnowledgeBaseController) Post() {
 	var knowledgeBase models.KnowledgeBase
 	knowledgeBase.CreateAt = time.Now().Unix()
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &knowledgeBase); err != nil {
-		c.JSON(configs.ResponseFail, "参数错误!", &err)
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", &err)
 	}
 
 	// validation
@@ -98,7 +96,7 @@ func (c *KnowledgeBaseController) Put() {
 	// request body
 	var newKnowledgeBase models.KnowledgeBase
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &newKnowledgeBase); err != nil {
-		c.JSON(configs.ResponseFail, "参数错误！", &err)
+		c.JSON(configs.ResponseFail, "参数有误，请检查！", &err)
 	}
 
 	// validation
@@ -130,7 +128,7 @@ func (c *KnowledgeBaseController) Put() {
 	}
 
 	// insert
-	row, err := c.KnowledgeBaseRepository.UpdateParams(newKnowledgeBase.ID, orm.Params{
+	row, err := c.KnowledgeBaseRepository.Update(newKnowledgeBase.ID, orm.Params{
 		"Title":    newKnowledgeBase.Title,
 		"SubTitle": newKnowledgeBase.SubTitle,
 		"Content":  newKnowledgeBase.Content,
@@ -167,16 +165,16 @@ func (c *KnowledgeBaseController) Delete() {
 func (c *KnowledgeBaseController) List() {
 
 	// request body
-	var paginationData *models.PaginationData
-	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &paginationData); err != nil {
-		c.JSON(configs.ResponseFail, "参数错误!", &err)
+	var knowledgePaginationDto *models.KnowledgePaginationDto
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &knowledgePaginationDto); err != nil {
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", &err)
 	}
 
 	// query
-	paginationData, err := c.KnowledgeBaseRepository.GetKnowledgeBases(paginationData)
+	knowledgePaginationDto, err := c.KnowledgeBaseRepository.GetKnowledgeBases(knowledgePaginationDto)
 	if err != nil {
-		c.JSON(configs.ResponseFail, "查询失败!", &err)
+		c.JSON(configs.ResponseFail, "fail", &err)
 	}
 
-	c.JSON(configs.ResponseSucess, "查询成功！", &paginationData)
+	c.JSON(configs.ResponseSucess, "success", &knowledgePaginationDto)
 }

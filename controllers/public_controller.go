@@ -3,19 +3,17 @@ package controllers
 import (
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
+	"kefu_server/configs"
 	"kefu_server/im"
 	"kefu_server/models"
+	"kefu_server/services"
 	"kefu_server/utils"
-	"math/rand"
 	"os"
 	"path"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego/validation"
 	"github.com/qiniu/api.v7/auth/qbox"
@@ -24,235 +22,250 @@ import (
 
 // PublicController struct
 type PublicController struct {
-	beego.Controller
+	BaseController
+	UserRepository    *services.UserRepository
+	MessageRepository *services.MessageRepository
+	AdminRepository   *services.AdminRepository
 }
+
+// Prepare More like construction method
+func (c *PublicController) Prepare() {
+
+	// UserRepository inttance
+	c.UserRepository = services.GetUserRepositoryInstance()
+
+	// MessageRepository instance
+	c.MessageRepository = services.GetMessageRepositoryInstance()
+
+	// AdminRepository instance
+	c.AdminRepository = services.GetAdminRepositoryInstance()
+
+}
+
+// Finish Comparison like destructor
+func (c *PublicController) Finish() {}
 
 // Register mimc and user
 func (c *PublicController) Register() {
 
 	// request body
-	var sessionRequest models.SessionRequest
-	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &sessionRequest); err != nil {
-		logs.Error(err)
-		c.Data["json"] = utils.ResponseError(c.Ctx, "参数错误!", nil)
-		c.ServeJSON()
-		return
+	var sessionRequestDto models.SessionRequestDto
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &sessionRequestDto); err != nil {
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", nil)
 	}
 
 	// type
-	if sessionRequest.Type > 1 || sessionRequest.Type < 0 {
-		c.Data["json"] = utils.ResponseError(c.Ctx, "type类型错误!", nil)
-		c.ServeJSON()
-		return
+	if sessionRequestDto.Type > 1 || sessionRequestDto.Type < 0 {
+		c.JSON(configs.ResponseFail, "type类型错误!", nil)
 	}
 
-	imToken := new(models.IMToken)
+	imTokenDto := new(models.IMTokenDto)
 
-	o := orm.NewOrm()
-
+	var user *models.User
+	var admin *models.Admin
 	var (
 		fetchResult string
 		fetchError  error
 	)
 
 	// user
-	var user models.User
-	var admin models.Admin
-	if sessionRequest.Type == 0 {
+	if sessionRequestDto.Type == 0 {
 
 		// platfrom id exist
-		if count, err := o.QueryTable(new(models.Platform)).Filter("id", sessionRequest.Platform).Count(); count <= 0 || sessionRequest.Platform == 1 {
-			c.Data["json"] = utils.ResponseError(c.Ctx, "注册失败，该平台ID不存在!", &err)
-			c.ServeJSON()
-			return
+		if pt := services.GetPlatformRepositoryInstance().GetPlatform(sessionRequestDto.Platform); pt == nil || sessionRequestDto.Platform == 1 {
+			c.JSON(configs.ResponseFail, "注册失败，该平台ID不存在!", nil)
 		}
 
-		user = models.User{ID: sessionRequest.AccountID, UID: sessionRequest.UID, Platform: sessionRequest.Platform, Address: sessionRequest.Address}
+		// Do business user data expansion here
+		if sessionRequestDto.UID != 0 {
+
+			// “sessionRequestDto.UID”, If there is a mapping relationship with the business platform
+			// You can update the business profile user information to the customer service database here
+			// example:
+			// &myUser := modes.MyUser{}
+			// o.Raw("SELECT * FROM `members` WHERE id = 100", sessionRequestDto.UID).QueryRow(&myUser)
+			// & myUser is the data of the business platform user, and finally assigned to models.User
+
+			// Read users based on business platform
+			user = c.UserRepository.GetUserWithUID(sessionRequestDto.UID)
+
+		} else {
+
+			// Read users using AccountID
+			user = c.UserRepository.GetUser(sessionRequestDto.AccountID)
+
+		}
 
 		/// old user
-		if err := o.QueryTable(new(models.User)).Filter("id", sessionRequest.AccountID).One(&user); err == nil {
+		if user != nil {
+
+			// fetchResult
 			fetchResult, fetchError = im.GetMiMcToken(strconv.FormatInt(user.ID, 10))
-			if err := json.Unmarshal([]byte(fetchResult), &imToken); err != nil {
-				c.Data["json"] = utils.ResponseError(c.Ctx, "注册失败!", &err)
-				c.ServeJSON()
-				return
+			if err := json.Unmarshal([]byte(fetchResult), &imTokenDto); err != nil {
+				c.JSON(configs.ResponseFail, "注册失败!", &err)
 			}
-			user.Online = 1
-			user.UID = sessionRequest.UID
-			user.Address = sessionRequest.Address
-			user.Address = sessionRequest.Address
-			user.Platform = sessionRequest.Platform
-			user.LastActivity = time.Now().Unix()
-			user.Token = imToken.Data.Token
-			logs.Info("imToken.Data.Token==", imToken.Data.Token)
-			_, _ = o.Update(&user)
+
+			// update userinfo
+			c.UserRepository.Update(user.ID, orm.Params{
+				"Online":       1,
+				"Address":      sessionRequestDto.Address,
+				"Platform":     sessionRequestDto.Platform,
+				"LastActivity": time.Now().Unix(),
+				"Token":        imTokenDto.Data.Token,
+			})
+
 		} else {
+
 			// create new user
+			user = &models.User{}
 			user.CreateAt = time.Now().Unix()
 			user.ID = 0
 			user.Online = 1
 			user.LastActivity = time.Now().Unix()
-			user.Address = sessionRequest.Address
-			if accountID, err := o.Insert(&user); err == nil {
+			user.Address = sessionRequestDto.Address
+
+			if accountID, err := c.UserRepository.Add(user); err == nil {
+
 				fetchResult, fetchError = im.GetMiMcToken(strconv.FormatInt(accountID, 10))
-				if err := json.Unmarshal([]byte(fetchResult), &imToken); err != nil {
-					c.Data["json"] = utils.ResponseError(c.Ctx, "注册失败!", &err)
-					c.ServeJSON()
-					return
+				if err := json.Unmarshal([]byte(fetchResult), &imTokenDto); err != nil {
+					c.JSON(configs.ResponseFail, "注册失败!", &err)
 				}
-				user.Token = imToken.Data.Token
-				user.NickName = "访客" + strconv.FormatInt(accountID, 10)
-				_, _ = o.Update(&user)
+
+				// update userinfo
+				c.UserRepository.Update(user.ID, orm.Params{
+					"Token":    imTokenDto.Data.Token,
+					"NickName": "访客" + strconv.FormatInt(accountID, 10),
+				})
+
 			} else {
-				logs.Info(err)
-				c.Data["json"] = utils.ResponseError(c.Ctx, "服务异常,请稍后重试!", err)
-				c.ServeJSON()
-				return
+				c.JSON(configs.ResponseFail, "注册失败!", &err)
 			}
 		}
 
 	} else {
 
-		// is service
-		token := c.Ctx.Input.Header("Authorization")
+		// GetAuthInfo
+		auth := c.GetAuthInfo()
+		admin = c.AdminRepository.GetAdmin(auth.UID)
 
-		// admin
-		_auth := models.Auths{Token: token}
-		if err := o.Read(&_auth, "Token"); err != nil {
-			c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
-			c.ServeJSON()
-			return
-		}
-		admin := models.Admin{ID: _auth.UID}
-		if err := o.Read(&admin); err != nil {
-			c.Data["json"] = utils.ResponseError(c.Ctx, "客服不存在!", err)
-			c.ServeJSON()
-			return
-		}
-
+		// fetchResult
 		fetchResult, fetchError = im.GetMiMcToken(strconv.FormatInt(admin.ID, 10))
+
+		// imTokenDto
+		if err := json.Unmarshal([]byte(fetchResult), &imTokenDto); err != nil {
+			c.JSON(configs.ResponseFail, "注册失败!", &err)
+		}
 	}
 
+	// is Error ?
 	if fetchError != nil {
-		c.Data["json"] = utils.ResponseError(c.Ctx, "注册失败!", &fetchError)
-		c.ServeJSON()
-		return
+		c.JSON(configs.ResponseFail, "注册失败!", &fetchError)
 	}
-	if err := json.Unmarshal([]byte(fetchResult), &imToken); err != nil {
-		logs.Error(err)
-		c.Data["json"] = utils.ResponseError(c.Ctx, "注册失败!", &err)
-		c.ServeJSON()
-		return
-	}
+
+	// response data
 	type successData struct {
 		Token interface{} `json:"token"`
 		User  interface{} `json:"user"`
 	}
 	var resData successData
-	if sessionRequest.Type == 0 {
-		resData = successData{Token: &imToken, User: &user}
+	if sessionRequestDto.Type == 0 {
+		resData = successData{Token: &imTokenDto, User: &user}
 	} else {
-		resData = successData{Token: &imToken, User: &admin}
+		resData = successData{Token: &imTokenDto, User: &admin}
 	}
-	c.Data["json"] = utils.ResponseSuccess(c.Ctx, "获取成功!", &resData)
-	c.ServeJSON()
+
+	c.JSON(configs.ResponseSucess, "获取成功!", &resData)
 
 }
 
 // Read get user read count
 func (c *PublicController) Read() {
 
-	o := orm.NewOrm()
 	id, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
-	qs := o.QueryTable(new(models.Message))
-	var readCount int64
-	if _count, err := qs.Filter("to_account", id).Filter("read", 1).Count(); err == nil {
-		readCount = _count
-	} else {
+	readCount, err := c.MessageRepository.GetReadCount(id)
+	if err == nil {
 		readCount = 0
 	}
-	c.Data["json"] = utils.ResponseSuccess(c.Ctx, "查询成功！", &readCount)
-	c.ServeJSON()
+	c.JSON(configs.ResponseSucess, "获取成功!", readCount)
 
 }
 
 // Window set user window
 func (c *PublicController) Window() {
 
-	o := orm.NewOrm()
 	type WindowType struct {
 		Window int `json:"window"`
 	}
 	var wType WindowType
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &wType); err != nil {
-		c.Data["json"] = utils.ResponseError(c.Ctx, "更新失败！", nil)
-		return
+		c.JSON(configs.ResponseFail, "更新失败!", nil)
 	}
-	id, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
-	user := models.User{ID: id}
-	if err := o.Read(&user); err != nil {
-		logs.Info(err)
-		c.Data["json"] = utils.ResponseError(c.Ctx, "更新失败！", nil)
-	} else {
-		user.IsWindow = wType.Window
-		_, _ = o.Update(&user)
-		c.Data["json"] = utils.ResponseSuccess(c.Ctx, "更新成功！", nil)
+
+	// get user info
+	uid, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
+	user := c.UserRepository.GetUser(uid)
+
+	if user == nil {
+		c.JSON(configs.ResponseFail, "更新失败，用户不存在!", nil)
 	}
-	c.ServeJSON()
+
+	// update
+	_, err := c.UserRepository.Update(uid, orm.Params{
+		"IsWindow": wType.Window,
+	})
+	if err != nil {
+		c.JSON(configs.ResponseFail, "更新失败!", nil)
+	}
+
+	c.JSON(configs.ResponseSucess, "更新更新成功!", nil)
 }
 
 // CleanRead clean user read
 func (c *PublicController) CleanRead() {
+	uid, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
 
-	o := orm.NewOrm()
-	id, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
-	if _, err := o.Raw("UPDATE `message` SET `read` = 0 WHERE `to_account` = ?", id).Exec(); err != nil {
-		c.Data["json"] = utils.ResponseError(c.Ctx, "执行失败！", err)
-
-	} else {
-		c.Data["json"] = utils.ResponseSuccess(c.Ctx, "执行成功！", nil)
+	// Can't just clear customer service
+	if admin := c.AdminRepository.GetAdmin(uid); admin != nil {
+		c.JSON(configs.ResponseFail, "清除成功!", nil)
 	}
-	c.ServeJSON()
+
+	// clear
+	if _, err := c.MessageRepository.ClearRead(uid); err != nil {
+		c.JSON(configs.ResponseFail, "清除失败!", &err)
+	}
+
+	c.JSON(configs.ResponseSucess, "清除成功!", nil)
 
 }
 
 // Robot get robot
 func (c *PublicController) Robot() {
 
-	o := orm.NewOrm()
-
 	// request body
-	platformID, _ := strconv.ParseInt(c.Ctx.Input.Param(":platform"), 10, 64)
+	pid, _ := strconv.ParseInt(c.Ctx.Input.Param(":platform"), 10, 64)
 
-	var robots []*models.Robot
-	qs := o.QueryTable(new(models.Robot))
-	_, _ = qs.Filter("platform__in", platformID, 1).Filter("switch", 1).All(&robots)
-	if len(robots) > 0 {
-		robot := robots[rand.Intn(len(robots))]
-		c.Data["json"] = utils.ResponseSuccess(c.Ctx, "查询成功！", &robot)
-	} else {
-		c.Data["json"] = utils.ResponseError(c.Ctx, "查询失败!", nil)
+	// get robot
+	robot, err := services.GetRobotRepositoryInstance().GetRobotWithOnline(pid)
+	if err != nil {
+		c.JSON(configs.ResponseFail, "fail", &err)
 	}
-	c.ServeJSON()
+
+	c.JSON(configs.ResponseSucess, "success", &robot)
 
 }
 
 // RobotInfo get robot info
 func (c *PublicController) RobotInfo() {
 
-	o := orm.NewOrm()
 	id, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
 
 	// request
-	robot := models.Robot{ID: id}
-	if err := o.Read(&robot); err != nil {
-		c.Data["json"] = utils.ResponseError(c.Ctx, "获取失败!", err)
-		c.ServeJSON()
-		return
+	robot := services.GetRobotRepositoryInstance().GetRobot(id)
+	if robot == nil {
+		c.JSON(configs.ResponseFail, "fail,机器人不存在!", nil)
 	}
-	robot.Artificial = strings.Trim(robot.Artificial, "|")
-	c.Data["json"] = utils.ResponseSuccess(c.Ctx, "查询成功！", &robot)
-	c.ServeJSON()
+
+	c.JSON(configs.ResponseSucess, "success", &robot)
 
 }
 
@@ -266,31 +279,22 @@ type UploadSecretMode struct {
 // UploadSecret update Secret
 func (c *PublicController) UploadSecret() {
 
-	o := orm.NewOrm()
-	system := models.System{ID: 1}
-	if err := o.Read(&system); err != nil {
-		c.Data["json"] = utils.ResponseError(c.Ctx, "查询失败!", nil)
-		c.ServeJSON()
-		return
-	}
+	// system info
+	system := services.GetSystemRepositoryInstance().GetSystem()
 
 	// System built-in storage
 	if system.UploadMode == 1 {
-		c.Data["json"] = utils.ResponseSuccess(c.Ctx, "查询成功！", &UploadSecretMode{
+		c.JSON(configs.ResponseSucess, "success", &UploadSecretMode{
 			Mode:   system.UploadMode,
 			Secret: "",
 			Host:   beego.AppConfig.String("static_host"),
 		})
-		c.ServeJSON()
+	}
 
-		// qiniu
-	} else if system.UploadMode == 2 {
-		qiniuSetting := models.QiniuSetting{ID: 1}
-		if err := o.Read(&qiniuSetting); err != nil {
-			c.Data["json"] = utils.ResponseError(c.Ctx, "查询失败!", nil)
-			c.ServeJSON()
-			return
-		}
+	// qiniu
+	if system.UploadMode == 2 {
+
+		qiniuSetting := services.GetQiniuRepositoryInstance().GetQiniuConfigInfo()
 		putPolicy := storage.PutPolicy{
 			Scope: qiniuSetting.Bucket,
 		}
@@ -300,82 +304,56 @@ func (c *PublicController) UploadSecret() {
 		mac := qbox.NewMac(qiniuSetting.AccessKey, qiniuSetting.SecretKey)
 		upToken := putPolicy.UploadToken(mac)
 		secretModeData := UploadSecretMode{Mode: system.UploadMode, Secret: upToken, Host: qiniuSetting.Host}
-		c.Data["json"] = utils.ResponseSuccess(c.Ctx, "查询成功！", &secretModeData)
+		c.JSON(configs.ResponseSucess, "success", &secretModeData)
 
-		// aliyun OSS
-	} else if system.UploadMode == 3 {
-
-	} else {
-		c.Data["json"] = utils.ResponseSuccess(c.Ctx, "查询成功！", nil)
-		c.ServeJSON()
 	}
 
-	c.ServeJSON()
+	c.JSON(configs.ResponseFail, "fail", nil)
 }
 
 // LastActivity change last Activity
 func (c *PublicController) LastActivity() {
 
-	o := orm.NewOrm()
+	// uid id if exist current request is user, else admin
 	uid, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
 
+	// user
 	if uid > 0 {
-
-		user := models.User{ID: uid}
-		user.LastActivity = time.Now().Unix()
-		if _, err := o.Update(&user, "LastActivity"); err != nil {
-			c.Data["json"] = utils.ResponseError(c.Ctx, "用户不存在!", &err)
-			c.ServeJSON()
-			return
+		_, err := c.UserRepository.Update(uid, orm.Params{
+			"LastActivity": time.Now().Unix(),
+		})
+		if err != nil {
+			c.JSON(configs.ResponseFail, "fail,用户不存在!", &err)
 		}
-
-	} else {
-
-		// token
-		token := c.Ctx.Input.Header("Authorization")
-		_auth := models.Auths{Token: token}
-		if err := o.Read(&_auth, "Token"); err != nil {
-			c.Data["json"] = utils.ResponseError(c.Ctx, "登录已失效！", nil)
-			c.ServeJSON()
-			return
-		}
-		admin := models.Admin{ID: _auth.UID}
-		if err := o.Read(&admin); err != nil {
-			c.Data["json"] = utils.ResponseError(c.Ctx, "用户不存在!", nil)
-			c.ServeJSON()
-			return
-		}
-
-		admin.LastActivity = time.Now().Unix()
-		if _, err := o.Update(&admin, "LastActivity"); err != nil {
-			c.Data["json"] = utils.ResponseError(c.Ctx, "用户不存在!", nil)
-			c.ServeJSON()
-			return
-		}
-
+		c.JSON(configs.ResponseSucess, "上报成功!", nil)
 	}
 
-	c.Data["json"] = utils.ResponseSuccess(c.Ctx, "上报成功!", nil)
-	c.ServeJSON()
+	// admin
+	// GetAuthInfo
+	auth := c.GetAuthInfo()
+	_, err := c.AdminRepository.Update(auth.UID, orm.Params{
+		"LastActivity": time.Now().Unix(),
+	})
+	if err != nil {
+		c.JSON(configs.ResponseFail, "fail,用户不存在!", &err)
+	}
+
+	c.JSON(configs.ResponseSucess, "上报成功!", nil)
 }
 
 // GetCompanyInfo get Company info
 func (c *PublicController) GetCompanyInfo() {
 
-	o := orm.NewOrm()
-
-	company := models.Company{ID: 1}
-	if err := o.Read(&company); err != nil {
-		logs.Error(err)
-		c.Data["json"] = utils.ResponseError(c.Ctx, "查询失败!", err)
-	} else {
-		c.Data["json"] = utils.ResponseSuccess(c.Ctx, "查询成功！", &company)
-	}
-	c.ServeJSON()
+	// system info
+	system := services.GetSystemRepositoryInstance().GetSystem()
+	c.JSON(configs.ResponseSucess, "上报成功!", &system)
 
 }
 
-// PushMessage push message
+// PushMessage push message store
+// This Api can be connected to Xiaomi's message callback to determine whether it is an offline message to handle the push
+// see https://admin.mimc.chat.xiaomi.net/docs/09-callback.html
+// Or the client can manually store messages through the Api
 func (c *PublicController) PushMessage() {
 
 	// PushMessage
@@ -384,39 +362,37 @@ func (c *PublicController) PushMessage() {
 		Payload string `json:"payload"`
 	}
 
+	// get body
 	var pushMessage PushMessage
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &pushMessage); err != nil {
-		logs.Error(err)
-		c.Data["json"] = utils.ResponseError(c.Ctx, "参数错误!", nil)
-		c.ServeJSON()
-		return
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", nil)
 	}
 
-	// 判断是否是单聊消息
+	// is not Single chat message And kill
 	if pushMessage.MsgType != "NORMAL_MSG" {
-		c.ServeJSON()
-		return
+		c.JSON(configs.ResponseFail, "sorry this is not Single chat message", nil)
 	}
 
-	// message
+	// push message store
 	var getMessage models.Message
 	msgContent, _ := base64.StdEncoding.DecodeString(pushMessage.Payload)
 	msgContent, _ = base64.StdEncoding.DecodeString(string(msgContent))
 	json.Unmarshal(msgContent, &getMessage)
 	utils.MessageInto(getMessage, false)
-	c.ServeJSON()
 
+	c.JSON(configs.ResponseSucess, "push success", nil)
 }
 
-// Upload Upload image
+// Upload upload image
 func (c *PublicController) Upload() {
 
-	f, h, _ := c.GetFile("file")
+	f, h, er := c.GetFile("file")
 	fileName := c.GetString("file_name")
+	if er != nil {
+		c.JSON(configs.ResponseFail, "上传失败,文件不存在!", nil)
+	}
 	if fileName == "" {
-		c.Data["json"] = utils.ResponseError(c.Ctx, "上传失败", "file_name不能为空")
-		c.ServeJSON()
-		return
+		c.JSON(configs.ResponseFail, "上传失败,file_name不能为空!", nil)
 	}
 	ext := path.Ext(h.Filename)
 
@@ -425,123 +401,76 @@ func (c *PublicController) Upload() {
 		".jpg":  true,
 		".jpeg": true,
 		".png":  true,
+		".JPG":  true,
+		".JPEG": true,
+		".PNG":  true,
 	}
 	if _, ok := AllowExtMap[ext]; !ok {
-		c.Data["json"] = utils.ResponseError(c.Ctx, "上传失败", "上传文件不合法")
-		c.ServeJSON()
-		return
+		c.JSON(configs.ResponseFail, "上传失败,上传文件不合法!", nil)
 	}
 
 	// create dir
-	uploadDir := "static/uploads/images/"
-	err := os.MkdirAll(uploadDir, 777)
+	uploadDir := "static/uploads/images/" + time.Now().Format("2006-01-02") + "/"
+	err := os.MkdirAll(uploadDir, os.ModePerm)
 	if err != nil {
-		c.Data["json"] = utils.ResponseError(c.Ctx, "上传失败,创建文件夹失败", fmt.Sprintf("%v", err))
-		c.ServeJSON()
-		return
+		c.JSON(configs.ResponseFail, "上传失败,创建文件夹失败!", &err)
 	}
 	fpath := uploadDir + fileName
 	defer f.Close()
-
 	err = c.SaveToFile("file", fpath)
-
 	if err != nil {
-		c.Data["json"] = utils.ResponseError(c.Ctx, "上传失败", fmt.Sprintf("%v", err))
-		c.ServeJSON()
-		return
+		c.JSON(configs.ResponseFail, "上传失败!", &err)
 	}
-	c.Data["json"] = utils.ResponseSuccess(c.Ctx, "上传成功", &fileName)
-	c.ServeJSON()
 
+	c.JSON(configs.ResponseSucess, "上传成功!", &fileName)
 }
 
 // GetMessageHistoryList get user messages
 func (c *PublicController) GetMessageHistoryList() {
 
-	o := orm.NewOrm()
-
-	messagePaginationData := models.MessagePaginationData{}
-	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &messagePaginationData); err != nil {
-		c.Data["json"] = utils.ResponseError(c.Ctx, "参数错误1!", nil)
-		c.ServeJSON()
-		return
+	messagePaginationDto := models.MessagePaginationDto{}
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &messagePaginationDto); err != nil {
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", nil)
 	}
 
 	token := c.Ctx.Input.Header("token")
 	if token == "" {
-		c.Data["json"] = utils.ResponseError(c.Ctx, "参数错误2!", nil)
-		c.ServeJSON()
-		return
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", nil)
 	}
 
 	// validation
 	valid := validation.Validation{}
-	valid.Required(messagePaginationData.Account, "account").Message("account不能为空！")
-	valid.Required(messagePaginationData.PageSize, "page_size").Message("page_size不能为空！")
-	valid.Required(messagePaginationData.Timestamp, "timestamp").Message("timestamp不能为空！")
+	valid.Required(messagePaginationDto.Account, "account").Message("account不能为空！")
+	valid.Required(messagePaginationDto.PageSize, "page_size").Message("page_size不能为空！")
+
 	if valid.HasErrors() {
 		for _, err := range valid.Errors {
-			c.Data["json"] = utils.ResponseError(c.Ctx, err.Message, nil)
-			break
+			c.JSON(configs.ResponseFail, err.Message, nil)
 		}
-		c.ServeJSON()
-		return
 	}
 
 	// exist user
-	user := models.User{ID: messagePaginationData.Account}
-	if err := o.Read(&user); err != nil {
-		c.Data["json"] = utils.ResponseError(c.Ctx, "查询失败，用户不存在", err)
-		c.ServeJSON()
-		return
+	user := c.UserRepository.GetUser(messagePaginationDto.Account)
+	if user == nil {
+		c.JSON(configs.ResponseFail, "fail，用户不存在!", nil)
 	}
 
 	/// validation TOKEN
 	if token != user.Token {
-		c.Data["json"] = utils.ResponseError(c.Ctx, "查询失败，用户不存在", nil)
-		c.ServeJSON()
-		return
+		c.JSON(configs.ResponseFail, "fail，用户不存在!", nil)
 	}
 
 	// Timestamp == 0
-	if messagePaginationData.Timestamp == 0 {
-		messagePaginationData.Timestamp = time.Now().Unix()
+	if messagePaginationDto.Timestamp == 0 {
+		messagePaginationDto.Timestamp = time.Now().Unix()
 	}
 
-	// join string
-	var messages []*models.Message
-	uid := strconv.FormatInt(user.ID, 10)
-	timestamp := strconv.FormatInt(messagePaginationData.Timestamp, 10)
-	type MessageCount struct {
-		Count int64
+	// query messages
+	returnMessagePaginationDto, err := c.MessageRepository.GetAdminMessages(messagePaginationDto)
+	if err != nil {
+		c.JSON(configs.ResponseFail, "fail", &err)
 	}
-	var messageCount MessageCount
-	o.Raw("SELECT COUNT(*) AS `count` FROM `message` WHERE (`to_account` = ? OR `from_account` = ?) AND `timestamp` < ? AND `delete` = 0", uid, uid, timestamp).QueryRow(&messageCount)
-	var end = messageCount.Count
-	start := int(messageCount.Count) - messagePaginationData.PageSize
-	if start <= 0 {
-		start = 0
-	}
-	if messageCount.Count > 0 {
-		_, err := o.Raw("SELECT * FROM `message` WHERE (`to_account` = ? OR `from_account` = ?) AND `timestamp` < ? AND `delete` = 0 ORDER BY `timestamp` ASC												 LIMIT ?,?", uid, uid, timestamp, start, end).QueryRows(&messages)
-		qs := o.QueryTable(new(models.Message))
-		_, _ = qs.Filter("from_account", uid).Update(orm.Params{"read": 0})
-		if err != nil {
-			c.Data["json"] = utils.ResponseError(c.Ctx, "查询失败！", &err)
-			c.ServeJSON()
-			return
-		}
-		o.Raw("SELECT COUNT(*) AS `count` FROM `message` WHERE (`to_account` = ? OR `from_account` = ?) AND `delete` = 0", uid, uid).QueryRow(&messageCount)
-		messagePaginationData.List = messages
-		messagePaginationData.Total = messageCount.Count
-	} else {
-		messagePaginationData.List = []models.Message{}
-		messagePaginationData.Total = 0
-	}
-	for index, msg := range messages {
-		payload, _ := base64.StdEncoding.DecodeString(msg.Payload)
-		messages[index].Payload = string(payload)
-	}
-	c.Data["json"] = utils.ResponseSuccess(c.Ctx, "查询成功！", &messagePaginationData)
-	c.ServeJSON()
+
+	c.JSON(configs.ResponseSucess, "success", &returnMessagePaginationDto)
+
 }

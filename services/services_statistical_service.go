@@ -15,11 +15,63 @@ type StatisticalRepositoryInterface interface {
 	Add(servicesStatistical *models.ServicesStatistical) (int64, error)
 	GetStatisticals(startDate string, endDate string) (map[string]interface{}, error)
 	GetTodayActionStatistical(startDate string, endDate string) ([]orm.Params, error)
+	GetCustomerServiceList(request models.ServicesStatisticalPaginationDto) models.ServicesStatisticalPaginationDto
 }
 
 // StatisticalRepository struct
 type StatisticalRepository struct {
 	BaseRepository
+}
+
+// GetStatisticalRepositoryInstance get instance
+func GetStatisticalRepositoryInstance() *StatisticalRepository {
+	instance := new(StatisticalRepository)
+	instance.Init(new(models.ServicesStatistical))
+	return instance
+}
+
+// GetCustomerServiceList get Customer Service List
+func (r *StatisticalRepository) GetCustomerServiceList(request models.ServicesStatisticalPaginationDto) models.ServicesStatisticalPaginationDto {
+
+	layoutDate := "2006-01-02 15:04:05"
+	loc, _ := time.LoadLocation("Local")
+	startDateStr := request.Date + " 00:00:00"
+	endDateStr := request.Date + " 23:59:59"
+	startDate, _ := time.ParseInLocation(layoutDate, startDateStr, loc)
+	endDate, _ := time.ParseInLocation(layoutDate, endDateStr, loc)
+
+	var params []orm.Params
+	type TotalModel struct {
+		Count int64
+	}
+	var totalModel TotalModel
+
+	// Deduplication
+	addSQL := " COUNT(*) "
+	if request.IsDeWeighting {
+		addSQL = " count(distinct user_account) "
+	}
+
+	if err := r.o.Raw("SELECT "+addSQL+" AS `count` FROM services_statistical AS s INNER JOIN (SELECT * FROM `user`) AS u ON s.user_account = u.id AND s.service_account = ? AND s.create_at > ? AND s.create_at < ?", request.Cid, startDate.Unix(), endDate.Unix()).QueryRow(&totalModel); err != nil {
+		logs.Warn("GetCustomerServiceList get Customer Service List1------------", err)
+	}
+	request.Total = totalModel.Count
+
+	// Deduplication
+	addSQL1 := " "
+	if request.IsDeWeighting {
+		addSQL1 = " GROUP BY `user_account` "
+	}
+
+	if counter, err := r.o.Raw("SELECT s.id, s.user_account, s.service_account,s.create_at, s.transfer_account,s.platform,u.nickname FROM services_statistical AS s INNER JOIN (SELECT * FROM `user` ) AS u ON s.user_account = u.id AND s.service_account = ? AND s.create_at > ? AND s.create_at < ? "+addSQL1+" ORDER BY s.create_at DESC LIMIT ?,?", request.Cid, startDate.Unix(), endDate.Unix(), (request.PageOn-1)*request.PageSize, request.PageSize).Values(&params); counter <= 0 {
+		logs.Warn("GetCustomerServiceList get Customer Service List2------------", err)
+		request.List = []string{}
+		return request
+	}
+
+	request.List = params
+	return request
+
 }
 
 // Add add statistical

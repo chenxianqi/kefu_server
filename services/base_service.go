@@ -4,7 +4,7 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
-// const val 
+// const val
 var (
 	MinPageSize = 1
 	MaxPageSize = 50
