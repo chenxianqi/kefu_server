@@ -10,9 +10,7 @@ import (
 
 	"kefu_server/controllers"
 	"kefu_server/db"
-	"kefu_server/im"
 	_ "kefu_server/routers"
-	"kefu_server/task"
 )
 
 // Initialization log
@@ -41,18 +39,18 @@ func main() {
 	initLog()
 
 	// init task
-	task.Run()
+	// task.Run()
 
 	/// Static file configuration
 	beego.SetStaticPath("/", "public/client")
 	beego.SetStaticPath("/admin", "public/admin")
 	beego.SetStaticPath("/static", "static")
 
-	// Error handling
+	// Handling Error
 	beego.ErrorController(&controllers.ErrorController{})
 
 	// init robot
-	im.RobotInit()
+	// im.RobotInit()
 
 	// run application
 	beego.Run()

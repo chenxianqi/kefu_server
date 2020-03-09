@@ -131,12 +131,12 @@ GO 》》》》》 [小米开放平台][6]
     mimc_appKey = ""
     mimc_appSecret = ""
     # IM数据库信息
-    im_alias_name = "default"
-    im_driver_name= "mysql"
-    im_mysql_host = "localhost"
-    im_mysql_user = "root"
-    im_mysql_db   = "kefu_server"
-    im_mysql_pwd  = "keith"
+    kf_alias_name = "default"
+    kf_driver_name= "mysql"
+    kf_mysql_host = "localhost"
+    kf_mysql_user = "root"
+    kf_mysql_db   = "kefu_server"
+    kf_mysql_pwd  = "keith"
 
 ```
 > **Note:** 根据beego的配置文件配置，填写从小米开放平台获得的appId，appKey, appSecret， 以及您的数据库连接，账号，密码

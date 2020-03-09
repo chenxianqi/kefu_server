@@ -147,6 +147,12 @@ func init() {
 			beego.NSBefore(filters.FilterToken),
 			beego.NSRouter("/list", &controllers.ServicesStatisticalController{}, "post:List"),
 		),
+
+		// Work Order
+		beego.NSNamespace("/workorder",
+			beego.NSBefore(filters.FilterToken),
+			beego.NSRouter("/type", &controllers.WorkOrderController{}, "post:PostType"),
+		),
 	)
 	beego.AddNamespace(ns)
 

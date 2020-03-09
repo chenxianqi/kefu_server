@@ -174,7 +174,7 @@ func (c *PublicController) Register() {
 		resData = successData{Token: &imTokenDto, User: &admin}
 	}
 
-	c.JSON(configs.ResponseSucess, "获取成功!", &resData)
+	c.JSON(configs.ResponseSucess, "注册成功!", &resData)
 
 }
 
@@ -186,7 +186,7 @@ func (c *PublicController) Read() {
 	if err == nil {
 		readCount = 0
 	}
-	c.JSON(configs.ResponseSucess, "获取成功!", readCount)
+	c.JSON(configs.ResponseSucess, "查询成功!", readCount)
 
 }
 
@@ -217,7 +217,7 @@ func (c *PublicController) Window() {
 		c.JSON(configs.ResponseFail, "更新失败!", nil)
 	}
 
-	c.JSON(configs.ResponseSucess, "更新更新成功!", nil)
+	c.JSON(configs.ResponseSucess, "更新成功!", nil)
 }
 
 // CleanRead clean user read
@@ -381,6 +381,7 @@ func (c *PublicController) PushMessage() {
 	utils.MessageInto(getMessage, false)
 
 	c.JSON(configs.ResponseSucess, "push success", nil)
+	
 }
 
 // Upload upload image
