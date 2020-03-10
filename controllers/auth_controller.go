@@ -8,8 +8,10 @@ import (
 	"kefu_server/models"
 	"kefu_server/services"
 	"kefu_server/utils"
+	"strconv"
 	"time"
 
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego/validation"
 )
@@ -46,7 +48,7 @@ func (c *AuthController) Finish() {}
 type LoginRequest struct {
 	AuthType int64  `json:"auth_type"`
 	UserName string `json:"username"`
-	Password string `ojson:"password"`
+	Password string `json:"password"`
 }
 
 // Login admin login
@@ -145,4 +147,57 @@ func (c *AuthController) Logout() {
 		c.JSON(configs.ResponseFail, "退出失败！", &err)
 	}
 	c.JSON(configs.ResponseSucess, "退出成功！", nil)
+}
+
+// RobotFetchTokenRequest struct
+type RobotFetchTokenRequest struct {
+	AppID     string `json:"app_id"`
+	AppKey    string `json:"app_key"`
+	AppSecret string `json:"app_secret"`
+}
+
+// RobotFetchToken admin logout
+func (c *AuthController) RobotFetchToken() {
+
+	var request RobotFetchTokenRequest
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &request); err != nil {
+		c.JSON(configs.ResponseFail, "参数有误，请检查", nil)
+	}
+
+	// valid
+	valid := validation.Validation{}
+	valid.Required(request.AppID, "app_id").Message("app_id不能为空！")
+	valid.Required(request.AppKey, "app_key").Message("app_key不能为空！")
+	valid.Required(request.AppSecret, "app_secret").Message("app_secret不能为空！")
+	if valid.HasErrors() {
+		for _, err := range valid.Errors {
+			c.JSON(configs.ResponseFail, err.Message, nil)
+		}
+
+	}
+
+	// MD5
+	m5 := md5.New()
+	m5.Write([]byte(request.AppID + request.AppKey + request.AppSecret))
+	reqyestSecret := hex.EncodeToString(m5.Sum(nil))
+
+	// current app Secret
+	_AppID, _ := beego.AppConfig.Int64("mimc_appId")
+	_AppKey := beego.AppConfig.String("mimc_appKey")
+	_AppSecret := beego.AppConfig.String("mimc_appSecret")
+	m51 := md5.New()
+	m51.Write([]byte(strconv.FormatInt(_AppID, 10) + _AppKey + _AppSecret))
+	currentAppSecret := hex.EncodeToString(m51.Sum(nil))
+
+	// check
+	if reqyestSecret != currentAppSecret {
+		c.JSON(configs.ResponseFail, "server error~", currentAppSecret)
+		c.JSON(configs.ResponseFail, "server error~", reqyestSecret)
+	}
+
+	// create token
+	newToken := utils.GenerateToken(models.JwtKeyDto{ID: _AppID, UserName: _AppKey, AuthType: 0})
+
+	c.JSON(configs.ResponseSucess, "授权成功!", &newToken)
+
 }

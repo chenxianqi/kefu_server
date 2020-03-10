@@ -8,7 +8,6 @@ import (
 
 	"kefu_server/configs"
 	"kefu_server/models"
-	robotlbrary "kefu_server/robot"
 	"kefu_server/services"
 	"strconv"
 	"strings"
@@ -59,7 +58,7 @@ func (c *RobotController) Delete() {
 	// GetAuthInfo
 	auth := c.GetAuthInfo()
 	admin := c.AdminRepository.GetAdmin(auth.UID)
-	if admin.Root != 1 {
+	if admin == nil || admin.Root != 1 {
 		c.JSON(configs.ResponseFail, "您没有权限删除机器人!", nil)
 	}
 
@@ -81,7 +80,8 @@ func (c *RobotController) Delete() {
 	}
 
 	// init robots
-	robotlbrary.RobotInit()
+	// 待处理888 删除成功后处理重启机器人
+	// robotlbrary.RobotInit()
 	c.JSON(configs.ResponseSucess, "删除成功!", nil)
 
 }
@@ -92,7 +92,7 @@ func (c *RobotController) Post() {
 	// GetAuthInfo
 	auth := c.GetAuthInfo()
 	admin := c.AdminRepository.GetAdmin(auth.UID)
-	if admin.Root != 1 {
+	if admin == nil || admin.Root != 1 {
 		c.JSON(configs.ResponseFail, "您没有权限添加机器人!", nil)
 	}
 
@@ -134,7 +134,8 @@ func (c *RobotController) Post() {
 		c.JSON(configs.ResponseFail, "添加失败!", nil)
 	}
 
-	robotlbrary.RobotInit()
+	// 待处理888 处理重启机器人
+	// robotlbrary.RobotInit()
 	c.JSON(configs.ResponseSucess, "添加成功!", id)
 
 }
@@ -145,7 +146,7 @@ func (c *RobotController) Put() {
 	// GetAuthInfo
 	auth := c.GetAuthInfo()
 	admin := c.AdminRepository.GetAdmin(auth.UID)
-	if admin.Root != 1 {
+	if admin == nil || admin.Root != 1 {
 		c.JSON(configs.ResponseFail, "您没有权限修改机器人!", nil)
 	}
 
@@ -217,7 +218,8 @@ func (c *RobotController) Put() {
 	robot.Artificial = strings.Trim(robot.Artificial, "|")
 	robot.KeyWord = strings.Trim(robot.KeyWord, "|")
 	robot.CreateAt = oldRobot.CreateAt
-	robotlbrary.RobotInit()
+	// 待处理888 处理重启机器人
+	// robotlbrary.RobotInit()
 	c.JSON(configs.ResponseSucess, "修改成功!", &robot)
 
 }

@@ -14,7 +14,8 @@ import (
 type RobotRepositoryInterface interface {
 	GetRobot(id int64) *models.Robot
 	GetRobotWithNickName(nickName string) *models.Robot
-	GetRobotWithOnline(id int64) (*models.Robot, error)
+	GetRobotWithOnline(platformID int64) (*models.Robot, error)
+	GetRobotWithRandomOnline() *models.Robot
 	GetRobots() ([]models.Robot, error)
 	GetRobotWithInIds(ids ...int64) ([]models.Robot, error)
 	Delete(id int64) (int64, error)
@@ -108,10 +109,22 @@ func (r *RobotRepository) GetRobotWithNickName(nickName string) *models.Robot {
 	return &robot
 }
 
+// GetRobotWithRandomOnline get one Robot with Random Online
+func (r *RobotRepository) GetRobotWithRandomOnline() (*models.Robot, error) {
+	var robot *models.Robot
+	if err := r.q.Filter("switch", 1).One(&robot); err != nil {
+		logs.Warn("GetRobotWithRandomOnline get one Robot with Random Online------------", err)
+		return nil, err
+	}
+	robot.Artificial = strings.Trim(robot.Artificial, "|")
+	robot.KeyWord = strings.Trim(robot.KeyWord, "|")
+	return robot, nil
+}
+
 // GetRobotWithOnline get one Robot with Online
-func (r *RobotRepository) GetRobotWithOnline(id int64) (*models.Robot, error) {
+func (r *RobotRepository) GetRobotWithOnline(platformID int64) (*models.Robot, error) {
 	var robots []*models.Robot
-	if _, err := r.q.Filter("platform__in", id, 1).Filter("switch", 1).All(&robots); err != nil {
+	if _, err := r.q.Filter("platform__in", platformID, 1).Filter("switch", 1).All(&robots); err != nil {
 		logs.Warn("GetRobotWithRandom get one Robot with Random------------", err)
 		return nil, err
 	}

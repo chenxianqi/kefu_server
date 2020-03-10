@@ -38,7 +38,7 @@ func (c *QiniuController) Get() {
 	// GetAuthInfo
 	auth := c.GetAuthInfo()
 	admin := c.AdminRepository.GetAdmin(auth.UID)
-	if admin.Root != 1 {
+	if admin == nil || admin.Root != 1 {
 		c.JSON(configs.ResponseFail, "您没有权限获取配置!", nil)
 	}
 
@@ -63,7 +63,7 @@ func (c *QiniuController) Put() {
 	// GetAuthInfo
 	auth := c.GetAuthInfo()
 	admin := c.AdminRepository.GetAdmin(auth.UID)
-	if admin.Root != 1 {
+	if admin == nil || admin.Root != 1 {
 		c.JSON(configs.ResponseFail, "您没有权限获取配置!", nil)
 	}
 

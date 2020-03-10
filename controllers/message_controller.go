@@ -1,15 +1,12 @@
 package controllers
 
 import (
-	"encoding/base64"
 	"encoding/json"
 
 	"kefu_server/configs"
 	"kefu_server/models"
-	robotlbrary "kefu_server/robot"
 	"kefu_server/services"
 	"kefu_server/utils"
-	"strconv"
 	"time"
 
 	"github.com/astaxie/beego/logs"
@@ -67,9 +64,10 @@ func (c *MessageController) List() {
 	}
 
 	// push notify update current service contacts list
-	if len(robotlbrary.Robots) > 0 {
-		robotlbrary.PushNewContacts(auth.UID, robotlbrary.Robots[0])
-	}
+	// 待处理888 推送给客户的的聊天列表
+	// if len(robotlbrary.Robots) > 0 {
+	// 	robotlbrary.PushNewContacts(auth.UID, robotlbrary.Robots[0])
+	// }
 
 	c.JSON(configs.ResponseSucess, "success", &returnMessagePaginationDto)
 }
@@ -102,7 +100,7 @@ func (c *MessageController) Remove() {
 	c.JSON(configs.ResponseSucess, "删除成!", row)
 }
 
-// Transfer transfer user to user
+// Transfer transfer admin to admin
 func (c *MessageController) Transfer() {
 
 	// GetAuthInfo
@@ -126,9 +124,6 @@ func (c *MessageController) Transfer() {
 		}
 	}
 
-	robot := robotlbrary.Robots[0]
-	robotID, _ := strconv.ParseInt(robot.AppAccount(), 10, 64)
-
 	type adminData struct {
 		ID       int64  `orm:"column(id)" json:"id"`
 		NickName string `json:"nickname"`
@@ -148,6 +143,12 @@ func (c *MessageController) Transfer() {
 		c.JSON(configs.ResponseFail, "转接失败用户ID不存在!", nil)
 	}
 
+	// get one online robot
+
+	// robot, _ := services.GetRobotRepositoryInstance().GetRobotWithRandomOnline()
+	// 待处理888 记得要使用toAdminJSON
+	logs.Info(toAdminJSON)
+
 	// message
 	message := models.Message{}
 	message.BizType = "transfer"
@@ -156,29 +157,40 @@ func (c *MessageController) Transfer() {
 	message.TransferAccount = transferDto.ToAccount
 
 	// Send to forwarder
-	message.ToAccount = admin.ID
-	message.Payload = "您将" + user.NickName + "转接给" + toAdmin.NickName
-	messageJSONOne, _ := json.Marshal(message)
-	messageStringOne := base64.StdEncoding.EncodeToString([]byte(messageJSONOne))
-	robot.SendMessage(strconv.FormatInt(admin.ID, 10), []byte(messageStringOne))
+
+	// message.ToAccount = admin.ID
+	// message.Payload = "您将" + user.NickName + "转接给" + toAdmin.NickName
+	// messageJSONOne, _ := json.Marshal(message)
+	// messageStringOne := base64.StdEncoding.EncodeToString([]byte(messageJSONOne))
+
+	// 待处理888 发送消息
+	// robot.SendMessage(strconv.FormatInt(admin.ID, 10), []byte(messageStringOne))
+
 	utils.MessageInto(message, true)
 
 	// Send to forwarded customer service
-	message.ToAccount = transferDto.ToAccount
-	message.Payload = admin.NickName + "将" + user.NickName + "转接给您"
-	messageJSONTwo, _ := json.Marshal(message)
-	messageStringTwo := base64.StdEncoding.EncodeToString([]byte(messageJSONTwo))
-	robot.SendMessage(strconv.FormatInt(transferDto.ToAccount, 10), []byte(messageStringTwo))
+
+	// message.ToAccount = transferDto.ToAccount
+	// message.Payload = admin.NickName + "将" + user.NickName + "转接给您"
+	// messageJSONTwo, _ := json.Marshal(message)
+	// messageStringTwo := base64.StdEncoding.EncodeToString([]byte(messageJSONTwo))
+
+	// 待处理888 发送消息
+	// robot.SendMessage(strconv.FormatInt(transferDto.ToAccount, 10), []byte(messageStringTwo))
+
 	utils.MessageInto(message, true)
 
 	// send to user
-	message.FromAccount = robotID
-	message.ToAccount = transferDto.UserAccount
-	message.Delete = 1
-	message.Payload = string(toAdminJSON)
-	messageJSONThree, _ := json.Marshal(message)
-	messageString3 := base64.StdEncoding.EncodeToString([]byte(messageJSONThree))
-	robot.SendMessage(strconv.FormatInt(transferDto.UserAccount, 10), []byte(messageString3))
+	// message.FromAccount = robot.ID
+	// message.ToAccount = transferDto.UserAccount
+	// message.Delete = 1
+	// message.Payload = string(toAdminJSON)
+	// messageJSONThree, _ := json.Marshal(message)
+	// messageString3 := base64.StdEncoding.EncodeToString([]byte(messageJSONThree))
+
+	// 待处理888 发送消息
+	// robot.SendMessage(strconv.FormatInt(transferDto.UserAccount, 10), []byte(messageString3))
+
 	utils.MessageInto(message, false)
 
 	// Transfer to the library for counting service times

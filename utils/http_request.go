@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -43,10 +44,10 @@ type HTTPResponse struct {
 // method post, get 等
 // data  body 数据
 // token 授权token
-func HTTPRequest(url string, method string, bodyData string, token string) *HTTPResponse {
+func HTTPRequest(path string, method string, bodyData url.Values, token string) *HTTPResponse {
 	client := &http.Client{}
 	response := new(HTTPResponse)
-	req, err := http.NewRequest(method, url, strings.NewReader(bodyData))
+	req, err := http.NewRequest(method, path, strings.NewReader(bodyData.Encode()))
 	if err != nil {
 		response.Code = 500
 		response.Message = "链接错误"

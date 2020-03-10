@@ -31,6 +31,7 @@ func init() {
 		beego.NSNamespace("/auth",
 			beego.NSRouter("/login", &controllers.AuthController{}, "post:Login"),
 			beego.NSRouter("/logout", &controllers.AuthController{}, "get:Logout"),
+			beego.NSRouter("/token", &controllers.AuthController{}, "post:RobotFetchToken"),
 		),
 
 		// public
