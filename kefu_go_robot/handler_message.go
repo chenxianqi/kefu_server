@@ -1,4 +1,4 @@
-package im
+package robotlbrary
 
 import (
 	"container/list"
@@ -26,12 +26,31 @@ func (c MsgHandler) HandleMessage(packets *list.List) {
 		// 收到的原始消息
 		p2pMsg := ele.Value.(*msg.P2PMessage)
 
-		// 取出用户发的消息内容
+		// get message
 		var message models.Message
-		msgContent, _ := base64.StdEncoding.DecodeString(string(p2pMsg.Payload()))
-		//logs.Info("收到消息", *p2pMsg.FromAccount(), *p2pMsg.ToAccount(), *p2pMsg.Timestamp(),*p2pMsg.PacketId(),*p2pMsg.Sequence())
-		_ = json.Unmarshal(msgContent, &message)
-		MessageP2P(message)
+		msgContentByte, err := base64.StdEncoding.DecodeString(string(p2pMsg.Payload()))
+		err = json.Unmarshal(msgContentByte, &message)
+
+		switch message.BizType {
+		// 消息入库
+		case "into":
+			return
+		// 撤销消息
+		case "cancel":
+			return
+		// 搜索知识库
+		case "search_knowledge":
+			return
+		// 与机器人握手
+		case "handshake":
+			return
+		default:
+
+		}
+
+		if err == nil {
+			MessageP2P(message)
+		}
 
 	}
 

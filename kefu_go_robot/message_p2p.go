@@ -1,4 +1,4 @@
-package im
+package robotlbrary
 
 import (
 	"encoding/base64"
@@ -61,13 +61,9 @@ func MessageP2P(message models.Message) {
 			break
 		}
 	}
+
 	if isFromAccountRobot {
 		return
-	}
-
-	// 判断机器人是否在线
-	if robot.Status() == 1 {
-		robot.Login()
 	}
 
 	// 是否是入库消息(中转入库)

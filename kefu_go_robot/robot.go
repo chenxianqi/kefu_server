@@ -1,4 +1,4 @@
-package im
+package robotlbrary
 
 import (
 	"kefu_server/models"
@@ -25,7 +25,7 @@ func CreateRobot(appAccount string) *mimc.MCUser {
 
 // GetRobots get robot all
 func GetRobots() []models.Robot {
-	
+
 	// RobotRepository instance
 	robotRepository := services.GetRobotRepositoryInstance()
 	var robots []models.Robot

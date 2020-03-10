@@ -4,16 +4,16 @@ import (
 	"encoding/base64"
 	"encoding/json"
 
-	"github.com/astaxie/beego/logs"
-	"github.com/astaxie/beego/validation"
-
 	"kefu_server/configs"
-	"kefu_server/im"
 	"kefu_server/models"
+	robotlbrary "kefu_server/robot"
 	"kefu_server/services"
 	"kefu_server/utils"
 	"strconv"
 	"time"
+
+	"github.com/astaxie/beego/logs"
+	"github.com/astaxie/beego/validation"
 )
 
 // MessageController struct
@@ -67,8 +67,8 @@ func (c *MessageController) List() {
 	}
 
 	// push notify update current service contacts list
-	if len(im.Robots) > 0 {
-		im.PushNewContacts(auth.UID, im.Robots[0])
+	if len(robotlbrary.Robots) > 0 {
+		robotlbrary.PushNewContacts(auth.UID, robotlbrary.Robots[0])
 	}
 
 	c.JSON(configs.ResponseSucess, "success", &returnMessagePaginationDto)
@@ -126,7 +126,7 @@ func (c *MessageController) Transfer() {
 		}
 	}
 
-	robot := im.Robots[0]
+	robot := robotlbrary.Robots[0]
 	robotID, _ := strconv.ParseInt(robot.AppAccount(), 10, 64)
 
 	type adminData struct {

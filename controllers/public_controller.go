@@ -4,8 +4,8 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"kefu_server/configs"
-	"kefu_server/im"
 	"kefu_server/models"
+	robotlbrary "kefu_server/robot"
 	"kefu_server/services"
 	"kefu_server/utils"
 	"os"
@@ -100,7 +100,7 @@ func (c *PublicController) Register() {
 		if user != nil {
 
 			// fetchResult
-			fetchResult, fetchError = im.GetMiMcToken(strconv.FormatInt(user.ID, 10))
+			fetchResult, fetchError = robotlbrary.GetMiMcToken(strconv.FormatInt(user.ID, 10))
 			if err := json.Unmarshal([]byte(fetchResult), &imTokenDto); err != nil {
 				c.JSON(configs.ResponseFail, "注册失败!", &err)
 			}
@@ -126,7 +126,7 @@ func (c *PublicController) Register() {
 
 			if accountID, err := c.UserRepository.Add(user); err == nil {
 
-				fetchResult, fetchError = im.GetMiMcToken(strconv.FormatInt(accountID, 10))
+				fetchResult, fetchError = robotlbrary.GetMiMcToken(strconv.FormatInt(accountID, 10))
 				if err := json.Unmarshal([]byte(fetchResult), &imTokenDto); err != nil {
 					c.JSON(configs.ResponseFail, "注册失败!", &err)
 				}
@@ -149,7 +149,7 @@ func (c *PublicController) Register() {
 		admin = c.AdminRepository.GetAdmin(auth.UID)
 
 		// fetchResult
-		fetchResult, fetchError = im.GetMiMcToken(strconv.FormatInt(admin.ID, 10))
+		fetchResult, fetchError = robotlbrary.GetMiMcToken(strconv.FormatInt(admin.ID, 10))
 
 		// imTokenDto
 		if err := json.Unmarshal([]byte(fetchResult), &imTokenDto); err != nil {
@@ -381,7 +381,7 @@ func (c *PublicController) PushMessage() {
 	utils.MessageInto(getMessage, false)
 
 	c.JSON(configs.ResponseSucess, "push success", nil)
-	
+
 }
 
 // Upload upload image

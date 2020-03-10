@@ -7,8 +7,8 @@ import (
 	"github.com/astaxie/beego/validation"
 
 	"kefu_server/configs"
-	"kefu_server/im"
 	"kefu_server/models"
+	robotlbrary "kefu_server/robot"
 	"kefu_server/services"
 	"strconv"
 	"strings"
@@ -81,7 +81,7 @@ func (c *RobotController) Delete() {
 	}
 
 	// init robots
-	im.RobotInit()
+	robotlbrary.RobotInit()
 	c.JSON(configs.ResponseSucess, "删除成功!", nil)
 
 }
@@ -134,7 +134,7 @@ func (c *RobotController) Post() {
 		c.JSON(configs.ResponseFail, "添加失败!", nil)
 	}
 
-	im.RobotInit()
+	robotlbrary.RobotInit()
 	c.JSON(configs.ResponseSucess, "添加成功!", id)
 
 }
@@ -217,7 +217,7 @@ func (c *RobotController) Put() {
 	robot.Artificial = strings.Trim(robot.Artificial, "|")
 	robot.KeyWord = strings.Trim(robot.KeyWord, "|")
 	robot.CreateAt = oldRobot.CreateAt
-	im.RobotInit()
+	robotlbrary.RobotInit()
 	c.JSON(configs.ResponseSucess, "修改成功!", &robot)
 
 }

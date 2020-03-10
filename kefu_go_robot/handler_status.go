@@ -1,4 +1,4 @@
-package im
+package robotlbrary
 
 import "github.com/astaxie/beego/logs"
 
