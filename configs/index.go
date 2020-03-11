@@ -9,6 +9,6 @@ type ResponseStatusType int
 const (
 	ResponseError    ResponseStatusType = 500
 	ResponseSucess   ResponseStatusType = 200
-	ResponseFail     ResponseStatusType = 401
+	ResponseFail     ResponseStatusType = 400
 	ResponseNotFound ResponseStatusType = 404
 )

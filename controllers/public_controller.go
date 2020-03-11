@@ -10,6 +10,7 @@ import (
 	"os"
 	"path"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/astaxie/beego"
@@ -103,7 +104,6 @@ func (c *PublicController) Register() {
 			if err := json.Unmarshal([]byte(fetchResult), &imTokenDto); err != nil {
 				c.JSON(configs.ResponseFail, "注册失败!", &err)
 			}
-
 			// update userinfo
 			c.UserRepository.Update(user.ID, orm.Params{
 				"Online":       1,
@@ -112,6 +112,7 @@ func (c *PublicController) Register() {
 				"LastActivity": time.Now().Unix(),
 				"Token":        imTokenDto.Data.Token,
 			})
+			user.Token = imTokenDto.Data.Token
 
 		} else {
 
@@ -353,9 +354,14 @@ func (c *PublicController) GetCompanyInfo() {
 // This Api can be connected to Xiaomi's message callback to determine whether it is an offline message to handle the push
 // see https://admin.mimc.chat.xiaomi.net/docs/09-callback.html
 // Or the client can manually store messages through the Api
+// OFFLINE_MSG type is offline message
+// NORMAL_MSG  type is online message
+// Notice!!!: This Api does not handle types other than NORMAL_MSG
 func (c *PublicController) PushMessage() {
 
 	// PushMessage
+	// PushMessage.MsgType == "NORMAL_MSG" || "OFFLINE_MSG"
+	// PushMessage.Payload, Must be base64 of models.Message
 	type PushMessage struct {
 		MsgType string `json:"msgType"`
 		Payload string `json:"payload"`
@@ -369,13 +375,13 @@ func (c *PublicController) PushMessage() {
 
 	// is not Single chat message And kill
 	if pushMessage.MsgType != "NORMAL_MSG" {
-		c.JSON(configs.ResponseFail, "sorry this is not Single chat message", nil)
+		c.JSON(configs.ResponseFail, "sorry you send message type is not NORMAL_MSG, it is "+pushMessage.MsgType, nil)
 	}
-
 	// push message store
 	var getMessage models.Message
-	msgContent, _ := base64.StdEncoding.DecodeString(pushMessage.Payload)
-	msgContent, _ = base64.StdEncoding.DecodeString(string(msgContent))
+	var msgContent []byte
+	msgContent, _ = base64.StdEncoding.DecodeString(pushMessage.Payload)
+	msgContent, _ = base64.StdEncoding.DecodeString(strings.Replace(string(msgContent), "\"", "", -1))
 	json.Unmarshal(msgContent, &getMessage)
 	utils.MessageInto(getMessage, false)
 
@@ -423,6 +429,35 @@ func (c *PublicController) Upload() {
 	}
 
 	c.JSON(configs.ResponseSucess, "上传成功!", &fileName)
+}
+
+// CancelMessage cancel a message
+func (c *PublicController) CancelMessage() {
+
+	removeMessageRequestDto := models.RemoveMessageRequestDto{}
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &removeMessageRequestDto); err != nil {
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", nil)
+	}
+	// validation
+	valid := validation.Validation{}
+	valid.Required(removeMessageRequestDto.Key, "key").Message("key不能为空！")
+	valid.Required(removeMessageRequestDto.FromAccount, "from_account").Message("from_account不能为空！")
+	valid.Required(removeMessageRequestDto.ToAccount, "to_account").Message("to_account不能为空！")
+	if valid.HasErrors() {
+		for _, err := range valid.Errors {
+			c.JSON(configs.ResponseFail, err.Message, nil)
+		}
+	}
+
+	// cancel
+	messageRepository := services.GetMessageRepositoryInstance()
+	_, err := messageRepository.Delete(removeMessageRequestDto)
+
+	if err != nil {
+		c.JSON(configs.ResponseFail, "撤回失败!", &err)
+	}
+
+	c.JSON(configs.ResponseSucess, "撤回成功!", nil)
 }
 
 // GetMessageHistoryList get user messages

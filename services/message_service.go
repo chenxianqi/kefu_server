@@ -17,6 +17,7 @@ type MessageRepositoryInterface interface {
 	Add(message *models.Message) (int64, error)
 	GetReadCount(uid int64) (int64, error)
 	ClearRead(uid int64) (int64, error)
+	Cancel(fromAccount int64, toAccount int64, key int64) error
 }
 
 // MessageRepository struct
@@ -33,7 +34,7 @@ func GetMessageRepositoryInstance() *MessageRepository {
 
 // Add add a message
 func (r *MessageRepository) Add(message *models.Message) (int64, error) {
-	row, err := r.o.Insert(&message)
+	row, err := r.o.Insert(message)
 	if err != nil {
 		logs.Warn("Add add a message------------", err)
 	}

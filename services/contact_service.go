@@ -34,7 +34,7 @@ func GetContactRepositoryInstance() *ContactRepository {
 
 // Add add a Contact
 func (r *ContactRepository) Add(contact *models.Contact) (int64, error) {
-	row, err := r.o.Insert(&contact)
+	row, err := r.o.Insert(contact)
 	if err != nil {
 		logs.Warn("Add add a Contact------------", err)
 	}
@@ -53,12 +53,12 @@ func (r *ContactRepository) GetContact(id int64) *models.Contact {
 
 // GetContactWithIds get one Contact with ids
 func (r *ContactRepository) GetContactWithIds(ids ...int64) (*models.Contact, error) {
-	var contact *models.Contact
+	var contact models.Contact
 	err := r.q.Filter("from_account__in", ids).Filter("to_account__in", ids).One(&contact)
 	if err != nil {
 		logs.Warn("GetContactWithIds get one Contact with ids------------", err)
 	}
-	return contact, err
+	return &contact, err
 }
 
 // UpdateIsSessionEnd update

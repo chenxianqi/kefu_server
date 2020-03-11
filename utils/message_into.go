@@ -75,12 +75,13 @@ func MessageInto(message models.Message, isKF bool) {
 
 	// 处理客服聊天列表
 	if contact, err := contactRepository.GetContactWithIds(message.ToAccount, message.FromAccount); err != nil {
-		contact.ToAccount = message.ToAccount
-		contact.FromAccount = message.FromAccount
-		contact.LastMessageType = message.BizType
-		contact.CreateAt = time.Now().Unix()
-		contact.LastMessage = message.Payload
-		_, _ = contactRepository.Add(contact)
+		newContact := models.Contact{}
+		newContact.ToAccount = message.ToAccount
+		newContact.FromAccount = message.FromAccount
+		newContact.LastMessageType = message.BizType
+		newContact.CreateAt = time.Now().Unix()
+		newContact.LastMessage = message.Payload
+		_, _ = contactRepository.Add(&newContact)
 	} else {
 		isSessionEnd := 0
 		if message.BizType == "end" || message.BizType == "timeout" {

@@ -47,6 +47,8 @@ func init() {
 			beego.NSRouter("/window/:id", &controllers.PublicController{}, "put:Window"),
 			beego.NSRouter("/upload", &controllers.PublicController{}, "post:Upload"),
 			beego.NSRouter("/messages", &controllers.PublicController{}, "post:GetMessageHistoryList"),
+			beego.NSRouter("/message/push", &controllers.PublicController{}, "post:PushMessage"),
+			beego.NSRouter("/message/cancel", &controllers.PublicController{}, "post:CancelMessage"),
 		),
 
 		// knowledge_base
