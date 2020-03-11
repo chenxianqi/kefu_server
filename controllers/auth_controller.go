@@ -151,8 +151,6 @@ func (c *AuthController) Logout() {
 
 // RobotFetchTokenRequest struct
 type RobotFetchTokenRequest struct {
-	AppID     string `json:"app_id"`
-	AppKey    string `json:"app_key"`
 	AppSecret string `json:"app_secret"`
 }
 
@@ -166,19 +164,12 @@ func (c *AuthController) RobotFetchToken() {
 
 	// valid
 	valid := validation.Validation{}
-	valid.Required(request.AppID, "app_id").Message("app_id不能为空！")
-	valid.Required(request.AppKey, "app_key").Message("app_key不能为空！")
 	valid.Required(request.AppSecret, "app_secret").Message("app_secret不能为空！")
 	if valid.HasErrors() {
 		for _, err := range valid.Errors {
 			c.JSON(configs.ResponseFail, err.Message, nil)
 		}
 	}
-
-	// MD5
-	m5 := md5.New()
-	m5.Write([]byte(request.AppID + request.AppKey + request.AppSecret))
-	reqyestSecret := hex.EncodeToString(m5.Sum(nil))
 
 	// current app Secret
 	_AppID, _ := beego.AppConfig.Int64("mimc_appId")
@@ -189,7 +180,7 @@ func (c *AuthController) RobotFetchToken() {
 	currentAppSecret := hex.EncodeToString(m51.Sum(nil))
 
 	// check
-	if reqyestSecret != currentAppSecret {
+	if request.AppSecret != currentAppSecret {
 		c.JSON(configs.ResponseFail, "server error~", nil)
 	}
 
