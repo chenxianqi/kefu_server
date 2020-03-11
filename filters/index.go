@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/astaxie/beego/logs"
+
 	"github.com/astaxie/beego/context"
 	"github.com/astaxie/beego/orm"
 )
@@ -27,9 +29,11 @@ var FilterToken = func(ctx *context.Context) {
 	whitelist := []string{
 		"/v1/auth/login",
 		"/v1/auth/logout",
+		"/v1/auth/token",
 	}
 
 	oldToken := ctx.Input.Header("Authorization")
+	logs.Info("oldTokenoldToken===", oldToken)
 	isExistInSlice := utils.InExistInSlice(ctx.Request.RequestURI, whitelist)
 	isMatch, _ := regexp.MatchString(`^Bearer\s`, oldToken)
 	if (isExistInSlice == false && oldToken == "") || !isMatch {

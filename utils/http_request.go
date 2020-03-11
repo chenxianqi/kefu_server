@@ -1,11 +1,12 @@
 package utils
 
 import (
+	"bytes"
+	"encoding/json"
 	"io/ioutil"
+	"log"
 	"math/rand"
 	"net/http"
-	"net/url"
-	"strings"
 	"time"
 
 	"github.com/astaxie/beego/logs"
@@ -44,10 +45,17 @@ type HTTPResponse struct {
 // method post, get 等
 // data  body 数据
 // token 授权token
-func HTTPRequest(path string, method string, bodyData url.Values, token string) *HTTPResponse {
+func HTTPRequest(path string, method string, data interface{}, token string) *HTTPResponse {
 	client := &http.Client{}
 	response := new(HTTPResponse)
-	req, err := http.NewRequest(method, path, strings.NewReader(bodyData.Encode()))
+	bodyJSON, err := json.Marshal(data)
+	if err != nil {
+		log.Println(err)
+		response.Code = 400
+		response.Message = "json error"
+		return response
+	}
+	req, err := http.NewRequest(method, path, bytes.NewBuffer(bodyJSON))
 	if err != nil {
 		response.Code = 500
 		response.Message = "链接错误"
@@ -57,7 +65,7 @@ func HTTPRequest(path string, method string, bodyData url.Values, token string) 
 	req.Header.Add("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3")
 	req.Header.Add("Connection", "keep-alive")
 	req.Header.Add("User-Agent", GetRandomUserAgent())
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Access-Control-Max-Age", "2592000")
 	req.Header.Set("Authorization", token)
 	req.Header.Set("usertype", "cmp_app")
@@ -66,14 +74,16 @@ func HTTPRequest(path string, method string, bodyData url.Values, token string) 
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
+		response.Code = 400
 		response.Message = "请求错误"
-		logs.Error(err)
 		return response
 	}
 	if resp.StatusCode != 200 {
+		response.Code = 400
 		response.Message = "请求错误"
 		return response
 	}
-	response.Data = string(body)
+	json.Unmarshal(body, response)
+	// response.Data = string(body)
 	return response
 }

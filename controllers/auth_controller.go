@@ -173,7 +173,6 @@ func (c *AuthController) RobotFetchToken() {
 		for _, err := range valid.Errors {
 			c.JSON(configs.ResponseFail, err.Message, nil)
 		}
-
 	}
 
 	// MD5
@@ -191,12 +190,36 @@ func (c *AuthController) RobotFetchToken() {
 
 	// check
 	if reqyestSecret != currentAppSecret {
-		c.JSON(configs.ResponseFail, "server error~", currentAppSecret)
-		c.JSON(configs.ResponseFail, "server error~", reqyestSecret)
+		c.JSON(configs.ResponseFail, "server error~", nil)
 	}
 
 	// create token
 	newToken := utils.GenerateToken(models.JwtKeyDto{ID: _AppID, UserName: _AppKey, AuthType: 0})
+	auth := c.AuthsRepository.GetAuthInfoWithTypeAndUID(0, 0)
+	if auth == nil {
+
+		newAuth := models.Auths{
+			Token:    newToken,
+			UID:      0,
+			AuthType: 0,
+			UpdateAt: time.Now().Unix(),
+			CreateAt: time.Now().Unix(),
+		}
+		if _, err := c.AuthsRepository.Add(&newAuth); err != nil {
+			c.JSON(configs.ResponseFail, "授权失败!", nil)
+		}
+
+	} else {
+
+		_, err := c.AuthsRepository.Update(auth.ID, orm.Params{
+			"Token":    newToken,
+			"UpdateAt": time.Now().Unix(),
+		})
+		if err != nil {
+			c.JSON(configs.ResponseFail, "授权失败!", nil)
+		}
+
+	}
 
 	c.JSON(configs.ResponseSucess, "授权成功!", &newToken)
 

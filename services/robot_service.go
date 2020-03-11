@@ -15,6 +15,7 @@ type RobotRepositoryInterface interface {
 	GetRobot(id int64) *models.Robot
 	GetRobotWithNickName(nickName string) *models.Robot
 	GetRobotWithOnline(platformID int64) (*models.Robot, error)
+	GetRobotOnlineAll() ([]*models.Robot, error)
 	GetRobotWithRandomOnline() *models.Robot
 	GetRobots() ([]models.Robot, error)
 	GetRobotWithInIds(ids ...int64) ([]models.Robot, error)
@@ -119,6 +120,20 @@ func (r *RobotRepository) GetRobotWithRandomOnline() (*models.Robot, error) {
 	robot.Artificial = strings.Trim(robot.Artificial, "|")
 	robot.KeyWord = strings.Trim(robot.KeyWord, "|")
 	return robot, nil
+}
+
+// GetRobotOnlineAll get one Robot with Random Online
+func (r *RobotRepository) GetRobotOnlineAll() ([]*models.Robot, error) {
+	var robots []*models.Robot
+	if _, err := r.q.Filter("switch", 1).All(&robots); err != nil {
+		logs.Warn("GetRobotWithRandomOnline get one Robot with Random Online------------", err)
+		return nil, err
+	}
+	for index := range robots {
+		robots[index].Artificial = strings.Trim(robots[index].Artificial, "|")
+		robots[index].KeyWord = strings.Trim(robots[index].KeyWord, "|")
+	}
+	return robots, nil
 }
 
 // GetRobotWithOnline get one Robot with Online

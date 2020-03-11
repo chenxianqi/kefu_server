@@ -235,3 +235,15 @@ func (c *RobotController) List() {
 	c.JSON(configs.ResponseSucess, "success", &robots)
 
 }
+
+// GetOnlineAll get all ofline robot
+func (c *RobotController) GetOnlineAll() {
+
+	// query
+	robots, err := c.RobotRepository.GetRobotOnlineAll()
+	if err != nil {
+		c.JSON(configs.ResponseFail, "fail", nil)
+	}
+	c.JSON(configs.ResponseSucess, "success", &robots)
+
+}

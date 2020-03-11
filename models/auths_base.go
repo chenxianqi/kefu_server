@@ -1,6 +1,7 @@
 package models
 
 // Auths 登录授权信息
+// 目前有一种情况是机器人客户端使用的 UID=0 进行登录
 type Auths struct {
 	ID       int64  `orm:"auto;pk;column(id)" json:"id"`                    // 客服(管理员)ID
 	AuthType int64  `orm:"column(auth_type)" json:"auth_type"`              // AuthType登录配置模ID

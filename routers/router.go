@@ -95,6 +95,7 @@ func init() {
 			beego.NSBefore(filters.FilterToken),
 			beego.NSRouter("/?:id", &controllers.RobotController{}),
 			beego.NSRouter("/list", &controllers.RobotController{}, "get:List"),
+			beego.NSRouter("/online/all", &controllers.RobotController{}, "get:GetOnlineAll"),
 		),
 
 		// shortcut
