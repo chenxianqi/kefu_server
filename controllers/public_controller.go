@@ -100,7 +100,7 @@ func (c *PublicController) Register() {
 		if user != nil {
 
 			// fetchResult
-			fetchResult, fetchError = utils.GetMiMcToken(strconv.FormatInt(user.ID, 10))
+			fetchResult, fetchError = utils.CreateMiMcToken(strconv.FormatInt(user.ID, 10))
 			if err := json.Unmarshal([]byte(fetchResult), &imTokenDto); err != nil {
 				c.JSON(configs.ResponseFail, "注册失败!", &err)
 			}
@@ -126,7 +126,7 @@ func (c *PublicController) Register() {
 
 			if accountID, err := c.UserRepository.Add(user); err == nil {
 
-				fetchResult, fetchError = utils.GetMiMcToken(strconv.FormatInt(accountID, 10))
+				fetchResult, fetchError = utils.CreateMiMcToken(strconv.FormatInt(accountID, 10))
 				if err := json.Unmarshal([]byte(fetchResult), &imTokenDto); err != nil {
 					c.JSON(configs.ResponseFail, "注册失败!", &err)
 				}
@@ -149,7 +149,7 @@ func (c *PublicController) Register() {
 		admin = c.AdminRepository.GetAdmin(auth.UID)
 
 		// fetchResult
-		fetchResult, fetchError = utils.GetMiMcToken(strconv.FormatInt(admin.ID, 10))
+		fetchResult, fetchError = utils.CreateMiMcToken(strconv.FormatInt(admin.ID, 10))
 
 		// imTokenDto
 		if err := json.Unmarshal([]byte(fetchResult), &imTokenDto); err != nil {

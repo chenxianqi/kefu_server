@@ -6,11 +6,13 @@ import (
 	"github.com/Xiaomi-mimc/mimc-go-sdk/util/log"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
+	"github.com/astaxie/beego/toolbox"
 	_ "github.com/go-sql-driver/mysql"
 
 	"kefu_server/controllers"
 	"kefu_server/db"
 	_ "kefu_server/routers"
+	"kefu_server/task"
 )
 
 // Initialization log
@@ -39,7 +41,9 @@ func main() {
 	initLog()
 
 	// init task
-	// task.Run()
+	task.Run()
+	toolbox.StartTask()
+	defer toolbox.StopTask()
 
 	/// Static file configuration
 	beego.SetStaticPath("/", "public/client")
@@ -49,8 +53,8 @@ func main() {
 	// Handling Error
 	beego.ErrorController(&controllers.ErrorController{})
 
-	// init robot
-	// im.RobotInit()
+	// grpcserver init
+	// go grpcs.Run()
 
 	// run application
 	beego.Run()

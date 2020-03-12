@@ -18,6 +18,8 @@ type ContactRepositoryInterface interface {
 	DeleteAll(uid int64) (int64, error)
 	Add(contact *models.Contact) (int64, error)
 	GetContactWithIds(ids ...int64) (*models.Contact, error)
+	SetTimeOutContactOffline()
+	GetTimeOutList() []*models.Contact
 }
 
 // ContactRepository struct
@@ -30,6 +32,27 @@ func GetContactRepositoryInstance() *ContactRepository {
 	instance := new(ContactRepository)
 	instance.Init(new(models.Contact))
 	return instance
+}
+
+// GetTimeOutList get all timeout List
+func (r *ContactRepository) GetTimeOutList(lastMessageUnixTimer int64) []*models.Contact {
+	var contacts []*models.Contact
+	_, err := r.o.Raw("SELECT * FROM `contact` WHERE `create_at` <= ? AND `is_session_end` = 0 AND `last_message_type` != 'timeout'", lastMessageUnixTimer).QueryRows(&contacts)
+	if err != nil {
+		logs.Warn("GetTimeOutList get all timeout List------------", err)
+	}
+	return contacts
+}
+
+// SetTimeOutContactOffline set time out user offline
+func (r *ContactRepository) SetTimeOutContactOffline(userOffLineUnixTimer int64) {
+	_, err := r.q.Filter("create_at__lte", userOffLineUnixTimer).Update(orm.Params{
+		"last_message_type": "timeout",
+		"is_session_end":    1,
+	})
+	if err != nil {
+		logs.Warn("SetTimeOutContactOffline set time out user offline------------", err)
+	}
 }
 
 // Add add a Contact

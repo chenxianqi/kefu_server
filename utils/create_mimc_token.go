@@ -19,8 +19,8 @@ type TokenHandler struct {
 	AppAccount string `json:"appAccount"`
 }
 
-// GetMiMcToken ...
-func GetMiMcToken(accountID string) (string, error) {
+// CreateMiMcToken ...
+func CreateMiMcToken(accountID string) (string, error) {
 	tokenHandler := new(TokenHandler)
 	tokenHandler.httpURL = beego.AppConfig.String("mimc_HttpUrl")
 	tokenHandler.AppID, _ = beego.AppConfig.Int64("mimc_appId")

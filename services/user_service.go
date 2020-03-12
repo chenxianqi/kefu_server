@@ -17,6 +17,7 @@ type UserRepositoryInterface interface {
 	Update(id int64, params *orm.Params) (int64, error)
 	Delete(id int64) (int64, error)
 	GetOnlineCount() (int64, error)
+	CheckUsersLoginTimeOutAndSetOffline(lastMessageUnixTimer int64) int64
 }
 
 // UserRepository struct
@@ -29,6 +30,18 @@ func GetUserRepositoryInstance() *UserRepository {
 	instance := new(UserRepository)
 	instance.Init(new(models.User))
 	return instance
+}
+
+// CheckUsersLoginTimeOutAndSetOffline  Check if user login timeout
+func (r *UserRepository) CheckUsersLoginTimeOutAndSetOffline(lastMessageUnixTimer int64) int64 {
+	count, err := r.q.Filter("online__in", 1, 2).Filter("last_activity__lte", lastMessageUnixTimer).Update(orm.Params{
+		"online":    0,
+		"is_window": 0,
+	})
+	if err != nil {
+		logs.Warn("CheckUsersLoginTimeOutAndSetOffline  Check if user login timeout------------", err)
+	}
+	return count
 }
 
 // Add create a user

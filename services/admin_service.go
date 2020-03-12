@@ -15,6 +15,7 @@ type AdminRepositoryInterface interface {
 	Add(admin *models.Admin, col1 string) (bool, int64, error)
 	Delete(id int64) (int64, error)
 	GetAdmins(request *AdminPaginationDto) (*AdminPaginationDto, error)
+	CheckAdminsLoginTimeOutAndSetOffline(lastMessageUnixTimer int64) int64
 }
 
 // AdminPaginationDto  a struct
@@ -44,6 +45,15 @@ func GetAdminRepositoryInstance() *AdminRepository {
 	instance := new(AdminRepository)
 	instance.Init(new(models.Admin))
 	return instance
+}
+
+// CheckAdminsLoginTimeOutAndSetOffline  Check if user login timeout
+func (r *AdminRepository) CheckAdminsLoginTimeOutAndSetOffline(lastMessageUnixTimer int64) int64 {
+	count, _ := r.q.Filter("online__in", 1, 2).Filter("last_activity__lte", lastMessageUnixTimer).Update(orm.Params{
+		"online":           0,
+		"current_con_user": 0,
+	})
+	return count
 }
 
 // GetAdmin get one admin with id
