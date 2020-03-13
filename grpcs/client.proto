@@ -1,0 +1,14 @@
+syntax = "proto3";
+package grpcs;
+
+service Kefu {
+  rpc GetOnlineAllRobots (Request) returns (Respones) {}
+  rpc PushMessage (Request) returns (Respones) {}
+  rpc CancelMessage (Request) returns (Respones) {}
+}
+message Respones {
+  string data = 1;
+}
+message  Request {
+  string data = 1;
+}

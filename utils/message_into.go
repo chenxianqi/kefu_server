@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"kefu_server/models"
 	"kefu_server/services"
-	"strconv"
 	"time"
 
 	"github.com/astaxie/beego/orm"
@@ -20,12 +19,6 @@ func MessageInto(message models.Message, isKF bool) {
 
 	// MessageRepository instance
 	messageRepository := services.GetMessageRepositoryInstance()
-
-	// 判断是否是撤回消息（软删除）
-	if message.BizType == "cancel" {
-		key, _ := strconv.ParseInt(message.Payload, 10, 64)
-		_, _ = messageRepository.Delete(models.RemoveMessageRequestDto{FromAccount: message.FromAccount, ToAccount: message.ToAccount, Key: key})
-	}
 
 	// message create time
 	message.Timestamp = time.Now().Unix()

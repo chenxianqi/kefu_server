@@ -10,7 +10,6 @@ import (
 	"os"
 	"path"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/astaxie/beego"
@@ -381,8 +380,7 @@ func (c *PublicController) PushMessage() {
 	var getMessage models.Message
 	var msgContent []byte
 	msgContent, _ = base64.StdEncoding.DecodeString(pushMessage.Payload)
-	msgContent, _ = base64.StdEncoding.DecodeString(strings.Replace(string(msgContent), "\"", "", -1))
-	json.Unmarshal(msgContent, &getMessage)
+	utils.StringToInterface(string(msgContent), &getMessage)
 	utils.MessageInto(getMessage, false)
 
 	c.JSON(configs.ResponseSucess, "push success", nil)

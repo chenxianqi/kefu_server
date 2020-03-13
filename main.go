@@ -11,6 +11,7 @@ import (
 
 	"kefu_server/controllers"
 	"kefu_server/db"
+	"kefu_server/grpcs"
 	_ "kefu_server/routers"
 	"kefu_server/task"
 )
@@ -54,7 +55,7 @@ func main() {
 	beego.ErrorController(&controllers.ErrorController{})
 
 	// grpcserver init
-	// go grpcs.Run()
+	go grpcs.Run()
 
 	// run application
 	beego.Run()

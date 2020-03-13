@@ -1,8 +1,6 @@
 package task
 
 import (
-	"encoding/base64"
-	"encoding/json"
 	"kefu_server/models"
 	"kefu_server/services"
 	"kefu_server/utils"
@@ -56,17 +54,14 @@ func appTask() {
 			message.Timestamp = time.Now().Unix()
 			message.Payload = "由于您长时间未回复，本次会话超时了"
 			message.ToAccount = contact.FromAccount
-			var messageJSON []byte
 			var messageString string
-			messageJSON, _ = json.Marshal(message)
-			messageString = base64.StdEncoding.EncodeToString([]byte(messageJSON))
+			messageString = utils.InterfaceToString(message)
 			utils.PushMessage(contact.FromAccount, messageString)
 
 			// Send a reminder message to customer service
 			message.FromAccount = contact.FromAccount
 			message.ToAccount = contact.ToAccount
-			messageJSON, _ = json.Marshal(message)
-			messageString = base64.StdEncoding.EncodeToString([]byte(messageJSON))
+			messageString = utils.InterfaceToString(message)
 			utils.PushMessage(contact.ToAccount, messageString)
 			utils.MessageInto(message, true)
 
@@ -77,8 +72,7 @@ func appTask() {
 				message.BizType = "text"
 				message.Key = time.Now().Unix()
 				message.Payload = robot.TimeoutText
-				messageJSON, _ = json.Marshal(message)
-				messageString = base64.StdEncoding.EncodeToString([]byte(messageJSON))
+				messageString = utils.InterfaceToString(message)
 				utils.PushMessage(contact.FromAccount, messageString)
 			}
 
