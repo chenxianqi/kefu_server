@@ -59,7 +59,8 @@ func HTTPRequest(path string, method string, data interface{}, token string) *HT
 	if err != nil {
 		response.Code = 500
 		response.Message = "链接错误"
-		logs.Error(err)
+		logs.Error("链接错误====err", err)
+		return nil
 	}
 	req.Header.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
 	req.Header.Add("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3")
@@ -70,12 +71,17 @@ func HTTPRequest(path string, method string, data interface{}, token string) *HT
 	req.Header.Set("Authorization", token)
 	req.Header.Set("usertype", "cmp_app")
 	resp, err := client.Do(req)
+	if err != nil {
+		response.Code = 502
+		response.Message = "链接错误：" + err.Error()
+		return response
+	}
 	response.Code = resp.StatusCode
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		response.Code = 400
-		response.Message = "请求错误"
+		response.Code = 502
+		response.Message = "读取数据错处：" + err.Error()
 		return response
 	}
 	if resp.StatusCode != 200 {
@@ -84,6 +90,5 @@ func HTTPRequest(path string, method string, data interface{}, token string) *HT
 		return response
 	}
 	json.Unmarshal(body, response)
-	// response.Data = string(body)
 	return response
 }

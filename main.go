@@ -34,7 +34,7 @@ func initLog() {
 }
 
 func main() {
-
+	end := make(chan bool, 1)
 	// init db
 	db.Run()
 
@@ -60,4 +60,5 @@ func main() {
 	// run application
 	beego.Run()
 
+	<-end
 }

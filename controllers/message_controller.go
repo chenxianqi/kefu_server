@@ -64,7 +64,7 @@ func (c *MessageController) List() {
 	}
 
 	// push notify update current service contacts list
-	// 待处理888 推送给客户的的聊天列表
+	// 待处理888 推送给客服的的聊天列表
 	// if len(robotlbrary.Robots) > 0 {
 	// 	robotlbrary.PushNewContacts(auth.UID, robotlbrary.Robots[0])
 	// }
@@ -166,7 +166,7 @@ func (c *MessageController) Transfer() {
 	// 待处理888 发送消息
 	// robot.SendMessage(strconv.FormatInt(admin.ID, 10), []byte(messageStringOne))
 
-	utils.MessageInto(message, true)
+	utils.MessageInto(message)
 
 	// Send to forwarded customer service
 
@@ -178,7 +178,7 @@ func (c *MessageController) Transfer() {
 	// 待处理888 发送消息
 	// robot.SendMessage(strconv.FormatInt(transferDto.ToAccount, 10), []byte(messageStringTwo))
 
-	utils.MessageInto(message, true)
+	utils.MessageInto(message)
 
 	// send to user
 	// message.FromAccount = robot.ID
@@ -191,7 +191,7 @@ func (c *MessageController) Transfer() {
 	// 待处理888 发送消息
 	// robot.SendMessage(strconv.FormatInt(transferDto.UserAccount, 10), []byte(messageString3))
 
-	utils.MessageInto(message, false)
+	utils.MessageInto(message)
 
 	// Transfer to the library for counting service times
 	servicesStatistical := models.ServicesStatistical{UserAccount: transferDto.UserAccount, ServiceAccount: transferDto.ToAccount, TransferAccount: admin.ID, Platform: user.Platform, CreateAt: time.Now().Unix()}

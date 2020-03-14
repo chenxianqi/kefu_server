@@ -5,6 +5,11 @@ service Kefu {
   rpc GetOnlineAllRobots (Request) returns (Respones) {}
   rpc PushMessage (Request) returns (Respones) {}
   rpc CancelMessage (Request) returns (Respones) {}
+  rpc SearchKnowledgeTitles (Request) returns (Respones) {}
+  rpc GetOnlineAdmins (Request) returns (Respones) {}
+  rpc InsertStatistical (Request) returns (Respones) {}
+  rpc PushNewContacts (Request) returns (Respones) {}
+  rpc GetKnowledgeBaseWithTitleAndPlatform (Request) returns (Respones) {}
 }
 message Respones {
   string data = 1;

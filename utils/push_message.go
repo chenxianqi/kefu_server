@@ -30,7 +30,6 @@ func PushMessage(toAccount int64, msg string) bool {
 		fmt.Println(response)
 		return false
 	}
-
 	return true
 
 }

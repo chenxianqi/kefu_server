@@ -16,6 +16,8 @@ type KnowledgeBaseRepositoryInterface interface {
 	Add(knowledgeBase *models.KnowledgeBase, col1 string) (bool, int64, error)
 	Update(id int64, params *orm.Params) (int64, error)
 	Delete(id int64) (int64, error)
+	SearchKnowledgeTitles(request models.KnowledgeBaseTitleRequestDto) []models.KnowledgeBaseTitleDto
+	GetKnowledgeBaseWithTitleAndPlatform(title string, platform int64) *models.KnowledgeBase
 }
 
 // KnowledgeBaseRepository struct
@@ -41,6 +43,43 @@ func (r *KnowledgeBaseRepository) Add(knowledgeBase *models.KnowledgeBase, col1 
 		logs.Warn("Add create a Platform------------", err)
 	}
 	return _bool, index, err
+}
+
+// SearchKnowledgeTitles Search Knowledge Titles
+// payload = "key1"
+// keyWords = "key1|key2|key3"
+func (r *KnowledgeBaseRepository) SearchKnowledgeTitles(request models.KnowledgeBaseTitleRequestDto) []models.KnowledgeBaseTitleDto {
+	if request.Payload == "" {
+		return []models.KnowledgeBaseTitleDto{}
+	}
+	var knowledgeBaseTitleDto []models.KnowledgeBaseTitleDto
+	subTitle := ""
+	fields := "title"
+	if request.IsSerachSub {
+		fields = "title,sub_title"
+	}
+	roobtKeyWords := strings.Split(strings.Trim(request.KeyWords, "|"), "|")
+	if request.KeyWords == "" {
+		subTitle := ""
+		for _, value := range roobtKeyWords {
+			if strings.Contains(value, request.Payload) {
+				subTitle += subTitle + " sub_title LIKE \"%" + value + "%\" OR "
+			}
+		}
+	}
+	if request.IsSerachSub && request.KeyWords != "" {
+		for _, value := range roobtKeyWords {
+			subTitle += " sub_title LIKE \"%" + value + "%\" OR "
+		}
+	}
+	subTitle += " sub_title LIKE \"%" + request.Payload + "%\" "
+	_, err := r.o.Raw("SELECT "+fields+" FROM knowledge_base WHERE ( "+subTitle+" ) AND platform IN (?,?) ORDER by rand() limit ?", 1, request.Platform, request.Limit).QueryRows(&knowledgeBaseTitleDto)
+	if err != nil {
+		logs.Warn("Search Knowledge Titles------------", err)
+		return []models.KnowledgeBaseTitleDto{}
+	}
+	return knowledgeBaseTitleDto
+
 }
 
 // Update knowledgeBase
@@ -106,6 +145,17 @@ func (r *KnowledgeBaseRepository) GetKnowledgeBaseWithTitle(title string) *model
 	}
 	base.SubTitle = strings.Trim(base.SubTitle, "|")
 	return &base
+}
+
+// GetKnowledgeBaseWithTitleAndPlatform get one KnowledgeBase with title and platform
+func (r *KnowledgeBaseRepository) GetKnowledgeBaseWithTitleAndPlatform(title string, platform int64) *models.KnowledgeBase {
+	var knowledge models.KnowledgeBase
+	if err := r.q.Filter("title", title).Filter("platform__in", 1, platform).One(&knowledge); err != nil {
+		logs.Warn("GetKnowledgeBaseWithTitle get one KnowledgeBase with title------------", err)
+		return nil
+	}
+	knowledge.SubTitle = strings.Trim(knowledge.SubTitle, "|")
+	return &knowledge
 }
 
 // Delete delete a KnowledgeBase

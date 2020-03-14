@@ -15,6 +15,7 @@ type AdminRepositoryInterface interface {
 	Add(admin *models.Admin, col1 string) (bool, int64, error)
 	Delete(id int64) (int64, error)
 	GetAdmins(request *AdminPaginationDto) (*AdminPaginationDto, error)
+	GetOnlineAdmins() []models.Admin
 	CheckAdminsLoginTimeOutAndSetOffline(lastMessageUnixTimer int64) int64
 }
 
@@ -83,6 +84,17 @@ func (r *AdminRepository) Update(id int64, params orm.Params) (int64, error) {
 		logs.Warn("Update admin------------", err)
 	}
 	return index, err
+}
+
+// GetOnlineAdmins online all admin
+func (r *AdminRepository) GetOnlineAdmins() []models.Admin {
+	var admins []models.Admin
+	_, err := r.o.Raw("SELECT a.*, IFNULL(c.count,0) AS `count` FROM admin as a LEFT  JOIN (SELECT to_account,COUNT(*) AS count FROM `contact` WHERE is_session_end = 0 GROUP BY to_account) c ON a.id = c.to_account WHERE a.`online` = 1 ORDER BY c.count").QueryRows(&admins)
+	if err != nil {
+		logs.Warn("GetOnlineAdmins online all admin------------", err)
+		return []models.Admin{}
+	}
+	return admins
 }
 
 // Add create a admin

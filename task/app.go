@@ -63,7 +63,7 @@ func appTask() {
 			message.ToAccount = contact.ToAccount
 			messageString = utils.InterfaceToString(message)
 			utils.PushMessage(contact.ToAccount, messageString)
-			utils.MessageInto(message, true)
+			utils.MessageInto(message)
 
 			// Message after timeout
 			if robot.TimeoutText != "" {

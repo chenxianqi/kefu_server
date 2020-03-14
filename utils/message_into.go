@@ -10,10 +10,10 @@ import (
 )
 
 // MessageInto push message
-func MessageInto(message models.Message, isKF bool) {
+func MessageInto(message models.Message) {
 
 	// 不处理的类型
-	if message.BizType == "contacts" || message.BizType == "pong" || message.BizType == "welcome" || message.BizType == "into" || message.BizType == "search_knowledge" {
+	if message.BizType == "contacts" || message.BizType == "handshake" || message.BizType == "pong" || message.BizType == "welcome" || message.BizType == "into" || message.BizType == "search_knowledge" {
 		return
 	}
 
@@ -26,34 +26,32 @@ func MessageInto(message models.Message, isKF bool) {
 	// content内容转base64
 	message.Payload = base64.StdEncoding.EncodeToString([]byte(message.Payload))
 
-	// 过滤掉下面类型的消息不入库
-	if !(message.BizType == "handshake") {
+	// UserRepository instance
+	userRepository := services.GetUserRepositoryInstance()
+	user := userRepository.GetUser(message.ToAccount)
 
-		if !isKF {
+	// 接收者是用户
+	if user != nil {
 
-			// UserRepository instance
-			userRepository := services.GetUserRepositoryInstance()
-
-			// 默认已读消息
-			message.Read = 0
-			user := userRepository.GetUser(message.ToAccount)
-			if user != nil && user.Online == 0 {
-				message.Read = 1
-			}
-			if user != nil && user.IsWindow == 0 {
-				message.Read = 1
-			}
+		// 默认已读消息
+		message.Read = 0
+		user := userRepository.GetUser(message.ToAccount)
+		if user != nil && user.Online == 0 {
+			message.Read = 1
 		}
-
-		// message.BizType == "end" is not read
-		if message.BizType == "end" || message.BizType == "timeout" {
-			message.Read = 0
+		if user != nil && user.IsWindow == 0 {
+			message.Read = 1
 		}
-
-		// 消息入库
-		_, _ = messageRepository.Add(&message)
 
 	}
+
+	// message.BizType == "end" is not read
+	if message.BizType == "end" || message.BizType == "timeout" {
+		message.Read = 0
+	}
+
+	// 消息入库
+	_, _ = messageRepository.Add(&message)
 
 	// RobotRepository instance
 	robotRepository := services.GetRobotRepositoryInstance()

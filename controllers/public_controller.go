@@ -381,7 +381,7 @@ func (c *PublicController) PushMessage() {
 	var msgContent []byte
 	msgContent, _ = base64.StdEncoding.DecodeString(pushMessage.Payload)
 	utils.StringToInterface(string(msgContent), &getMessage)
-	utils.MessageInto(getMessage, false)
+	utils.MessageInto(getMessage)
 
 	c.JSON(configs.ResponseSucess, "push success", nil)
 
@@ -426,7 +426,7 @@ func (c *PublicController) Upload() {
 		c.JSON(configs.ResponseFail, "上传失败!", &err)
 	}
 
-	c.JSON(configs.ResponseSucess, "上传成功!", &fileName)
+	c.JSON(configs.ResponseSucess, "上传成功!", "/"+fpath)
 }
 
 // CancelMessage cancel a message
