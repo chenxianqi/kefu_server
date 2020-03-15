@@ -55,6 +55,7 @@ func init() {
 			beego.NSBefore(filters.FilterToken),
 			beego.NSRouter("/?:id", &controllers.KnowledgeBaseController{}),
 			beego.NSRouter("/list", &controllers.KnowledgeBaseController{}, "post:List"),
+			beego.NSRouter("/total", &controllers.KnowledgeBaseController{}, "get:Total"),
 		),
 
 		// home

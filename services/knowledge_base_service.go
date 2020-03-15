@@ -18,6 +18,7 @@ type KnowledgeBaseRepositoryInterface interface {
 	Delete(id int64) (int64, error)
 	SearchKnowledgeTitles(request models.KnowledgeBaseTitleRequestDto) []models.KnowledgeBaseTitleDto
 	GetKnowledgeBaseWithTitleAndPlatform(title string, platform int64) *models.KnowledgeBase
+	GetKnowledgeBasePlatformsTotal() []orm.Params
 }
 
 // KnowledgeBaseRepository struct
@@ -114,7 +115,13 @@ func (r *KnowledgeBaseRepository) GetKnowledgeBases(request *models.KnowledgePag
 
 	// query
 	var lists []models.KnowledgeBase
-	if _, err := r.q.OrderBy("-create_at").Limit(request.PageSize).Offset((request.PageOn - 1) * request.PageSize).All(&lists); err != nil {
+	like := " "
+	k := request.Keyword
+	if k != "" {
+		like = ("sub_title LIKE '%" + k + "%' OR title LIKE '%" + k + "%' OR content LIKE '%" + k + "%' AND")
+	}
+	total, err := r.o.Raw("SELECT * FROM knowledge_base WHERE "+like+" `platform` = ? ORDER BY create_at DESC LIMIT ? OFFSET ?", request.Platform, request.PageSize, (request.PageOn-1)*request.PageSize).QueryRows(&lists)
+	if err != nil {
 		logs.Warn("GetKnowledgeBases get one KnowledgeBases------------", err)
 		return nil, err
 	}
@@ -126,7 +133,6 @@ func (r *KnowledgeBaseRepository) GetKnowledgeBases(request *models.KnowledgePag
 		request.PageSize = MaxPageSize
 	}
 
-	total, _ := r.q.Count()
 	for index := range lists {
 		lists[index].SubTitle = strings.Trim(lists[index].SubTitle, "|")
 	}
@@ -165,4 +171,15 @@ func (r *KnowledgeBaseRepository) Delete(id int64) (int64, error) {
 		logs.Warn("Delete delete a KnowledgeBase------------", err)
 	}
 	return index, err
+}
+
+// GetKnowledgeBasePlatformsTotal get Group count
+func (r *KnowledgeBaseRepository) GetKnowledgeBasePlatformsTotal() []orm.Params {
+	var maps []orm.Params
+	_, err := r.o.Raw("select P.id,p.title,IFNULL(k.count,0) as count FROM platform p LEFT JOIN (SELECT  platform,COUNT(*) AS count FROM `knowledge_base` GROUP BY platform) k ON k.platform = p.id").Values(&maps)
+	if err != nil {
+		logs.Warn("GetKnowledgeBasePlatformsTotal get Group count------------", err)
+		return []orm.Params{}
+	}
+	return maps
 }

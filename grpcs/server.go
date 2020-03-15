@@ -10,6 +10,7 @@ import (
 	"net"
 	"strconv"
 
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	grpc "google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -94,7 +95,8 @@ func (s *kefuServer) GetKnowledgeBaseWithTitleAndPlatform(ctx context.Context, i
 
 // Run run grpc server
 func Run() {
-	lis, err := net.Listen("tcp", ":8028")
+	grpcPort, _ := beego.AppConfig.Int("grpc_port")
+	lis, err := net.Listen("tcp", ":"+strconv.Itoa(grpcPort))
 	if err != nil {
 		logs.Info("grpc server failed: %v", err)
 	}

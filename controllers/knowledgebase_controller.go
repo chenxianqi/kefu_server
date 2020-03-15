@@ -178,3 +178,9 @@ func (c *KnowledgeBaseController) List() {
 
 	c.JSON(configs.ResponseSucess, "success", &knowledgePaginationDto)
 }
+
+// Total platforms Total
+func (c *KnowledgeBaseController) Total() {
+	res := c.KnowledgeBaseRepository.GetKnowledgeBasePlatformsTotal()
+	c.JSON(configs.ResponseSucess, "success", &res)
+}
