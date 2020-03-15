@@ -79,9 +79,6 @@ func (c *RobotController) Delete() {
 		c.JSON(configs.ResponseFail, "删除失败!", nil)
 	}
 
-	// init robots
-	// 待处理888 删除成功后处理重启机器人
-	// robotlbrary.RobotInit()
 	c.JSON(configs.ResponseSucess, "删除成功!", nil)
 
 }
@@ -134,8 +131,6 @@ func (c *RobotController) Post() {
 		c.JSON(configs.ResponseFail, "添加失败!", nil)
 	}
 
-	// 待处理888 处理重启机器人
-	// robotlbrary.RobotInit()
 	c.JSON(configs.ResponseSucess, "添加成功!", id)
 
 }
@@ -218,8 +213,7 @@ func (c *RobotController) Put() {
 	robot.Artificial = strings.Trim(robot.Artificial, "|")
 	robot.KeyWord = strings.Trim(robot.KeyWord, "|")
 	robot.CreateAt = oldRobot.CreateAt
-	// 待处理888 处理重启机器人
-	// robotlbrary.RobotInit()
+
 	c.JSON(configs.ResponseSucess, "修改成功!", &robot)
 
 }

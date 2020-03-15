@@ -129,8 +129,7 @@ func (r *MessageRepository) GetAdminMessages(messagePaginationDto models.Message
 	inExp := "?,?"
 
 	// get all robot
-	robotRepository := new(RobotRepository)
-	robotRepository.Init(new(models.Robot))
+	robotRepository := GetRobotRepositoryInstance()
 	robots, err := robotRepository.GetRobots()
 	if err != nil {
 		logs.Warn("GetMessages get one service message list0------------", err)

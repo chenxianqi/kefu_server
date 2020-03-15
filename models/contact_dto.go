@@ -6,6 +6,7 @@ type ContactDto struct {
 	Cid             int64  `json:"cid"`
 	FromAccount     int64  `json:"from_account"`
 	ToAccount       int64  `json:"to_account"`
+	LastAccount     int64  `json:"last_account"`
 	LastMessage     string `json:"last_message"`
 	IsSessionEnd    int    `json:"is_session_end"`
 	LastMessageType string `json:"last_message_type"`

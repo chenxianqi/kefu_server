@@ -31,7 +31,6 @@ func init() {
 		beego.NSNamespace("/auth",
 			beego.NSRouter("/login", &controllers.AuthController{}, "post:Login"),
 			beego.NSRouter("/logout", &controllers.AuthController{}, "get:Logout"),
-			beego.NSRouter("/token", &controllers.AuthController{}, "post:RobotFetchToken"),
 		),
 
 		// public
@@ -69,7 +68,6 @@ func init() {
 		beego.NSNamespace("/message",
 			beego.NSBefore(filters.FilterToken),
 			beego.NSRouter("/list", &controllers.MessageController{}, "post:List"),
-			beego.NSRouter("/transfer", &controllers.MessageController{}, "post:Transfer"),
 			beego.NSRouter("/remove", &controllers.MessageController{}, "post:Remove"),
 		),
 
@@ -137,6 +135,7 @@ func init() {
 			beego.NSRouter("/?:id", &controllers.ContactController{}),
 			beego.NSRouter("/list", &controllers.ContactController{}, "get:GetContacts"),
 			beego.NSRouter("/clear", &controllers.ContactController{}, "delete:DeleteAll"),
+			beego.NSRouter("/transfer", &controllers.ContactController{}, "post:Transfer"),
 		),
 
 		// platform

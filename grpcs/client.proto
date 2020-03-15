@@ -1,16 +1,27 @@
 syntax = "proto3";
 package grpcs;
 
+// protoc --go_out=plugins=grpc:./ client.proto
 service Kefu {
   rpc GetOnlineAllRobots (Request) returns (Respones) {}
-  rpc PushMessage (Request) returns (Respones) {}
+  rpc InsertMessage (Request) returns (Respones) {}
   rpc CancelMessage (Request) returns (Respones) {}
   rpc SearchKnowledgeTitles (Request) returns (Respones) {}
   rpc GetOnlineAdmins (Request) returns (Respones) {}
   rpc InsertStatistical (Request) returns (Respones) {}
   rpc PushNewContacts (Request) returns (Respones) {}
   rpc GetKnowledgeBaseWithTitleAndPlatform (Request) returns (Respones) {}
+
 }
+
+message StreamRes {
+  string data = 1;
+}
+message  StreamReq {
+  string data = 1;
+}
+
+
 message Respones {
   string data = 1;
 }

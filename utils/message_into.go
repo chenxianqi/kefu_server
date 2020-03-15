@@ -36,10 +36,18 @@ func MessageInto(message models.Message) {
 		// 默认已读消息
 		message.Read = 0
 		user := userRepository.GetUser(message.ToAccount)
-		if user != nil && user.Online == 0 {
+		if user != nil && (user.Online == 0 || user.IsWindow == 0) {
 			message.Read = 1
 		}
-		if user != nil && user.IsWindow == 0 {
+
+		// 处理是否已回复
+		services.GetStatisticalRepositoryInstance().CheckIsReplyAndSetReply(user.ID, message.FromAccount, user.Platform)
+
+	} else {
+
+		// 接收者是客服
+		admin := services.GetAdminRepositoryInstance().GetAdmin(message.ToAccount)
+		if admin != nil && admin.CurrentConUser != message.FromAccount {
 			message.Read = 1
 		}
 
@@ -71,6 +79,7 @@ func MessageInto(message models.Message) {
 		newContact.FromAccount = message.FromAccount
 		newContact.LastMessageType = message.BizType
 		newContact.CreateAt = time.Now().Unix()
+		newContact.LastAccount = message.FromAccount
 		newContact.LastMessage = message.Payload
 		_, _ = contactRepository.Add(&newContact)
 	} else {
@@ -82,9 +91,16 @@ func MessageInto(message models.Message) {
 			"LastMessageType": message.BizType,
 			"CreateAt":        time.Now().Unix(),
 			"LastMessage":     message.Payload,
+			"LastAccount":     message.FromAccount,
 			"IsSessionEnd":    isSessionEnd,
 			"Delete":          0,
 		})
+	}
+
+	if user != nil {
+		PushNewContacts(message.FromAccount)
+	} else {
+		PushNewContacts(message.ToAccount)
 	}
 
 }

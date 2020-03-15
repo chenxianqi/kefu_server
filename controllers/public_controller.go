@@ -377,11 +377,11 @@ func (c *PublicController) PushMessage() {
 		c.JSON(configs.ResponseFail, "sorry you send message type is not NORMAL_MSG, it is "+pushMessage.MsgType, nil)
 	}
 	// push message store
-	var getMessage models.Message
+	var message models.Message
 	var msgContent []byte
 	msgContent, _ = base64.StdEncoding.DecodeString(pushMessage.Payload)
-	utils.StringToInterface(string(msgContent), &getMessage)
-	utils.MessageInto(getMessage)
+	utils.StringToInterface(string(msgContent), &message)
+	utils.MessageInto(message)
 
 	c.JSON(configs.ResponseSucess, "push success", nil)
 
@@ -499,7 +499,7 @@ func (c *PublicController) GetMessageHistoryList() {
 	}
 
 	// query messages
-	returnMessagePaginationDto, err := c.MessageRepository.GetAdminMessages(messagePaginationDto)
+	returnMessagePaginationDto, err := c.MessageRepository.GetUserMessages(messagePaginationDto)
 	if err != nil {
 		c.JSON(configs.ResponseFail, "fail", &err)
 	}

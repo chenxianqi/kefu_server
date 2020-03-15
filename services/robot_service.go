@@ -75,8 +75,8 @@ func (r *RobotRepository) Update(id int64, params orm.Params) (int64, error) {
 // GetRobots get Robots
 func (r *RobotRepository) GetRobots() ([]models.Robot, error) {
 	var robots []models.Robot
-	if _, err := r.q.OrderBy("-create_at").All(&robots); err != nil {
-		logs.Warn("GetRobot get one Robot------------", err)
+	if _, err := r.q.Filter("delete", 0).OrderBy("-create_at").All(&robots); err != nil {
+		logs.Warn("GetRobots get Robots------------", err)
 		return nil, err
 	}
 	for index := range robots {
@@ -89,7 +89,7 @@ func (r *RobotRepository) GetRobots() ([]models.Robot, error) {
 // GetRobot get one Robot
 func (r *RobotRepository) GetRobot(id int64) *models.Robot {
 	var robot models.Robot
-	if err := r.q.Filter("id", id).One(&robot); err != nil {
+	if err := r.q.Filter("delete", 0).Filter("id", id).One(&robot); err != nil {
 		logs.Warn("GetRobot get one Robot------------", err)
 		return nil
 	}
@@ -101,7 +101,7 @@ func (r *RobotRepository) GetRobot(id int64) *models.Robot {
 // GetRobotWithNickName get one Robot with nickname
 func (r *RobotRepository) GetRobotWithNickName(nickName string) *models.Robot {
 	var robot models.Robot
-	if err := r.q.Filter("nickname", nickName).One(&robot); err != nil {
+	if err := r.q.Filter("delete", 0).Filter("nickname", nickName).One(&robot); err != nil {
 		logs.Warn("GetRobotWithNickName get one Robot with nickname------------", err)
 		return nil
 	}
@@ -113,7 +113,7 @@ func (r *RobotRepository) GetRobotWithNickName(nickName string) *models.Robot {
 // GetRobotWithRandomOnline get one Robot with Random Online
 func (r *RobotRepository) GetRobotWithRandomOnline() (*models.Robot, error) {
 	var robot *models.Robot
-	if err := r.q.Filter("switch", 1).One(&robot); err != nil {
+	if err := r.q.Filter("delete", 0).Filter("switch", 1).One(&robot); err != nil {
 		logs.Warn("GetRobotWithRandomOnline get one Robot with Random Online------------", err)
 		return nil, err
 	}
@@ -125,7 +125,7 @@ func (r *RobotRepository) GetRobotWithRandomOnline() (*models.Robot, error) {
 // GetRobotOnlineAll get one Robot with Random Online
 func (r *RobotRepository) GetRobotOnlineAll() ([]*models.Robot, error) {
 	var robots []*models.Robot
-	if _, err := r.q.Filter("switch", 1).All(&robots); err != nil {
+	if _, err := r.q.Filter("delete", 0).Filter("switch", 1).All(&robots); err != nil {
 		logs.Warn("GetRobotWithRandomOnline get one Robot with Random Online------------", err)
 		return nil, err
 	}
@@ -139,7 +139,7 @@ func (r *RobotRepository) GetRobotOnlineAll() ([]*models.Robot, error) {
 // GetRobotWithOnline get one Robot with Online
 func (r *RobotRepository) GetRobotWithOnline(platformID int64) (*models.Robot, error) {
 	var robots []*models.Robot
-	if _, err := r.q.Filter("platform__in", platformID, 1).Filter("switch", 1).All(&robots); err != nil {
+	if _, err := r.q.Filter("delete", 0).Filter("platform__in", platformID, 1).Filter("switch", 1).All(&robots); err != nil {
 		logs.Warn("GetRobotWithRandom get one Robot with Random------------", err)
 		return nil, err
 	}
@@ -155,9 +155,9 @@ func (r *RobotRepository) GetRobotWithOnline(platformID int64) (*models.Robot, e
 // GetRobotWithInIds get one Robot with in() ids
 func (r *RobotRepository) GetRobotWithInIds(ids ...int64) ([]models.Robot, error) {
 	var robots []models.Robot
-	_, err := r.o.Raw("SELECT * FROM robot WHERE id IN(?, ?)", ids).QueryRows(&robots)
+	_, err := r.o.Raw("SELECT * FROM robot WHERE id IN(?, ?) AND `delete` = 0", ids).QueryRows(&robots)
 	if err != nil {
-		logs.Warn("GetRobot get one Robot------------", err)
+		logs.Warn("GetRobotWithInIds get one Robot with in() ids", err)
 	}
 	return robots, err
 }
@@ -165,9 +165,9 @@ func (r *RobotRepository) GetRobotWithInIds(ids ...int64) ([]models.Robot, error
 // Delete delete a robot
 func (r *RobotRepository) Delete(id int64) (int64, error) {
 	if id == 1 {
-		return 0, errors.New("system robot")
+		return 0, errors.New("system robot do not delete")
 	}
-	index, err := r.q.Filter("id", id).Delete()
+	index, err := r.q.Filter("id", id).Update(orm.Params{"Delete": 1})
 	if err != nil {
 		logs.Warn("Delete delete a robot------------", err)
 	}

@@ -98,7 +98,7 @@ func (r *ContactRepository) UpdateIsSessionEnd(usersID []int64, isSessionEnd int
 // GetContacts get Contacts
 func (r *ContactRepository) GetContacts(uid int64) ([]models.ContactDto, error) {
 	var contactDto []models.ContactDto
-	_, err := r.o.Raw("SELECT c.id AS cid,c.to_account,c.is_session_end, c.last_message,c.last_message_type,c.from_account, c.create_at AS contact_create_at,u.*, IFNULL(m.`count`,0) AS `read` FROM  `contact` c LEFT JOIN `user` u ON c.from_account = u.id LEFT JOIN (SELECT to_account,from_account, COUNT(*) as `count` FROM message WHERE `read` = 1 GROUP BY to_account,from_account) m ON m.to_account = c.to_account AND m.from_account = c.from_account WHERE c.to_account = ? AND c.delete = 0 ORDER BY c.create_at DESC", uid).QueryRows(&contactDto)
+	_, err := r.o.Raw("SELECT c.id AS cid,c.to_account,c.last_account,c.is_session_end, c.last_message,c.last_message_type,c.from_account, c.create_at AS contact_create_at,u.*, IFNULL(m.`count`,0) AS `read` FROM  `contact` c LEFT JOIN `user` u ON c.from_account = u.id LEFT JOIN (SELECT to_account,from_account, COUNT(*) as `count` FROM message WHERE `read` = 1 GROUP BY to_account,from_account) m ON m.to_account = c.to_account AND m.from_account = c.from_account WHERE c.to_account = ? AND c.delete = 0 ORDER BY c.create_at DESC", uid).QueryRows(&contactDto)
 	if err != nil {
 		logs.Warn("GetContacts get Contacts------------", err)
 		return []models.ContactDto{}, err

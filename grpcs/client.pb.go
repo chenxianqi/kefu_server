@@ -24,6 +24,84 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
+type StreamRes struct {
+	Data                 string   `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *StreamRes) Reset()         { *m = StreamRes{} }
+func (m *StreamRes) String() string { return proto.CompactTextString(m) }
+func (*StreamRes) ProtoMessage()    {}
+func (*StreamRes) Descriptor() ([]byte, []int) {
+	return fileDescriptor_014de31d7ac8c57c, []int{0}
+}
+
+func (m *StreamRes) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_StreamRes.Unmarshal(m, b)
+}
+func (m *StreamRes) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_StreamRes.Marshal(b, m, deterministic)
+}
+func (m *StreamRes) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_StreamRes.Merge(m, src)
+}
+func (m *StreamRes) XXX_Size() int {
+	return xxx_messageInfo_StreamRes.Size(m)
+}
+func (m *StreamRes) XXX_DiscardUnknown() {
+	xxx_messageInfo_StreamRes.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_StreamRes proto.InternalMessageInfo
+
+func (m *StreamRes) GetData() string {
+	if m != nil {
+		return m.Data
+	}
+	return ""
+}
+
+type StreamReq struct {
+	Data                 string   `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *StreamReq) Reset()         { *m = StreamReq{} }
+func (m *StreamReq) String() string { return proto.CompactTextString(m) }
+func (*StreamReq) ProtoMessage()    {}
+func (*StreamReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_014de31d7ac8c57c, []int{1}
+}
+
+func (m *StreamReq) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_StreamReq.Unmarshal(m, b)
+}
+func (m *StreamReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_StreamReq.Marshal(b, m, deterministic)
+}
+func (m *StreamReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_StreamReq.Merge(m, src)
+}
+func (m *StreamReq) XXX_Size() int {
+	return xxx_messageInfo_StreamReq.Size(m)
+}
+func (m *StreamReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_StreamReq.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_StreamReq proto.InternalMessageInfo
+
+func (m *StreamReq) GetData() string {
+	if m != nil {
+		return m.Data
+	}
+	return ""
+}
+
 type Respones struct {
 	Data                 string   `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -35,7 +113,7 @@ func (m *Respones) Reset()         { *m = Respones{} }
 func (m *Respones) String() string { return proto.CompactTextString(m) }
 func (*Respones) ProtoMessage()    {}
 func (*Respones) Descriptor() ([]byte, []int) {
-	return fileDescriptor_014de31d7ac8c57c, []int{0}
+	return fileDescriptor_014de31d7ac8c57c, []int{2}
 }
 
 func (m *Respones) XXX_Unmarshal(b []byte) error {
@@ -74,7 +152,7 @@ func (m *Request) Reset()         { *m = Request{} }
 func (m *Request) String() string { return proto.CompactTextString(m) }
 func (*Request) ProtoMessage()    {}
 func (*Request) Descriptor() ([]byte, []int) {
-	return fileDescriptor_014de31d7ac8c57c, []int{1}
+	return fileDescriptor_014de31d7ac8c57c, []int{3}
 }
 
 func (m *Request) XXX_Unmarshal(b []byte) error {
@@ -103,6 +181,8 @@ func (m *Request) GetData() string {
 }
 
 func init() {
+	proto.RegisterType((*StreamRes)(nil), "grpcs.StreamRes")
+	proto.RegisterType((*StreamReq)(nil), "grpcs.StreamReq")
 	proto.RegisterType((*Respones)(nil), "grpcs.Respones")
 	proto.RegisterType((*Request)(nil), "grpcs.Request")
 }
@@ -112,24 +192,25 @@ func init() {
 }
 
 var fileDescriptor_014de31d7ac8c57c = []byte{
-	// 265 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x92, 0x4d, 0x4b, 0x33, 0x41,
-	0x10, 0x84, 0xdf, 0xf0, 0xc6, 0xaf, 0xf6, 0x23, 0x38, 0x20, 0x88, 0xa0, 0xc8, 0xe2, 0xc1, 0xd3,
-	0x22, 0x51, 0x14, 0xbc, 0xc5, 0x1c, 0x42, 0x08, 0x6a, 0xd8, 0x08, 0x9e, 0x3b, 0xb3, 0x9d, 0xdd,
-	0x81, 0x49, 0xcf, 0xba, 0xdd, 0x4b, 0xfe, 0xa6, 0x3f, 0x49, 0x5c, 0x25, 0x5e, 0x3c, 0x8c, 0xb7,
-	0x19, 0x9a, 0xaa, 0xea, 0xa7, 0x68, 0xd8, 0xb3, 0xde, 0x11, 0x6b, 0x5a, 0xd5, 0x41, 0x83, 0xd9,
-	0x28, 0xea, 0xca, 0x4a, 0x72, 0x06, 0xdb, 0x19, 0x49, 0x15, 0x98, 0xc4, 0x18, 0xe8, 0xe6, 0xa8,
-	0x78, 0xdc, 0x39, 0xef, 0x5c, 0xee, 0x64, 0xed, 0x3b, 0x39, 0x85, 0xad, 0x8c, 0xde, 0x1a, 0x12,
-	0xfd, 0x6d, 0xdc, 0x7f, 0xff, 0x0f, 0xdd, 0x09, 0x2d, 0x1a, 0x73, 0x07, 0x66, 0x44, 0xfa, 0xcc,
-	0xde, 0x31, 0x0d, 0xbc, 0xcf, 0xc2, 0x3c, 0xa8, 0x98, 0x83, 0xb4, 0x4d, 0x49, 0xbf, 0x2d, 0x4e,
-	0x7a, 0xeb, 0xff, 0x57, 0x64, 0xf2, 0xcf, 0x5c, 0xc1, 0xee, 0xb4, 0x91, 0xf2, 0x91, 0x44, 0xb0,
-	0xa0, 0x18, 0x45, 0x1f, 0xf6, 0x87, 0xc8, 0x96, 0xfc, 0x1f, 0x34, 0xf7, 0x70, 0x34, 0x23, 0xac,
-	0x6d, 0x39, 0xe1, 0xb0, 0xf2, 0x94, 0x17, 0xf4, 0xe2, 0xd4, 0x53, 0xd4, 0x86, 0x37, 0xd0, 0xfb,
-	0x41, 0xcb, 0x97, 0x8e, 0xa3, 0x54, 0xb7, 0x70, 0x38, 0x66, 0xa1, 0x5a, 0x67, 0x8a, 0xea, 0x44,
-	0x9d, 0x45, 0x1f, 0x99, 0xf6, 0xd9, 0xc7, 0x13, 0xad, 0x86, 0x81, 0x15, 0x6d, 0x5c, 0x8b, 0x63,
-	0xb8, 0x18, 0x91, 0xae, 0xe1, 0x1e, 0x50, 0xe8, 0xd5, 0x69, 0xd9, 0x42, 0x0e, 0x38, 0x9f, 0x7a,
-	0xd4, 0x45, 0xa8, 0x97, 0x11, 0x56, 0xf3, 0xcd, 0xf6, 0x3e, 0xae, 0x3f, 0x02, 0x00, 0x00, 0xff,
-	0xff, 0x4f, 0xab, 0x2e, 0xaf, 0x2f, 0x02, 0x00, 0x00,
+	// 276 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x92, 0x4d, 0x4b, 0x33, 0x31,
+	0x10, 0xc7, 0x9f, 0xf2, 0xd4, 0x97, 0x0e, 0x6a, 0x31, 0x20, 0x88, 0xe0, 0x0b, 0xc5, 0x83, 0xa7,
+	0x1e, 0xaa, 0x28, 0x78, 0xab, 0x3d, 0x94, 0x52, 0xd4, 0xb2, 0x2b, 0x78, 0x9e, 0x66, 0xa7, 0xbb,
+	0x81, 0x6c, 0xb2, 0xcd, 0xcc, 0xd2, 0xef, 0xe9, 0x27, 0x12, 0xb6, 0x52, 0x3d, 0x54, 0x88, 0xb7,
+	0x84, 0xcc, 0xff, 0xe5, 0x17, 0x06, 0x0e, 0xb4, 0x35, 0xe4, 0xa4, 0x5f, 0x05, 0x2f, 0x5e, 0xed,
+	0xe4, 0xa1, 0xd2, 0xdc, 0xbb, 0x84, 0x4e, 0x2a, 0x81, 0xb0, 0x4c, 0x88, 0x95, 0x82, 0x76, 0x86,
+	0x82, 0xa7, 0xad, 0xab, 0xd6, 0x4d, 0x27, 0x69, 0xce, 0x3f, 0x07, 0x96, 0x5b, 0x07, 0x2e, 0x60,
+	0x3f, 0x21, 0xae, 0xbc, 0xfb, 0xc5, 0xe0, 0x1c, 0xf6, 0x12, 0x5a, 0xd6, 0xc4, 0xb2, 0xed, 0x79,
+	0xf0, 0xf1, 0x1f, 0xda, 0x53, 0x5a, 0xd4, 0xea, 0x01, 0xd4, 0x98, 0xe4, 0xd5, 0x59, 0xe3, 0x68,
+	0x68, 0x6d, 0xe2, 0xe7, 0x5e, 0x58, 0x1d, 0xf5, 0x9b, 0x9e, 0xfd, 0x2f, 0x8b, 0xb3, 0xee, 0xe6,
+	0xbe, 0x8e, 0xec, 0xfd, 0x53, 0x03, 0x38, 0x9c, 0x38, 0xa6, 0x20, 0xcf, 0xc4, 0x8c, 0x39, 0x45,
+	0x6a, 0x46, 0xe8, 0x34, 0xd9, 0x3f, 0x68, 0x1e, 0xe1, 0x24, 0x25, 0x0c, 0xba, 0x98, 0x3a, 0xbf,
+	0xb2, 0x94, 0xe5, 0xf4, 0x66, 0xc4, 0x52, 0x54, 0xc7, 0x3b, 0xe8, 0x7e, 0xc3, 0x65, 0xa5, 0x71,
+	0x51, 0xaa, 0x7b, 0x38, 0x5e, 0x93, 0xa5, 0x82, 0x62, 0x58, 0x8c, 0x46, 0x1b, 0x99, 0x36, 0xab,
+	0xb9, 0x78, 0xa1, 0xd5, 0xc8, 0x3b, 0x41, 0x1d, 0xf7, 0x8f, 0x13, 0xb8, 0x1e, 0x93, 0x6c, 0xe0,
+	0x9e, 0x90, 0xe9, 0xdd, 0x48, 0xd1, 0x40, 0x0e, 0x5d, 0x36, 0xb3, 0x28, 0x0b, 0x1f, 0xca, 0x08,
+	0xab, 0xf9, 0x6e, 0xb3, 0x63, 0xb7, 0x9f, 0x01, 0x00, 0x00, 0xff, 0xff, 0xb0, 0xdb, 0xc1, 0x9a,
+	0x73, 0x02, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -145,7 +226,7 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type KefuClient interface {
 	GetOnlineAllRobots(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Respones, error)
-	PushMessage(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Respones, error)
+	InsertMessage(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Respones, error)
 	CancelMessage(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Respones, error)
 	SearchKnowledgeTitles(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Respones, error)
 	GetOnlineAdmins(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Respones, error)
@@ -171,9 +252,9 @@ func (c *kefuClient) GetOnlineAllRobots(ctx context.Context, in *Request, opts .
 	return out, nil
 }
 
-func (c *kefuClient) PushMessage(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Respones, error) {
+func (c *kefuClient) InsertMessage(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Respones, error) {
 	out := new(Respones)
-	err := c.cc.Invoke(ctx, "/grpcs.Kefu/PushMessage", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/grpcs.Kefu/InsertMessage", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -237,7 +318,7 @@ func (c *kefuClient) GetKnowledgeBaseWithTitleAndPlatform(ctx context.Context, i
 // KefuServer is the server API for Kefu service.
 type KefuServer interface {
 	GetOnlineAllRobots(context.Context, *Request) (*Respones, error)
-	PushMessage(context.Context, *Request) (*Respones, error)
+	InsertMessage(context.Context, *Request) (*Respones, error)
 	CancelMessage(context.Context, *Request) (*Respones, error)
 	SearchKnowledgeTitles(context.Context, *Request) (*Respones, error)
 	GetOnlineAdmins(context.Context, *Request) (*Respones, error)
@@ -253,8 +334,8 @@ type UnimplementedKefuServer struct {
 func (*UnimplementedKefuServer) GetOnlineAllRobots(ctx context.Context, req *Request) (*Respones, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetOnlineAllRobots not implemented")
 }
-func (*UnimplementedKefuServer) PushMessage(ctx context.Context, req *Request) (*Respones, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PushMessage not implemented")
+func (*UnimplementedKefuServer) InsertMessage(ctx context.Context, req *Request) (*Respones, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InsertMessage not implemented")
 }
 func (*UnimplementedKefuServer) CancelMessage(ctx context.Context, req *Request) (*Respones, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CancelMessage not implemented")
@@ -297,20 +378,20 @@ func _Kefu_GetOnlineAllRobots_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Kefu_PushMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Kefu_InsertMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Request)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(KefuServer).PushMessage(ctx, in)
+		return srv.(KefuServer).InsertMessage(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/grpcs.Kefu/PushMessage",
+		FullMethod: "/grpcs.Kefu/InsertMessage",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KefuServer).PushMessage(ctx, req.(*Request))
+		return srv.(KefuServer).InsertMessage(ctx, req.(*Request))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -432,8 +513,8 @@ var _Kefu_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Kefu_GetOnlineAllRobots_Handler,
 		},
 		{
-			MethodName: "PushMessage",
-			Handler:    _Kefu_PushMessage_Handler,
+			MethodName: "InsertMessage",
+			Handler:    _Kefu_InsertMessage_Handler,
 		},
 		{
 			MethodName: "CancelMessage",

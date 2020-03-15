@@ -25,8 +25,8 @@ func (s *kefuServer) GetOnlineAllRobots(ctx context.Context, in *Request) (*Resp
 	return &Respones{Data: utils.InterfaceToString(robots)}, nil
 }
 
-// PushMessage
-func (s *kefuServer) PushMessage(ctx context.Context, in *Request) (*Respones, error) {
+// InsertMessage
+func (s *kefuServer) InsertMessage(ctx context.Context, in *Request) (*Respones, error) {
 	var message models.Message
 	msgContent, _ := base64.StdEncoding.DecodeString(in.Data)
 	utils.StringToInterface(string(msgContent), &message)
@@ -74,7 +74,6 @@ func (s *kefuServer) PushNewContacts(ctx context.Context, in *Request) (*Respone
 func (s *kefuServer) InsertStatistical(ctx context.Context, in *Request) (*Respones, error) {
 	var servicesStatistical models.ServicesStatistical
 	utils.StringToInterface(in.Data, &servicesStatistical)
-
 	statisticalRepository := services.GetStatisticalRepositoryInstance()
 	_, err := statisticalRepository.Add(&servicesStatistical)
 	if err != nil {
@@ -106,4 +105,5 @@ func Run() {
 	if err != nil {
 		logs.Info("failed to serve: ", err)
 	}
+
 }

@@ -15,6 +15,7 @@ type Robot struct {
 	Switch           int    `orm:"default(0);column(switch)" json:"switch"`                          // 是否开启
 	System           int    `orm:"default(0);column(system)" json:"system"`                          // 系统内置
 	Platform         int64  `orm:"type(bigint);column(platform)" json:"platform"`                    // 服务那个平台
+	Delete           int    `orm:"default(0);column(delete)" json:"delete"`                          // 是否已删除 0 false  1 true
 	UpdateAt         int64  `orm:"type(bigint);column(update_at)" json:"update_at"`                  // 更新时间
 	CreateAt         int64  `orm:"auto_now_add;type(int64);null;column(create_at)" json:"create_at"` // 创建时间
 }

@@ -8,10 +8,8 @@ import (
 	"kefu_server/models"
 	"kefu_server/services"
 	"kefu_server/utils"
-	"strconv"
 	"time"
 
-	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego/validation"
 )
@@ -147,71 +145,4 @@ func (c *AuthController) Logout() {
 		c.JSON(configs.ResponseFail, "退出失败！", &err)
 	}
 	c.JSON(configs.ResponseSucess, "退出成功！", nil)
-}
-
-// RobotFetchTokenRequest struct
-type RobotFetchTokenRequest struct {
-	AppSecret string `json:"app_secret"`
-}
-
-// RobotFetchToken admin logout
-func (c *AuthController) RobotFetchToken() {
-
-	var request RobotFetchTokenRequest
-	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &request); err != nil {
-		c.JSON(configs.ResponseFail, "参数有误，请检查", nil)
-	}
-
-	// valid
-	valid := validation.Validation{}
-	valid.Required(request.AppSecret, "app_secret").Message("app_secret不能为空！")
-	if valid.HasErrors() {
-		for _, err := range valid.Errors {
-			c.JSON(configs.ResponseFail, err.Message, nil)
-		}
-	}
-
-	// current app Secret
-	_AppID, _ := beego.AppConfig.Int64("mimc_appId")
-	_AppKey := beego.AppConfig.String("mimc_appKey")
-	_AppSecret := beego.AppConfig.String("mimc_appSecret")
-	m51 := md5.New()
-	m51.Write([]byte(strconv.FormatInt(_AppID, 10) + _AppKey + _AppSecret))
-	currentAppSecret := hex.EncodeToString(m51.Sum(nil))
-
-	// check
-	if request.AppSecret != currentAppSecret {
-		c.JSON(configs.ResponseFail, "server error~", nil)
-	}
-
-	// create token
-	newToken := utils.GenerateToken(models.JwtKeyDto{ID: _AppID, UserName: _AppKey, AuthType: 0})
-	auth := c.AuthsRepository.GetAuthInfoWithTypeAndUID(0, 0)
-	if auth == nil {
-
-		newAuth := models.Auths{
-			Token:    newToken,
-			UID:      0,
-			AuthType: 0,
-			UpdateAt: time.Now().Unix(),
-			CreateAt: time.Now().Unix(),
-		}
-		if _, err := c.AuthsRepository.Add(&newAuth); err != nil {
-			c.JSON(configs.ResponseFail, "授权失败!", nil)
-		}
-
-	} else {
-
-		_, err := c.AuthsRepository.Update(auth.ID, orm.Params{
-			"Token":    newToken,
-			"UpdateAt": time.Now().Unix(),
-		})
-		if err != nil {
-			c.JSON(configs.ResponseFail, "授权失败!", nil)
-		}
-
-	}
-
-	c.JSON(configs.ResponseSucess, "授权成功!", &newToken)
-
 }

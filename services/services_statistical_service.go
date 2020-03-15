@@ -16,6 +16,7 @@ type StatisticalRepositoryInterface interface {
 	GetStatisticals(startDate string, endDate string) (map[string]interface{}, error)
 	GetTodayActionStatistical(startDate string, endDate string) ([]orm.Params, error)
 	GetCustomerServiceList(request models.ServicesStatisticalPaginationDto) models.ServicesStatisticalPaginationDto
+	CheckIsReplyAndSetReply(uid int64, aid int64, platform int64)
 }
 
 // StatisticalRepository struct
@@ -52,7 +53,13 @@ func (r *StatisticalRepository) GetCustomerServiceList(request models.ServicesSt
 		addSQL = " count(distinct user_account) "
 	}
 
-	if err := r.o.Raw("SELECT "+addSQL+" AS `count` FROM services_statistical AS s INNER JOIN (SELECT * FROM `user`) AS u ON s.user_account = u.id AND s.service_account = ? AND s.create_at > ? AND s.create_at < ?", request.Cid, startDate.Unix(), endDate.Unix()).QueryRow(&totalModel); err != nil {
+	// is not reception?
+	INReception := "0,1"
+	if request.IsReception {
+		INReception = "0"
+	}
+
+	if err := r.o.Raw("SELECT "+addSQL+" AS `count` FROM services_statistical AS s INNER JOIN (SELECT * FROM `user`) AS u ON s.user_account = u.id AND s.service_account = ? AND s.create_at > ? AND s.create_at < ? AND is_reception IN("+INReception+")", request.Cid, startDate.Unix(), endDate.Unix()).QueryRow(&totalModel); err != nil {
 		logs.Warn("GetCustomerServiceList get Customer Service List1------------", err)
 	}
 	request.Total = totalModel.Count
@@ -63,7 +70,7 @@ func (r *StatisticalRepository) GetCustomerServiceList(request models.ServicesSt
 		addSQL1 = " GROUP BY `user_account` "
 	}
 
-	if counter, err := r.o.Raw("SELECT s.id, s.user_account, s.service_account,s.create_at, s.transfer_account,s.platform,u.nickname FROM services_statistical AS s INNER JOIN (SELECT * FROM `user` ) AS u ON s.user_account = u.id AND s.service_account = ? AND s.create_at > ? AND s.create_at < ? "+addSQL1+" ORDER BY s.create_at DESC LIMIT ?,?", request.Cid, startDate.Unix(), endDate.Unix(), (request.PageOn-1)*request.PageSize, request.PageSize).Values(&params); counter <= 0 {
+	if counter, err := r.o.Raw("SELECT s.id, s.user_account, s.service_account,s.create_at,s.is_reception, s.transfer_account,s.platform,u.nickname FROM services_statistical AS s INNER JOIN (SELECT * FROM `user` ) AS u ON s.user_account = u.id AND s.service_account = ? AND s.create_at > ? AND s.create_at < ? AND is_reception IN("+ INReception +") "+addSQL1+" ORDER BY s.create_at DESC LIMIT ?,?", request.Cid, startDate.Unix(), endDate.Unix(), (request.PageOn-1)*request.PageSize, request.PageSize).Values(&params); counter <= 0 {
 		logs.Warn("GetCustomerServiceList get Customer Service List2------------", err)
 		request.List = []string{}
 		return request
@@ -76,7 +83,7 @@ func (r *StatisticalRepository) GetCustomerServiceList(request models.ServicesSt
 
 // Add add statistical
 func (r *StatisticalRepository) Add(servicesStatistical *models.ServicesStatistical) (int64, error) {
-	id, err := r.o.Insert(&servicesStatistical)
+	id, err := r.o.Insert(servicesStatistical)
 	if err != nil {
 		logs.Warn("Add add statistical------------", err)
 	}
@@ -154,4 +161,22 @@ func (r *StatisticalRepository) GetTodayActionStatistical(startDate string, endD
 		return nil, err
 	}
 	return statisticalData, nil
+}
+
+// CheckIsReplyAndSetReply cehck is reply and set reply
+func (r *StatisticalRepository) CheckIsReplyAndSetReply(userAccount int64, serviceAccount int64, userPlatform int64) {
+	logs.Info(userAccount, serviceAccount, userPlatform)
+	var servicesStatistical models.ServicesStatistical
+	maxTime := time.Now().Unix() - 60*10
+	logs.Info(maxTime)
+	err := r.q.Filter("user_account", userAccount).Filter("service_account", serviceAccount).Filter("is_reception", 0).Filter("platform", userPlatform).Filter("create_at__gte", maxTime).One(&servicesStatistical)
+	if err != nil {
+		logs.Warn("CheckIsReplyAndSetReply cehck is reply and set reply Filter------------", err)
+	} else {
+		servicesStatistical.IsReception = 1
+		_, err := r.o.Update(&servicesStatistical)
+		if err != nil {
+			logs.Warn("CheckIsReplyAndSetReply cehck is reply and set reply Update------------", err)
+		}
+	}
 }

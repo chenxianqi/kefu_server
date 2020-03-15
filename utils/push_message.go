@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/logs"
 )
 
 // PushMessage send message
@@ -25,7 +24,6 @@ func PushMessage(toAccount int64, msg string) bool {
 	request["toAccount"] = strconv.FormatInt(toAccount, 10)
 	request["msg"] = msg
 	response := HTTPRequest(api, "POST", request, "")
-	logs.Info(response)
 	if response.Code != 200 {
 		fmt.Println(response)
 		return false

@@ -44,6 +44,7 @@ func appTask() {
 				continue
 			}
 
+			_lastBackAdmin := services.GetAdminRepositoryInstance().GetAdmin(contact.LastAccount)
 			robot := robots[0]
 
 			// message body
@@ -52,7 +53,10 @@ func appTask() {
 			message.Read = 0
 			message.FromAccount = robot.ID
 			message.Timestamp = time.Now().Unix()
-			message.Payload = "由于您长时间未回复，本次会话超时了"
+			message.Payload = "您长时间未回复，本次会话超时了"
+			if _lastBackAdmin == nil {
+				message.Payload = "客服长时间未回复，会话结束，您可以重新发起人工"
+			}
 			message.ToAccount = contact.FromAccount
 			var messageString string
 			messageString = utils.InterfaceToString(message)
@@ -61,12 +65,17 @@ func appTask() {
 			// Send a reminder message to customer service
 			message.FromAccount = contact.FromAccount
 			message.ToAccount = contact.ToAccount
+			message.Payload = "用户长时间无应答，会话结束"
+			if _lastBackAdmin == nil {
+				message.Read = 1
+				message.Payload = "您长时间未回复客户，会话结束"
+			}
 			messageString = utils.InterfaceToString(message)
 			utils.PushMessage(contact.ToAccount, messageString)
 			utils.MessageInto(message)
 
 			// Message after timeout
-			if robot.TimeoutText != "" {
+			if robot.TimeoutText != "" && _lastBackAdmin != nil {
 				message.FromAccount = robot.ID
 				message.ToAccount = contact.FromAccount
 				message.BizType = "text"

@@ -9,7 +9,6 @@ import (
 	"kefu_server/utils"
 	"time"
 
-	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/validation"
 )
 
@@ -64,10 +63,7 @@ func (c *MessageController) List() {
 	}
 
 	// push notify update current service contacts list
-	// 待处理888 推送给客服的的聊天列表
-	// if len(robotlbrary.Robots) > 0 {
-	// 	robotlbrary.PushNewContacts(auth.UID, robotlbrary.Robots[0])
-	// }
+	utils.PushNewContacts(auth.UID)
 
 	c.JSON(configs.ResponseSucess, "success", &returnMessagePaginationDto)
 }
@@ -98,123 +94,4 @@ func (c *MessageController) Remove() {
 	}
 
 	c.JSON(configs.ResponseSucess, "删除成!", row)
-}
-
-// Transfer transfer admin to admin
-func (c *MessageController) Transfer() {
-
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
-	adminRepository := services.GetAdminRepositoryInstance()
-	admin := adminRepository.GetAdmin(auth.UID)
-
-	// request body
-	var transferDto *models.TransferDto
-	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &transferDto); err != nil {
-		c.JSON(configs.ResponseFail, "参数有误，请检查!", nil)
-	}
-
-	// validation
-	valid := validation.Validation{}
-	valid.Required(transferDto.ToAccount, "to_account").Message("to_account不能为空！")
-	valid.Required(transferDto.UserAccount, "user_account").Message("user不能为空！")
-	if valid.HasErrors() {
-		for _, err := range valid.Errors {
-			c.JSON(configs.ResponseFail, err.Message, nil)
-		}
-	}
-
-	type adminData struct {
-		ID       int64  `orm:"column(id)" json:"id"`
-		NickName string `json:"nickname"`
-		Avatar   string `json:"avatar"`
-	}
-	toAdmin := adminRepository.GetAdmin(transferDto.ToAccount)
-	if toAdmin == nil {
-		c.JSON(configs.ResponseFail, "转接失败，转接客服不存在!", nil)
-	}
-	toAdminJSON, _ := json.Marshal(adminData{ID: toAdmin.ID, Avatar: toAdmin.Avatar, NickName: toAdmin.NickName})
-
-	// UserRepository instance
-	userRepository := services.GetUserRepositoryInstance()
-
-	user := userRepository.GetUser(transferDto.UserAccount)
-	if user == nil {
-		c.JSON(configs.ResponseFail, "转接失败用户ID不存在!", nil)
-	}
-
-	// get one online robot
-
-	// robot, _ := services.GetRobotRepositoryInstance().GetRobotWithRandomOnline()
-	// 待处理888 记得要使用toAdminJSON
-	logs.Info(toAdminJSON)
-
-	// message
-	message := models.Message{}
-	message.BizType = "transfer"
-	message.FromAccount = transferDto.UserAccount
-	message.Timestamp = time.Now().Unix()
-	message.TransferAccount = transferDto.ToAccount
-
-	// Send to forwarder
-
-	// message.ToAccount = admin.ID
-	// message.Payload = "您将" + user.NickName + "转接给" + toAdmin.NickName
-	// messageJSONOne, _ := json.Marshal(message)
-	// messageStringOne := base64.StdEncoding.EncodeToString([]byte(messageJSONOne))
-
-	// 待处理888 发送消息
-	// robot.SendMessage(strconv.FormatInt(admin.ID, 10), []byte(messageStringOne))
-
-	utils.MessageInto(message)
-
-	// Send to forwarded customer service
-
-	// message.ToAccount = transferDto.ToAccount
-	// message.Payload = admin.NickName + "将" + user.NickName + "转接给您"
-	// messageJSONTwo, _ := json.Marshal(message)
-	// messageStringTwo := base64.StdEncoding.EncodeToString([]byte(messageJSONTwo))
-
-	// 待处理888 发送消息
-	// robot.SendMessage(strconv.FormatInt(transferDto.ToAccount, 10), []byte(messageStringTwo))
-
-	utils.MessageInto(message)
-
-	// send to user
-	// message.FromAccount = robot.ID
-	// message.ToAccount = transferDto.UserAccount
-	// message.Delete = 1
-	// message.Payload = string(toAdminJSON)
-	// messageJSONThree, _ := json.Marshal(message)
-	// messageString3 := base64.StdEncoding.EncodeToString([]byte(messageJSONThree))
-
-	// 待处理888 发送消息
-	// robot.SendMessage(strconv.FormatInt(transferDto.UserAccount, 10), []byte(messageString3))
-
-	utils.MessageInto(message)
-
-	// Transfer to the library for counting service times
-	servicesStatistical := models.ServicesStatistical{UserAccount: transferDto.UserAccount, ServiceAccount: transferDto.ToAccount, TransferAccount: admin.ID, Platform: user.Platform, CreateAt: time.Now().Unix()}
-	// StatisticalRepository instance
-	statisticalRepository := services.GetStatisticalRepositoryInstance()
-	_, err := statisticalRepository.Add(&servicesStatistical)
-	if err != nil {
-	}
-
-	// End the repeater's and user's current session
-	tk := time.NewTimer(1 * time.Second)
-	select {
-	case <-tk.C:
-		usersID := []int64{admin.ID, transferDto.UserAccount}
-
-		// ContactRepository instance
-		contactRepository := services.GetContactRepositoryInstance()
-		_, err := contactRepository.UpdateIsSessionEnd(usersID, 1)
-
-		if err != nil {
-			logs.Info(err)
-		}
-	}
-
-	c.JSON(configs.ResponseSucess, "转接成功!", nil)
 }

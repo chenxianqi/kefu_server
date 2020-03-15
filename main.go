@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 
-	"github.com/Xiaomi-mimc/mimc-go-sdk/util/log"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/toolbox"
@@ -20,12 +19,10 @@ import (
 func initLog() {
 
 	if isDev := beego.AppConfig.String("runmode"); isDev == "prod" {
-		log.SetLogLevel(log.FatalLevel)
 		_ = logs.SetLogger(logs.AdapterFile, `{"filename":"project.log","level":7,"maxlines":0,"maxsize":0,"daily":true,"maxdays":10,"color":true}`)
 		fmt.Print("当前环境为生产环境")
 		_ = beego.BeeLogger.DelLogger("console")
 	} else {
-		log.SetLogLevel(log.ErrorLevel)
 		_ = logs.SetLogger(logs.AdapterConsole, `{"filename":"test.log","level":7,"maxlines":0,"maxsize":0,"daily":true,"maxdays":10,"color":true}`)
 		fmt.Print("当前环境为测试环境")
 	}

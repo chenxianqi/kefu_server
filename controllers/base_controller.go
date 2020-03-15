@@ -30,6 +30,11 @@ func (c *BaseController) JSON(status configs.ResponseStatusType, message string,
 		msg = "sorry server error"
 		data = nil
 	}
+	if status == configs.ResponseFail {
+		c.Ctx.Output.Status = 400
+	} else if status == configs.ResponseError {
+		c.Ctx.Output.Status = 500
+	}
 	c.Data["json"] = &models.ResponseDto{Code: status, Message: msg, Data: &data}
 	c.ServeJSON()
 	c.StopRun()

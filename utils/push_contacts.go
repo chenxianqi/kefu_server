@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"kefu_server/models"
 	"kefu_server/services"
@@ -16,10 +15,6 @@ func PushNewContacts(uid int64) {
 	message.BizType = "contacts"
 	message.FromAccount = 1
 	message.Timestamp = time.Now().Unix()
-	for index, contact := range contactData {
-		payload, _ := base64.StdEncoding.DecodeString(contact.LastMessage)
-		contactData[index].LastMessage = string(payload)
-	}
 	message.ToAccount = uid
 	messageContentByte, _ := json.Marshal(contactData)
 	message.Payload = string(messageContentByte)
