@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"encoding/json"
 	"kefu_server/configs"
+	"kefu_server/models"
 	"kefu_server/services"
 )
 
@@ -56,7 +58,34 @@ func (c *WorkOrderController) Comment() {
 
 // PostType add work order type
 func (c *WorkOrderController) PostType() {
-	c.JSON(configs.ResponseSucess, "success", nil)
+
+	// GetAuthInfo
+	auth := c.GetAuthInfo()
+	admin := services.GetAdminRepositoryInstance().GetAdmin(auth.UID)
+	if admin != nil && admin.Root != 1 {
+		c.JSON(configs.ResponseFail, "没有权限!", nil)
+	}
+
+	// request body
+	var workOrderType models.WorkOrderType
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &workOrderType); err != nil {
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", nil)
+	}
+
+	// validation
+	if workOrderType.Title == "" {
+		c.JSON(configs.ResponseFail, "类型标题不能为空！!", nil)
+	}
+
+	isNew, _, err := c.WorkOrderTypeRepository.Add(workOrderType)
+	if err != nil {
+		c.JSON(configs.ResponseFail, "添加失败!", err)
+	}
+	if !isNew {
+		c.JSON(configs.ResponseFail, "类型名称已存在!", err)
+	}
+
+	c.JSON(configs.ResponseSucess, "添加成功！", nil)
 }
 
 // GetType get work order type
