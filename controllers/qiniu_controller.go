@@ -91,7 +91,7 @@ func (c *QiniuController) Put() {
 		"Host":      qiniuSetting.Host,
 		"UpdateAt":  time.Now().Unix(),
 	}); err != nil {
-		c.JSON(configs.ResponseFail, "更新失败!", &err)
+		c.JSON(configs.ResponseFail, "更新失败!", err.Error())
 	}
 
 	c.JSON(configs.ResponseSucess, "更新成功!", &qiniuSetting)

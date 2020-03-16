@@ -74,7 +74,7 @@ func (c *UserController) Put() {
 		"Avatar":   user.Avatar,
 	})
 	if err != nil {
-		c.JSON(configs.ResponseFail, "更新失败!", &err)
+		c.JSON(configs.ResponseFail, "更新失败!", err.Error())
 	}
 	c.JSON(configs.ResponseSucess, "更新成功!", nil)
 }
@@ -108,7 +108,7 @@ func (c *UserController) Delete() {
 
 	// delete
 	if _, err := c.UserRepository.Delete(id); err != nil {
-		c.JSON(configs.ResponseFail, "删除失败!", &err)
+		c.JSON(configs.ResponseFail, "删除失败!", err.Error())
 	}
 
 	c.JSON(configs.ResponseSucess, "删除成功!", nil)
@@ -121,7 +121,7 @@ func (c *UserController) Users() {
 	// request body
 	var usersPaginationDto models.UsersPaginationDto
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &usersPaginationDto); err != nil {
-		c.JSON(configs.ResponseFail, "参数有误，请检查!", &err)
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", err.Error())
 	}
 
 	// validation
@@ -130,14 +130,14 @@ func (c *UserController) Users() {
 	valid.Required(usersPaginationDto.PageSize, "page_size").Message("page_size不能为空！")
 	if valid.HasErrors() {
 		for _, err := range valid.Errors {
-			c.JSON(configs.ResponseFail, err.Message, &err)
+			c.JSON(configs.ResponseFail, err.Message, err.Error())
 		}
 	}
 
 	// get users
 	res, err := c.UserRepository.GetUsers(&usersPaginationDto)
 	if err != nil {
-		c.JSON(configs.ResponseFail, "fail", &err)
+		c.JSON(configs.ResponseFail, "fail", err.Error())
 	}
 	c.JSON(configs.ResponseSucess, "success", &res)
 
@@ -148,7 +148,7 @@ func (c *UserController) OnLineCount() {
 
 	rows, err := c.UserRepository.GetOnlineCount()
 	if err != nil {
-		c.JSON(configs.ResponseFail, "fail", &err)
+		c.JSON(configs.ResponseFail, "fail", err.Error())
 	}
 	c.JSON(configs.ResponseSucess, "success", &rows)
 

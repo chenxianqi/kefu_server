@@ -168,7 +168,7 @@ func (c *PlatformController) Delete() {
 	}
 
 	if _, err := c.PlatformRepository.Delete(id); err != nil {
-		c.JSON(configs.ResponseFail, "删除失败!", &err)
+		c.JSON(configs.ResponseFail, "删除失败!", err.Error())
 	}
 
 	c.JSON(configs.ResponseSucess, "删除成功!", nil)
@@ -180,7 +180,7 @@ func (c *PlatformController) List() {
 	platforms, err := c.PlatformRepository.GetPlatformAll("id")
 
 	if err != nil {
-		c.JSON(configs.ResponseFail, "fail", &err)
+		c.JSON(configs.ResponseFail, "fail", err.Error())
 	}
 
 	c.JSON(configs.ResponseSucess, "success", &platforms)

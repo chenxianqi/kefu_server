@@ -37,7 +37,7 @@ func (c *HomeController) Statistical() {
 	// request body
 	statisticalRequest := StatisticalRequest{}
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &statisticalRequest); err != nil {
-		c.JSON(configs.ResponseFail, "参数有误，请检查!", &err)
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", err.Error())
 	}
 
 	// validation
@@ -46,13 +46,13 @@ func (c *HomeController) Statistical() {
 	valid.Required(statisticalRequest.DateEnd, "date_end").Message("date_end不能为空！")
 	if valid.HasErrors() {
 		for _, err := range valid.Errors {
-			c.JSON(configs.ResponseFail, err.Message, &err)
+			c.JSON(configs.ResponseFail, err.Message, err.Error())
 		}
 	}
 
 	countsArr, err := c.StatisticalRepository.GetStatisticals(statisticalRequest.DateStart, statisticalRequest.DateEnd)
 	if err != nil {
-		c.JSON(configs.ResponseFail, err.Error(), &err)
+		c.JSON(configs.ResponseFail, err.Error(), err.Error())
 	}
 
 	c.JSON(configs.ResponseSucess, "success", &countsArr)
@@ -65,7 +65,7 @@ func (c *HomeController) TodayActionStatistical() {
 	// request body
 	statisticalRequest := StatisticalRequest{}
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &statisticalRequest); err != nil {
-		c.JSON(configs.ResponseFail, "参数有误，请检查!", &err)
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", err.Error())
 	}
 
 	// validation
@@ -74,13 +74,13 @@ func (c *HomeController) TodayActionStatistical() {
 	valid.Required(statisticalRequest.DateEnd, "date_end").Message("date_end不能为空！")
 	if valid.HasErrors() {
 		for _, err := range valid.Errors {
-			c.JSON(configs.ResponseFail, err.Message, &err)
+			c.JSON(configs.ResponseFail, err.Message, err.Error())
 		}
 	}
 
 	statisticalData, err := c.StatisticalRepository.GetTodayActionStatistical(statisticalRequest.DateStart, statisticalRequest.DateEnd)
 	if err != nil {
-		c.JSON(configs.ResponseFail, err.Error(), &err)
+		c.JSON(configs.ResponseFail, err.Error(), err.Error())
 	}
 
 	c.JSON(configs.ResponseSucess, "success", &statisticalData)

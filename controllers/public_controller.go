@@ -101,7 +101,7 @@ func (c *PublicController) Register() {
 			// fetchResult
 			fetchResult, fetchError = utils.CreateMiMcToken(strconv.FormatInt(user.ID, 10))
 			if err := json.Unmarshal([]byte(fetchResult), &imTokenDto); err != nil {
-				c.JSON(configs.ResponseFail, "注册失败!", &err)
+				c.JSON(configs.ResponseFail, "注册失败!", err.Error())
 			}
 			// update userinfo
 			c.UserRepository.Update(user.ID, orm.Params{
@@ -127,7 +127,7 @@ func (c *PublicController) Register() {
 
 				fetchResult, fetchError = utils.CreateMiMcToken(strconv.FormatInt(accountID, 10))
 				if err := json.Unmarshal([]byte(fetchResult), &imTokenDto); err != nil {
-					c.JSON(configs.ResponseFail, "注册失败!", &err)
+					c.JSON(configs.ResponseFail, "注册失败!", err.Error())
 				}
 
 				// update userinfo
@@ -137,7 +137,7 @@ func (c *PublicController) Register() {
 				})
 
 			} else {
-				c.JSON(configs.ResponseFail, "注册失败!", &err)
+				c.JSON(configs.ResponseFail, "注册失败!", err.Error())
 			}
 		}
 
@@ -152,13 +152,13 @@ func (c *PublicController) Register() {
 
 		// imTokenDto
 		if err := json.Unmarshal([]byte(fetchResult), &imTokenDto); err != nil {
-			c.JSON(configs.ResponseFail, "注册失败!", &err)
+			c.JSON(configs.ResponseFail, "注册失败!", err.Error())
 		}
 	}
 
 	// is Error ?
 	if fetchError != nil {
-		c.JSON(configs.ResponseFail, "注册失败!", &fetchError)
+		c.JSON(configs.ResponseFail, "注册失败!", fetchError.Error())
 	}
 
 	// response data
@@ -230,7 +230,7 @@ func (c *PublicController) CleanRead() {
 
 	// clear
 	if _, err := c.MessageRepository.ClearRead(uid); err != nil {
-		c.JSON(configs.ResponseFail, "清除失败!", &err)
+		c.JSON(configs.ResponseFail, "清除失败!", err.Error())
 	}
 
 	c.JSON(configs.ResponseSucess, "清除成功!", nil)
@@ -246,7 +246,7 @@ func (c *PublicController) Robot() {
 	// get robot
 	robot, err := services.GetRobotRepositoryInstance().GetRobotWithOnline(pid)
 	if err != nil {
-		c.JSON(configs.ResponseFail, "fail", &err)
+		c.JSON(configs.ResponseFail, "fail", err.Error())
 	}
 
 	c.JSON(configs.ResponseSucess, "success", &robot)
@@ -322,7 +322,7 @@ func (c *PublicController) LastActivity() {
 			"LastActivity": time.Now().Unix(),
 		})
 		if err != nil {
-			c.JSON(configs.ResponseFail, "fail,用户不存在!", &err)
+			c.JSON(configs.ResponseFail, "fail,用户不存在!", err.Error())
 		}
 		c.JSON(configs.ResponseSucess, "上报成功!", nil)
 	}
@@ -334,7 +334,7 @@ func (c *PublicController) LastActivity() {
 		"LastActivity": time.Now().Unix(),
 	})
 	if err != nil {
-		c.JSON(configs.ResponseFail, "fail,用户不存在!", &err)
+		c.JSON(configs.ResponseFail, "fail,用户不存在!", err.Error())
 	}
 
 	c.JSON(configs.ResponseSucess, "上报成功!", nil)
@@ -417,13 +417,13 @@ func (c *PublicController) Upload() {
 	uploadDir := "static/uploads/images/" + time.Now().Format("2006-01-02") + "/"
 	err := os.MkdirAll(uploadDir, os.ModePerm)
 	if err != nil {
-		c.JSON(configs.ResponseFail, "上传失败,创建文件夹失败!", &err)
+		c.JSON(configs.ResponseFail, "上传失败,创建文件夹失败!", err.Error())
 	}
 	fpath := uploadDir + fileName
 	defer f.Close()
 	err = c.SaveToFile("file", fpath)
 	if err != nil {
-		c.JSON(configs.ResponseFail, "上传失败!", &err)
+		c.JSON(configs.ResponseFail, "上传失败!", err.Error())
 	}
 
 	c.JSON(configs.ResponseSucess, "上传成功!", "/"+fpath)
@@ -452,7 +452,7 @@ func (c *PublicController) CancelMessage() {
 	_, err := messageRepository.Delete(removeMessageRequestDto)
 
 	if err != nil {
-		c.JSON(configs.ResponseFail, "撤回失败!", &err)
+		c.JSON(configs.ResponseFail, "撤回失败!", err.Error())
 	}
 
 	c.JSON(configs.ResponseSucess, "撤回成功!", nil)
@@ -501,7 +501,7 @@ func (c *PublicController) GetMessageHistoryList() {
 	// query messages
 	returnMessagePaginationDto, err := c.MessageRepository.GetUserMessages(messagePaginationDto)
 	if err != nil {
-		c.JSON(configs.ResponseFail, "fail", &err)
+		c.JSON(configs.ResponseFail, "fail", err.Error())
 	}
 
 	c.JSON(configs.ResponseSucess, "success", &returnMessagePaginationDto)

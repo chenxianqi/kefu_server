@@ -59,7 +59,7 @@ func (c *MessageController) List() {
 	// query messages
 	returnMessagePaginationDto, err := c.MessageRepository.GetAdminMessages(messagePaginationDto)
 	if err != nil {
-		c.JSON(configs.ResponseFail, "fail", &err)
+		c.JSON(configs.ResponseFail, "fail", err.Error())
 	}
 
 	// push notify update current service contacts list
@@ -90,7 +90,7 @@ func (c *MessageController) Remove() {
 
 	row, err := c.MessageRepository.Delete(removeRequestDto)
 	if err != nil || row == 0 {
-		c.JSON(configs.ResponseFail, "删除失败!", &err)
+		c.JSON(configs.ResponseFail, "删除失败!", err.Error())
 	}
 
 	c.JSON(configs.ResponseSucess, "删除成!", row)

@@ -82,7 +82,7 @@ func (c *SystemController) Put() {
 		"UpdateAt":   time.Now().Unix(),
 	})
 	if err != nil {
-		c.JSON(configs.ResponseFail, "更新失败!", &err)
+		c.JSON(configs.ResponseFail, "更新失败!", err.Error())
 	}
 	c.JSON(configs.ResponseSucess, "更新成功!", &system)
 }

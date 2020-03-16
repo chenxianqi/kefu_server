@@ -79,7 +79,7 @@ func (c *AdminController) Put() {
 	admin := models.Admin{}
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &admin); err != nil {
 		logs.Warn("Put update admin error------------", err)
-		c.JSON(configs.ResponseFail, "参数有误，请检查！", &err)
+		c.JSON(configs.ResponseFail, "参数有误，请检查！", err.Error())
 	}
 
 	// admin exist
@@ -117,7 +117,7 @@ func (c *AdminController) Put() {
 		"Avatar":    admin.Avatar,
 		"AutoReply": admin.AutoReply,
 	}); err != nil {
-		c.JSON(configs.ResponseFail, "更新失败!", &err)
+		c.JSON(configs.ResponseFail, "更新失败!", err.Error())
 	}
 
 	admin.Password = "******"
@@ -158,7 +158,7 @@ func (c *AdminController) Post() {
 	valid.MaxSize(newAdmin.Password, 16, "password").Message("密码格式不正确，请输入6-16位字母数字下划线为密码！")
 	if valid.HasErrors() {
 		for _, err := range valid.Errors {
-			c.JSON(configs.ResponseFail, err.Message, &err)
+			c.JSON(configs.ResponseFail, err.Message, err.Error())
 		}
 	}
 
@@ -204,7 +204,7 @@ func (c *AdminController) Delete() {
 	num, err := c.AdminRepository.Delete(id)
 	if err != nil || num == 0 {
 		logs.Info("Delete remove admin error------------", err)
-		c.JSON(configs.ResponseFail, "删除失败!", &err)
+		c.JSON(configs.ResponseFail, "删除失败!", err.Error())
 	}
 	c.JSON(configs.ResponseSucess, "删除成功！", num)
 }
@@ -215,13 +215,13 @@ func (c *AdminController) List() {
 	// request body
 	var paginationDto services.AdminPaginationDto
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &paginationDto); err != nil {
-		c.JSON(configs.ResponseFail, "参数有误，请检查!", &err)
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", err.Error())
 	}
 
 	data, err := c.AdminRepository.GetAdmins(&paginationDto)
 
 	if err != nil {
-		c.JSON(configs.ResponseFail, "fail", &err)
+		c.JSON(configs.ResponseFail, "fail", err.Error())
 	}
 
 	c.JSON(configs.ResponseSucess, "success", &data)
@@ -232,7 +232,7 @@ func (c *AdminController) UpdatePassword() {
 
 	request := services.UpdatePasswordRequest{}
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &request); err != nil {
-		c.JSON(configs.ResponseFail, "参数有误，请检查!", &err)
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", err.Error())
 	}
 
 	// GetAuthInfo
@@ -254,7 +254,7 @@ func (c *AdminController) UpdatePassword() {
 	valid.Required(request.EnterPassword, "enter_password").Message("请再次输入新密码！")
 	if valid.HasErrors() {
 		for _, err := range valid.Errors {
-			c.JSON(configs.ResponseFail, err.Message, &err)
+			c.JSON(configs.ResponseFail, err.Message, err.Error())
 		}
 	}
 
@@ -315,7 +315,7 @@ func (c *AdminController) ChangeCurrentUser() {
 		"CurrentConUser": uid,
 	}); err != nil {
 		logs.Info("ChangeCurrentUser current connect user Warn------------", err)
-		c.JSON(configs.ResponseFail, "更新失败!", &err)
+		c.JSON(configs.ResponseFail, "更新失败!", err.Error())
 	}
 	c.JSON(configs.ResponseSucess, "更新成功！", nil)
 }
@@ -340,7 +340,7 @@ func (c *AdminController) Online() {
 	if _, err := c.AdminRepository.Update(admin.ID, orm.Params{
 		"Online": online,
 	}); err != nil {
-		c.JSON(configs.ResponseFail, "更新在线状态失败!", &err)
+		c.JSON(configs.ResponseFail, "更新在线状态失败!", err.Error())
 	}
 
 	c.JSON(configs.ResponseSucess, "更新在线状态成功!", nil)

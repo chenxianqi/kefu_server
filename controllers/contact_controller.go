@@ -43,7 +43,7 @@ func (c *ContactController) GetContacts() {
 	contactDto, err := c.ContactRepository.GetContacts(auth.UID)
 
 	if err != nil {
-		c.JSON(configs.ResponseFail, "fail", &err)
+		c.JSON(configs.ResponseFail, "fail", err.Error())
 	}
 	if len(contactDto) == 0 {
 		contactDto = []models.ContactDto{}
@@ -64,7 +64,7 @@ func (c *ContactController) Delete() {
 	rows, err := c.ContactRepository.Delete(id, auth.UID)
 
 	if err != nil || rows == 0 {
-		c.JSON(configs.ResponseFail, "删除失败!", &err)
+		c.JSON(configs.ResponseFail, "删除失败!", err.Error())
 	}
 
 	c.JSON(configs.ResponseSucess, "删除成功!", rows)
@@ -80,7 +80,7 @@ func (c *ContactController) DeleteAll() {
 	rows, err := c.ContactRepository.DeleteAll(auth.UID)
 
 	if err != nil {
-		c.JSON(configs.ResponseFail, "清空成功！", &err)
+		c.JSON(configs.ResponseFail, "清空成功！", err.Error())
 	}
 	c.JSON(configs.ResponseSucess, "清空成功!", rows)
 }

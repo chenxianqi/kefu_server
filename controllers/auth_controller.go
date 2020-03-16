@@ -138,11 +138,11 @@ func (c *AuthController) Logout() {
 			"CurrentConUser": 0,
 			"Online":         0,
 		}); err != nil {
-			c.JSON(configs.ResponseFail, "退出失败！", &err)
+			c.JSON(configs.ResponseFail, "退出失败！", err.Error())
 		}
 	}
 	if row, err := c.AuthsRepository.Delete(auth.ID); err != nil || row == 0 {
-		c.JSON(configs.ResponseFail, "退出失败！", &err)
+		c.JSON(configs.ResponseFail, "退出失败！", err.Error())
 	}
 	c.JSON(configs.ResponseSucess, "退出成功！", nil)
 }

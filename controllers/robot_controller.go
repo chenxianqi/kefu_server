@@ -97,7 +97,7 @@ func (c *RobotController) Post() {
 	var robot models.Robot
 	robot.CreateAt = time.Now().Unix()
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &robot); err != nil {
-		c.JSON(configs.ResponseFail, "参数有误，请检查!", &err)
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", err.Error())
 	}
 
 	// is exist platform?

@@ -31,7 +31,7 @@ func (c *ServicesStatisticalController) List() {
 	// request body
 	var paginationDto models.ServicesStatisticalPaginationDto
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &paginationDto); err != nil {
-		c.JSON(configs.ResponseFail, "参数有误，请检查!", &err)
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", err.Error())
 	}
 
 	// validation

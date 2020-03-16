@@ -122,7 +122,7 @@ func (c *ShortcutController) Delete() {
 	auth := c.GetAuthInfo()
 	id, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
 	if row, err := c.ShortcutRepository.Delete(id, auth.UID); err != nil || row == 0 {
-		c.JSON(configs.ResponseFail, "删除失败!", &err)
+		c.JSON(configs.ResponseFail, "删除失败!", err.Error())
 	}
 	c.JSON(configs.ResponseSucess, "删除成功！!", nil)
 }

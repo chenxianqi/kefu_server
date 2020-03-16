@@ -39,7 +39,7 @@ func (c *KnowledgeBaseController) Get() {
 
 	id, err := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
 	if err != nil {
-		c.JSON(configs.ResponseFail, "fail", &err)
+		c.JSON(configs.ResponseFail, "fail", err.Error())
 	}
 
 	knowledgeBase := c.KnowledgeBaseRepository.GetKnowledgeBase(id)
@@ -58,7 +58,7 @@ func (c *KnowledgeBaseController) Post() {
 	var knowledgeBase models.KnowledgeBase
 	knowledgeBase.CreateAt = time.Now().Unix()
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &knowledgeBase); err != nil {
-		c.JSON(configs.ResponseFail, "参数有误，请检查!", &err)
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", err.Error())
 	}
 
 	// validation
@@ -84,7 +84,7 @@ func (c *KnowledgeBaseController) Post() {
 	}
 
 	if err != nil {
-		c.JSON(configs.ResponseFail, "添加失败!", &err)
+		c.JSON(configs.ResponseFail, "添加失败!", err.Error())
 	}
 
 	c.JSON(configs.ResponseSucess, "添加成功!", index)
@@ -96,7 +96,7 @@ func (c *KnowledgeBaseController) Put() {
 	// request body
 	var newKnowledgeBase models.KnowledgeBase
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &newKnowledgeBase); err != nil {
-		c.JSON(configs.ResponseFail, "参数有误，请检查！", &err)
+		c.JSON(configs.ResponseFail, "参数有误，请检查！", err.Error())
 	}
 
 	// validation
@@ -106,7 +106,7 @@ func (c *KnowledgeBaseController) Put() {
 	valid.Required(newKnowledgeBase.UID, "uid").Message("用户ID不能为空！")
 	if valid.HasErrors() {
 		for _, err := range valid.Errors {
-			c.JSON(configs.ResponseFail, err.Message, &err)
+			c.JSON(configs.ResponseFail, err.Message, err.Error())
 		}
 	}
 
@@ -137,7 +137,7 @@ func (c *KnowledgeBaseController) Put() {
 	})
 
 	if err != nil || row == 0 {
-		c.JSON(configs.ResponseFail, "更新失败!", &err)
+		c.JSON(configs.ResponseFail, "更新失败!", err.Error())
 	}
 
 	if oldKnowledgeBase != nil {
@@ -155,7 +155,7 @@ func (c *KnowledgeBaseController) Delete() {
 	id, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
 	num, err := c.KnowledgeBaseRepository.Delete(id)
 	if err != nil || num == 0 {
-		c.JSON(configs.ResponseFail, "删除失败!", &err)
+		c.JSON(configs.ResponseFail, "删除失败!", err.Error())
 	}
 
 	c.JSON(configs.ResponseSucess, "删除成功!", num)
@@ -167,13 +167,13 @@ func (c *KnowledgeBaseController) List() {
 	// request body
 	var knowledgePaginationDto *models.KnowledgePaginationDto
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &knowledgePaginationDto); err != nil {
-		c.JSON(configs.ResponseFail, "参数有误，请检查!", &err)
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", err.Error())
 	}
 
 	// query
 	knowledgePaginationDto, err := c.KnowledgeBaseRepository.GetKnowledgeBases(knowledgePaginationDto)
 	if err != nil {
-		c.JSON(configs.ResponseFail, "fail", &err)
+		c.JSON(configs.ResponseFail, "fail", err.Error())
 	}
 
 	c.JSON(configs.ResponseSucess, "success", &knowledgePaginationDto)
