@@ -1,0 +1,108 @@
+<template>
+    <el-dialog  width="600px"   title="添加客服" :show-close="false" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
+      <el-form :model="form">
+        <el-form-item label="客服账号" :label-width="formLabelWidth">
+          <el-input v-model="form.username" placeholder="请输入客服账号" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="客服昵称" :label-width="formLabelWidth">
+          <el-input v-model="form.nickname" placeholder="请输入客服昵称" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="登录密码" :label-width="formLabelWidth">
+          <el-input v-model="form.password" placeholder="请输入登录密码" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="确认密码" :label-width="formLabelWidth">
+          <el-input v-model="cCassword" placeholder="请输入确认密码" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="closeModal">取 消</el-button>
+        <el-button type="primary" @click="save">保 存</el-button>
+      </div>
+    </el-dialog>
+</template>
+<script>
+import axios from "axios";
+export default {
+  name: 'mini-im-create-admin',
+  data(){
+    return {
+        form: {
+          username: '',
+          nickname: '',
+          password: ''
+        },
+        cCassword: '',
+        formLabelWidth: "80px"
+    }
+  },
+  props:{
+    dialogFormVisible: Boolean,
+    complete: Function
+  },
+  mounted(){
+  },
+  methods: {
+    // 关闭
+    closeModal(){
+      this.$emit('update:dialogFormVisible', false);
+    },
+    // 保存
+    save() {
+      // 验证一下密码字段
+      if(this.form.username.trim() == ""){
+        this.$message.error("账号不能为空！")
+        return;
+      }
+       if(this.form.nickname.trim() == ""){
+        this.$message.error("昵称不能为空！")
+        return;
+      }
+      if(this.form.password.trim() == ""){
+        this.$message.error("密码不能为空！")
+        return;
+      }
+      if(this.form.password.trim() != this.cCassword.trim()){
+        this.$message.error("两次密码不一致！")
+        return;
+      }
+
+      // 验证字段 ！！ 算了其它前端不验证了
+      const loading = this.$loading({
+        lock: true,
+        text: "保存中...",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.5)"
+      });
+      axios
+        .post("/admin", this.form)
+        .then(response => {
+          try {
+            console.log(response);
+            loading.close();
+            this.$message.success("添加成功");
+            this.closeModal();
+            this.resize();
+            this.complete(1);
+          } catch (e) {
+            console.log(e);
+          }
+        })
+        .catch(error => {
+          loading.close();
+          this.$message.error(error.response.data.message);
+        });
+    },
+    resize() {
+      this.cCassword = '';
+      this.form = {
+        username: '',
+        nickname: '',
+        password: ''
+      };
+    }
+  }
+}
+</script>
+<style scoped lang="stylus">
+   
+</style>

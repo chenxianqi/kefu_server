@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>在线客服 demo</title>
+    <style>
+        body{
+            overflow: hidden;
+            background: url(./bg.jpg) center center;
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+        }
+        .title{
+            position: absolute;
+            top: 30px;
+            left:0; right:0;
+            margin: 0 auto;
+            color: #d9d4f2;
+            text-align: center;
+            font-size: 40px;
+        }
+        .mini-im{
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-content: center;
+            align-items: center;
+            padding-bottom: 20px;
+            box-sizing: border-box;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            margin: 0 auto;
+        }
+        .mini-im div{
+            margin-bottom: 10px;
+            display: flex;
+        }
+        button{
+            width: 120px;
+            height: 35px;
+            border-radius: 3px;
+            margin: 0 10px;
+            cursor: pointer;
+            outline: none;
+            border: 1px solid #ece9fd;
+            background-color:#ece9fd;
+        }
+        button:hover{
+            border: 1px solid #1898fc;
+        }
+        .mini-im-m{
+            width: 350px;
+            height: 550px;
+            position: absolute;
+            top: 120px;
+            left:0; right:0;
+            margin: 0 auto;
+            z-index: 9999;
+            box-shadow: 1px 1px 20px 2px rgb(9, 102, 178);
+        }
+
+        .fix-bottom{
+            position: absolute;
+            top: 20px;
+            right: 30px;
+        }
+        .fix-bottom a{
+            display: flex;
+            align-items: center;
+        }
+        .fix-bottom a span{
+            margin-left: 10px;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+
+    </style>
+</head>
+<body>
+
+
+    <canvas id="nokey" width="946" height="946"></canvas>
+    <script>
+        var canvas = document.getElementById('nokey'),
+           can_w = parseInt(canvas.getAttribute('width')),
+           can_h = parseInt(canvas.getAttribute('height')),
+           ctx = canvas.getContext('2d');
+        
+        // console.log(typeof can_w);
+        
+        var ball = {
+              x: 0,
+              y: 0,
+              vx: 0,
+              vy: 0,
+              r: 0,
+              alpha: 1,
+              phase: 0
+           },
+           ball_color = {
+               r: 207,
+               g: 255,
+               b: 4
+           },
+           R = 2,
+           balls = [],
+           alpha_f = 0.03,
+           alpha_phase = 0,
+            
+        // Line
+           link_line_width = 0.8,
+           dis_limit = 260,
+           add_mouse_point = true,
+           mouse_in = false,
+           mouse_ball = {
+              x: 0,
+              y: 0,
+              vx: 0,
+              vy: 0,
+              r: 0,
+              type: 'mouse'
+           };
+        
+        // Random speed
+        function getRandomSpeed(pos){
+            var  min = -1,
+               max = 1;
+            switch(pos){
+                case 'top':
+                    return [randomNumFrom(min, max), randomNumFrom(0.1, max)];
+                    break;
+                case 'right':
+                    return [randomNumFrom(min, -0.1), randomNumFrom(min, max)];
+                    break;
+                case 'bottom':
+                    return [randomNumFrom(min, max), randomNumFrom(min, -0.1)];
+                    break;
+                case 'left':
+                    return [randomNumFrom(0.1, max), randomNumFrom(min, max)];
+                    break;
+                default:
+                    return;
+                    break;
+            }
+        }
+        function randomArrayItem(arr){
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+        function randomNumFrom(min, max){
+            return Math.random()*(max - min) + min;
+        }
+        console.log(randomNumFrom(0, 10));
+        // Random Ball
+        function getRandomBall(){
+            var pos = randomArrayItem(['top', 'right', 'bottom', 'left']);
+            switch(pos){
+                case 'top':
+                    return {
+                        x: randomSidePos(can_w),
+                        y: -R,
+                        vx: getRandomSpeed('top')[0],
+                        vy: getRandomSpeed('top')[1],
+                        r: R,
+                        alpha: 1,
+                        phase: randomNumFrom(0, 10)
+                    }
+                    break;
+                case 'right':
+                    return {
+                        x: can_w + R,
+                        y: randomSidePos(can_h),
+                        vx: getRandomSpeed('right')[0],
+                        vy: getRandomSpeed('right')[1],
+                        r: R,
+                        alpha: 1,
+                        phase: randomNumFrom(0, 10)
+                    }
+                    break;
+                case 'bottom':
+                    return {
+                        x: randomSidePos(can_w),
+                        y: can_h + R,
+                        vx: getRandomSpeed('bottom')[0],
+                        vy: getRandomSpeed('bottom')[1],
+                        r: R,
+                        alpha: 1,
+                        phase: randomNumFrom(0, 10)
+                    }
+                    break;
+                case 'left':
+                    return {
+                        x: -R,
+                        y: randomSidePos(can_h),
+                        vx: getRandomSpeed('left')[0],
+                        vy: getRandomSpeed('left')[1],
+                        r: R,
+                        alpha: 1,
+                        phase: randomNumFrom(0, 10)
+                    }
+                    break;
+            }
+        }
+        function randomSidePos(length){
+            return Math.ceil(Math.random() * length);
+        }
+        
+        // Draw Ball
+        function renderBalls(){
+            Array.prototype.forEach.call(balls, function(b){
+               if(!b.hasOwnProperty('type')){
+                   ctx.fillStyle = 'rgba('+ball_color.r+','+ball_color.g+','+ball_color.b+','+b.alpha+')';
+                   ctx.beginPath();
+                   ctx.arc(b.x, b.y, R, 0, Math.PI*2, true);
+                   ctx.closePath();
+                   ctx.fill();
+               }
+            });
+        }
+        
+        // Update balls
+        function updateBalls(){
+            var new_balls = [];
+            Array.prototype.forEach.call(balls, function(b){
+                b.x += b.vx;
+                b.y += b.vy;
+                
+                if(b.x > -(50) && b.x < (can_w+50) && b.y > -(50) && b.y < (can_h+50)){
+                   new_balls.push(b);
+                }
+                
+                // alpha change
+                b.phase += alpha_f;
+                b.alpha = Math.abs(Math.cos(b.phase));
+                // console.log(b.alpha);
+            });
+            
+            balls = new_balls.slice(0);
+        }
+        
+        // loop alpha
+        function loopAlphaInf(){
+            
+        }
+        
+        // Draw lines
+        function renderLines(){
+            var fraction, alpha;
+            for (var i = 0; i < balls.length; i++) {
+                for (var j = i + 1; j < balls.length; j++) {
+                   
+                   fraction = getDisOf(balls[i], balls[j]) / dis_limit;
+                    
+                   if(fraction < 1){
+                       alpha = (1 - fraction).toString();
+        
+                       ctx.strokeStyle = 'rgba(150,150,150,'+alpha+')';
+                       ctx.lineWidth = link_line_width;
+                       
+                       ctx.beginPath();
+                       ctx.moveTo(balls[i].x, balls[i].y);
+                       ctx.lineTo(balls[j].x, balls[j].y);
+                       ctx.stroke();
+                       ctx.closePath();
+                   }
+                }
+            }
+        }
+        
+        // calculate distance between two points
+        function getDisOf(b1, b2){
+            var  delta_x = Math.abs(b1.x - b2.x),
+               delta_y = Math.abs(b1.y - b2.y);
+            
+            return Math.sqrt(delta_x*delta_x + delta_y*delta_y);
+        }
+        
+        // add balls if there a little balls
+        function addBallIfy(){
+            if(balls.length < 20){
+                balls.push(getRandomBall());
+            }
+        }
+        
+        // Render
+        function render(){
+            ctx.clearRect(0, 0, can_w, can_h);
+            
+            renderBalls();
+            
+            renderLines();
+            
+            updateBalls();
+            
+            addBallIfy();
+            
+            window.requestAnimationFrame(render);
+        }
+        
+        // Init Balls
+        function initBalls(num){
+            for(var i = 1; i <= num; i++){
+                balls.push({
+                    x: randomSidePos(can_w),
+                    y: randomSidePos(can_h),
+                    vx: getRandomSpeed('top')[0],
+                    vy: getRandomSpeed('top')[1],
+                    r: R,
+                    alpha: 1,
+                    phase: randomNumFrom(0, 10)
+                });
+            }
+        }
+        // Init Canvas
+        function initCanvas(){
+            canvas.setAttribute('width', window.innerWidth);
+            canvas.setAttribute('height', window.innerHeight);
+            
+            can_w = parseInt(canvas.getAttribute('width'));
+            can_h = parseInt(canvas.getAttribute('height'));
+        }
+        window.addEventListener('resize', function(e){
+            console.log('Window Resize...');
+            initCanvas();
+        });
+        
+        function goMovie(){
+            initCanvas();
+            initBalls(30);
+            window.requestAnimationFrame(render);
+        }
+        goMovie();
+        
+        // Mouse effect
+        canvas.addEventListener('mouseenter', function(){
+            console.log('mouseenter');
+            mouse_in = true;
+            balls.push(mouse_ball);
+        });
+        canvas.addEventListener('mouseleave', function(){
+            console.log('mouseleave');
+            mouse_in = false;
+            var new_balls = [];
+            Array.prototype.forEach.call(balls, function(b){
+                if(!b.hasOwnProperty('type')){
+                    new_balls.push(b);
+                }
+            });
+            balls = new_balls.slice(0);
+        });
+        canvas.addEventListener('mousemove', function(e){
+            var e = e || window.event;
+            mouse_ball.x = e.pageX;
+            mouse_ball.y = e.pageY;
+            // console.log(mouse_ball);
+        });</script>
+
+    <div class="title">在线客服 DEMO</div>
+
+    <div class="mini-im-m" id="miniIMiFrameBox">
+        <iframe id="miniIMiFrame" height="100%" width="100%" frameborder="0"></iframe>
+    </div>
+    <div class="mini-im">
+        <div>
+            <button onclick="location.href = 'http://kf.aissz.com:666/static/app/kefu_workbench.apk'">工作台(Android)</button>
+            <button onclick="location.href = 'http://kf.aissz.com:666/static/app/linux-0.0.1.AppImage'">工作台(linux)</button>
+            <button onclick="location.href = 'http://kf.aissz.com:666/static/app/mac-0.0.1.dmg'">工作台(mac)</button>
+            <button onclick="location.href = 'http://kf.aissz.com:666/static/app/win-0.0.1.exe'">工作台(window)</button>
+            <button onclick="goToClinet()">工作台(网页)</button>
+            <button style="color: red" onclick="location.href = 'http://kf.aissz.com:666/static/app/app-release.apk'">客户端demo(Android)</button>
+        </div>
+        <div>
+            <button onclick="hiddenHeadder()">隐藏Header</button>
+            <button onclick="showHeadder()">显示Header</button>
+            <button onclick="verticalScreen()">移动端坚屏</button>
+            <button onclick="horizontalScreen()">横屏PAD</button>
+            <button onclick="show()">展开PC客服</button>
+            <button onclick="hide()">收起PC客服</button>
+        </div>
+    </div>
+
+    <div class="fix-bottom">
+        <a title="去给作者Star" target="_blank" href="https://github.com/chenxianqi/kefu_server.git">
+          <svg class="github-logo" height="23" viewBox="0 0 16 16" version="1.1" width="23" aria-hidden="true"><path fill="#ffffff" fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+          <span> Github</span>
+        </a>
+      </div>
+    
+</body>
+</html>
+<script src="./mini_im.js"></script>
+<script>
+
+/** ---------------------------PC端---------------------- **/
+
+// 初始化PC 在线客服
+var MiniIMPC  = MiniIM.init({
+    url: "http://kf.aissz.com:666",
+    isShowPcBar: true,// 是否显示PC右下角的bar
+    platform: 3,      // 平台
+    isHeader: 0,      // 移动端是否显示header（PC端强制不显示）
+    isMobile: 0,      // 是否是移动端
+    userAccount: 10256,   // 会话用户账号
+    uid: 0,           // 业务平台的ID
+})
+
+// 显示窗口
+function show(){
+    MiniIMPC.showChatWindow()
+}
+
+// 隐藏窗口
+function hide(){
+    MiniIMPC.hideChatWindow()
+}
+
+
+
+
+/** ---------------------------M端---------------------- **/
+
+// 初始化M端 在线客服
+var MiniIMMB = MiniIM.init({
+    url: "http://aissz.com:666",
+    platform: 5,      // 平台
+    isHeader: 1,      // 移动端是否显示header
+    isMobile: 1,      // 是否是移动端
+    userAccount: 10255,   // 会话用户账号
+    uid: 0,           // 业务平台的ID
+})
+
+// iFrame
+var miniIMiFrame = document.getElementById("miniIMiFrame")
+miniIMiFrame.src = MiniIMMB.createLink()
+var miniIMiFrameBox = document.getElementById("miniIMiFrameBox")
+
+// 坚屏
+function verticalScreen(){
+    miniIMiFrameBox.style.width = "350px"
+    miniIMiFrameBox.style.height = "550px"
+}
+// 横屏
+function horizontalScreen(){
+    miniIMiFrameBox.style.height = "400px"
+    miniIMiFrameBox.style.width = "700px"
+}
+
+// 隐藏Header
+function hiddenHeadder(){
+    miniIMiFrame.src = miniIMiFrame.src.replace("h=1", "h=0")
+    miniIMiFrame.reload()
+}
+
+// 显示Header
+function showHeadder(){
+    miniIMiFrame.src = miniIMiFrame.src.replace("h=0", "h=1")
+    miniIMiFrame.reload()
+}
+
+// 去工作台
+function goToClinet(){
+    window.open("http://aissz.com:666/admin/")
+}
+
+</script>

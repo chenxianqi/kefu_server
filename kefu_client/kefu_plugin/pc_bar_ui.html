@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Mini IM UI</title>
+    <style>
+
+        .mini-im-client-fixed{
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            min-width: 200px;
+            max-width: 360px;
+            min-height: 40px;
+        }
+        .mini-im-client-bar{
+            width: 200px;
+            height: 40px;
+            border-radius: 3px;
+            overflow: hidden;
+            display: flex;
+            cursor: pointer;
+        }
+        .mini-im-client-bar-icon{
+            width: 40px;
+            height: 40px;
+            background-color: #1779ca;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .mini-im-client-bar-icon img{
+            width: 30px;
+            height: 30px;
+        }
+        .mini-im-client-bar-title{
+            width: 160px;
+            height: 40px;
+            background-color:  #1898fc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-size: 15px;
+            text-align: center;
+        }
+        .mini-im-client-iframe{
+            width: 360px;
+            height: 500px;
+            box-shadow: 1px 1px 8px 2px rgba(204, 204, 204, 0.61);
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+
+
+
+    <!-- PC Bar UI -->
+    <div class="mini-im-client-fixed" id="miniImClientFixed">
+        <div class="mini-im-client-iframe" id="miniImclientIframeBox">
+            <iframe id="miniImclientIframe" height="500" width="360" frameborder="0"></iframe>
+        </div>
+        <div class="mini-im-client-bar" id="miniImClientBar">
+            <div class="mini-im-client-bar-icon">
+                <img src="http://qiniu.cmp520.com/kefu_icon_2000.png" alt="">
+            </div>
+            <div class="mini-im-client-bar-title" id="miniImClientNewMessageTag">
+               在线客服
+            </div>
+        </div>
+    </div>
+
+
+    
+</body>
+</html>
