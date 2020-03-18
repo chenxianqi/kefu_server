@@ -3,3 +3,4 @@ mimc.log
 kefu_server
 kefu_server.tar.gz
 conf/app.back.conf
+node_modules

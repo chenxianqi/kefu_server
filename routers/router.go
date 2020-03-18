@@ -158,6 +158,8 @@ func init() {
 			beego.NSRouter("/type", &controllers.WorkOrderController{}, "post:PostWorkType"),
 			beego.NSRouter("/type", &controllers.WorkOrderController{}, "put:UpdateWorkType"),
 			beego.NSRouter("/type/:id", &controllers.WorkOrderController{}, "delete:DeleteWorkType"),
+			beego.NSRouter("/type/:id", &controllers.WorkOrderController{}, "get:GetWorkType"),
+			beego.NSRouter("/types", &controllers.WorkOrderController{}, "get:GetWorkTypes"),
 		),
 	)
 	beego.AddNamespace(ns)

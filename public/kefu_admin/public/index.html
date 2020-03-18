@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <script type="text/javascript" src="<%= BASE_URL %>mimc-min_1_0_2.js"></script>
+    <script type="text/javascript" src="<%= BASE_URL %>base64.min.js"></script>
+    <title>客服系统</title>
+    <style>
+      body, h1, h2, h3, h4, h5, h6, hr, p, blockquote, dl, dt, dd, ul, ol, li, pre, form, fieldset, legend, button, input, textarea, th, td { margin:0; padding:0; } 
+      body, button, input, select, textarea { font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif; } 
+      h1, h2, h3, h4, h5, h6{ font-size:100%; } 
+      address, cite, dfn, em, var { font-style:normal; } 
+      code, kbd, pre, samp { font-family:couriernew, courier, monospace; } 
+      small{ font-size:12px; } 
+      ul, ol { list-style:none; } 
+      a { text-decoration:none;
+        -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+        -webkit-user-select: none;
+        -moz-user-focus: none;
+        -moz-user-select: none;
+       } 
+      a:hover { text-decoration:underline; } 
+      sup { vertical-align:text-top; } 
+      sub{ vertical-align:text-bottom; } 
+      legend { color:#000; } 
+      fieldset, img { border:0; } 
+      button, input, select, textarea { font-size:100%; outline: none;} 
+      table { border-collapse:collapse; border-spacing:0; }
+      input{
+        border:0;
+        outline: none;
+      }
+      body{
+        height: 100vh;
+        overflow: hidden;
+        overflow-y: auto;
+        -webkit-overflow-scrolling:touch;
+        background-color: #fff;
+      }
+      .lx-load-box{
+        width: 2rem !important;
+        height: 2rem !important;
+        top:0 !important;
+        min-height: inherit!important;
+        left:0 !important; right:0 !important; bottom:0 !important; margin: auto !important;
+      }
+      input::-webkit-input-placeholder{
+        color:#ccc;
+      }
+      input::-moz-placeholder{   /* Mozilla Firefox 19+ */
+        color:#ccc;
+      }
+      input:-moz-placeholder{    /* Mozilla Firefox 4 to 18 */
+        color:#ccc;
+      }
+      input:-ms-input-placeholder{  /* Internet Explorer 10-11 */ 
+        color:#ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>
+      <strong>We're sorry but m doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+    </noscript>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+  </body>
+</html>

@@ -142,8 +142,8 @@ func (c *WorkOrderController) DeleteWorkType() {
 	c.JSON(configs.ResponseSucess, "删除成功！", nil)
 }
 
-// GetType get work order type
-func (c *WorkOrderController) GetType() {
+// GetWorkType get work order type
+func (c *WorkOrderController) GetWorkType() {
 
 	// id
 	id, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
@@ -155,17 +155,8 @@ func (c *WorkOrderController) GetType() {
 
 }
 
-// GetTypes get work order types
-func (c *WorkOrderController) GetTypes() {
-
-}
-
-// PutType update work order type
-func (c *WorkOrderController) PutType() {
-
-}
-
-// DeleteType delete work order type
-func (c *WorkOrderController) DeleteType() {
-
+// GetWorkTypes get work order types
+func (c *WorkOrderController) GetWorkTypes() {
+	workOrderTypes := c.WorkOrderTypeRepository.GetWorkOrderTypes()
+	c.JSON(configs.ResponseSucess, "查询成功！", workOrderTypes)
 }
