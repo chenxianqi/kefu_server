@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Toast } from 'mint-ui';
+var md5 = require('blueimp-md5')
 var MimcPlugin = {};
 MimcPlugin.install = function (Vue, options) {
 
@@ -35,6 +36,7 @@ MimcPlugin.install = function (Vue, options) {
             .then(response => {
                 this.fetchMIMCTokenResult = response.data.data.token
                 localStorage.setItem("miniImAppUser_" + response.data.data.user.id, JSON.stringify(response.data.data.user))
+                localStorage.setItem("Token", md5(response.data.data.user.token))
                 console.log("MIMC初始化成功")
                 if(callback) callback(response.data.data.user)
             })

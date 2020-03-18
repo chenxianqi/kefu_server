@@ -14,6 +14,7 @@ type UserRepositoryInterface interface {
 	GetUser(id int64) *models.User
 	GetUsers(usersPaginationDto *models.UsersPaginationDto) (*models.UsersPaginationDto, error)
 	GetUserWithUID(uid int64) *models.User
+	GetUserWithToken(token string) *models.User
 	Update(id int64, params *orm.Params) (int64, error)
 	Delete(id int64) (int64, error)
 	GetOnlineCount() (int64, error)
@@ -35,8 +36,10 @@ func GetUserRepositoryInstance() *UserRepository {
 // CheckUsersLoginTimeOutAndSetOffline  Check if user login timeout
 func (r *UserRepository) CheckUsersLoginTimeOutAndSetOffline(lastMessageUnixTimer int64) int64 {
 	count, err := r.q.Filter("online__in", 1, 2).Filter("last_activity__lte", lastMessageUnixTimer).Update(orm.Params{
-		"online":    0,
-		"is_window": 0,
+		"online":      0,
+		"remote_addr": "",
+		"token":       "",
+		"is_window":   0,
 	})
 	if err != nil {
 		logs.Warn("CheckUsersLoginTimeOutAndSetOffline  Check if user login timeout------------", err)
@@ -117,6 +120,16 @@ func (r *UserRepository) GetUserWithUID(uid int64) *models.User {
 	var user models.User
 	if err := r.q.Filter("uid", uid).One(&user); err != nil {
 		logs.Warn("GetUserWithUID get one User with uid------------", err)
+		return nil
+	}
+	return &user
+}
+
+// GetUserWithToken get one User with uid
+func (r *UserRepository) GetUserWithToken(token string) *models.User {
+	var user models.User
+	if err := r.q.Filter("token", token).One(&user); err != nil {
+		logs.Warn("GetUserWithToken get one User with uid------------", err)
 		return nil
 	}
 	return &user

@@ -55,8 +55,8 @@ func (c *RobotController) Get() {
 // Delete delete robot
 func (c *RobotController) Delete() {
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 	admin := c.AdminRepository.GetAdmin(auth.UID)
 	if admin == nil || admin.Root != 1 {
 		c.JSON(configs.ResponseFail, "您没有权限删除机器人!", nil)
@@ -86,8 +86,8 @@ func (c *RobotController) Delete() {
 // Post add robot
 func (c *RobotController) Post() {
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 	admin := c.AdminRepository.GetAdmin(auth.UID)
 	if admin == nil || admin.Root != 1 {
 		c.JSON(configs.ResponseFail, "您没有权限添加机器人!", nil)
@@ -138,8 +138,8 @@ func (c *RobotController) Post() {
 // Put update robot
 func (c *RobotController) Put() {
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 	admin := c.AdminRepository.GetAdmin(auth.UID)
 	if admin == nil || admin.Root != 1 {
 		c.JSON(configs.ResponseFail, "您没有权限修改机器人!", nil)

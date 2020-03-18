@@ -37,8 +37,8 @@ func (c *ContactController) Finish() {}
 // GetContacts get all Contacts
 func (c *ContactController) GetContacts() {
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 
 	contactDto, err := c.ContactRepository.GetContacts(auth.UID)
 
@@ -57,8 +57,8 @@ func (c *ContactController) Delete() {
 
 	id, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 
 	// delete
 	rows, err := c.ContactRepository.Delete(id, auth.UID)
@@ -73,8 +73,8 @@ func (c *ContactController) Delete() {
 // DeleteAll all
 func (c *ContactController) DeleteAll() {
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 
 	// delete
 	rows, err := c.ContactRepository.DeleteAll(auth.UID)
@@ -88,8 +88,8 @@ func (c *ContactController) DeleteAll() {
 // Transfer transfer admin to admin
 func (c *ContactController) Transfer() {
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 	adminRepository := services.GetAdminRepositoryInstance()
 	admin := adminRepository.GetAdmin(auth.UID)
 

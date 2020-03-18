@@ -35,8 +35,8 @@ func (c *AdminController) Finish() {}
 // GetMeInfo get me info
 func (c *AdminController) GetMeInfo() {
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 	admin := c.AdminRepository.GetAdmin(auth.UID)
 	if admin == nil {
 		c.JSON(configs.ResponseFail, "fail，用户不存在!", nil)
@@ -48,8 +48,8 @@ func (c *AdminController) GetMeInfo() {
 // Get admin
 func (c *AdminController) Get() {
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 	admin := c.AdminRepository.GetAdmin(auth.UID)
 	if admin == nil {
 		c.JSON(configs.ResponseFail, "fail，用户不存在!", nil)
@@ -72,8 +72,8 @@ func (c *AdminController) Get() {
 // Put update admin
 func (c *AdminController) Put() {
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 
 	// get request
 	admin := models.Admin{}
@@ -127,8 +127,8 @@ func (c *AdminController) Put() {
 // Post add new admin
 func (c *AdminController) Post() {
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 
 	admin := c.AdminRepository.GetAdmin(auth.UID)
 	if admin == nil {
@@ -185,8 +185,8 @@ func (c *AdminController) Post() {
 // Delete remove admin
 func (c *AdminController) Delete() {
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 
 	admin := c.AdminRepository.GetAdmin(auth.UID)
 	if admin == nil || admin.Root != 1 {
@@ -235,8 +235,8 @@ func (c *AdminController) UpdatePassword() {
 		c.JSON(configs.ResponseFail, "参数有误，请检查!", err.Error())
 	}
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 
 	// oldAdmin
 	oldAdmin := c.AdminRepository.GetAdmin(auth.UID)
@@ -299,8 +299,8 @@ func (c *AdminController) UpdatePassword() {
 // ChangeCurrentUser current connect user
 func (c *AdminController) ChangeCurrentUser() {
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 
 	// admin
 	admin := c.AdminRepository.GetAdmin(auth.UID)
@@ -328,8 +328,8 @@ func (c *AdminController) Online() {
 		online = 0
 	}
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 
 	admin := c.AdminRepository.GetAdmin(auth.UID)
 	if admin == nil {

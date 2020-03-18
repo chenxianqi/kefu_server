@@ -95,7 +95,7 @@ func (c *AuthController) Login() {
 
 	// create token
 	newToken := utils.GenerateToken(models.JwtKeyDto{ID: queryAdmin.ID, UserName: queryAdmin.UserName, AuthType: authType.ID})
-	auth := c.AuthsRepository.GetAuthInfoWithTypeAndUID(request.AuthType, queryAdmin.ID)
+	auth := c.AuthsRepository.GetAdminAuthInfoWithTypeAndUID(request.AuthType, queryAdmin.ID)
 	if auth == nil {
 
 		newAuth := models.Auths{
@@ -129,8 +129,8 @@ func (c *AuthController) Login() {
 // Logout admin logout
 func (c *AuthController) Logout() {
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 
 	if count := c.AuthsRepository.GetAdminOnlineCount(auth.UID); count <= 1 {
 

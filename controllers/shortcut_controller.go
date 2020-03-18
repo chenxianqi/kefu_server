@@ -31,8 +31,8 @@ func (c *ShortcutController) Finish() {}
 // Get get shortcut
 func (c *ShortcutController) Get() {
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 	id, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
 	shortcut := c.ShortcutRepository.GetShortcut(id)
 	if shortcut == nil || auth.UID != shortcut.UID {
@@ -45,8 +45,8 @@ func (c *ShortcutController) Get() {
 // Put update shortcut
 func (c *ShortcutController) Put() {
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 
 	// request body
 	shortcut := models.Shortcut{}
@@ -84,8 +84,8 @@ func (c *ShortcutController) Put() {
 // Post add new shortcut
 func (c *ShortcutController) Post() {
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 
 	// request body
 	var shortcut models.Shortcut
@@ -118,8 +118,8 @@ func (c *ShortcutController) Post() {
 // Delete delete remove shortcut
 func (c *ShortcutController) Delete() {
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 	id, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
 	if row, err := c.ShortcutRepository.Delete(id, auth.UID); err != nil || row == 0 {
 		c.JSON(configs.ResponseFail, "删除失败!", err.Error())
@@ -130,8 +130,8 @@ func (c *ShortcutController) Delete() {
 // List get shortcut all
 func (c *ShortcutController) List() {
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 
 	// query
 	shortcuts := c.ShortcutRepository.GetShortcuts(auth.UID)

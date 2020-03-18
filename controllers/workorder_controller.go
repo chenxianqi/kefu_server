@@ -38,8 +38,8 @@ func (c *WorkOrderController) Finish() {}
 // PostWorkType add work order type
 func (c *WorkOrderController) PostWorkType() {
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 	admin := services.GetAdminRepositoryInstance().GetAdmin(auth.UID)
 	if admin != nil && admin.Root != 1 {
 		c.JSON(configs.ResponseFail, "没有权限!", nil)
@@ -71,8 +71,8 @@ func (c *WorkOrderController) PostWorkType() {
 // UpdateWorkType update work order type
 func (c *WorkOrderController) UpdateWorkType() {
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 	admin := services.GetAdminRepositoryInstance().GetAdmin(auth.UID)
 	if admin != nil && admin.Root != 1 {
 		c.JSON(configs.ResponseFail, "没有权限!", nil)
@@ -101,8 +101,8 @@ func (c *WorkOrderController) UpdateWorkType() {
 // DeleteWorkType delete work order type
 func (c *WorkOrderController) DeleteWorkType() {
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 	admin := services.GetAdminRepositoryInstance().GetAdmin(auth.UID)
 	if admin != nil && admin.Root != 1 {
 		c.JSON(configs.ResponseFail, "没有权限!", nil)

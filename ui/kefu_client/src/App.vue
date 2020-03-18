@@ -349,7 +349,7 @@ export default {
 
   },
   beforeDestroy(){
-   this.toggleWindow(this.userAccount, 0)
+   this.toggleWindow(0)
   },
   methods: {
     // run
@@ -423,7 +423,7 @@ export default {
           // 清除未读消息
           this.cleanRead(user.id)
           // 更换toggle
-          this.toggleWindow(user.id, 1)
+          this.toggleWindow(1)
           // 登录完成发送一条握手消息给机器人
           IM.login(() => {
             setTimeout(()=> {
@@ -475,8 +475,8 @@ export default {
       axios.get('/public/clean_read/' + id)
     },
     //  用户是否在当前聊天页面
-    toggleWindow(id, window){
-      axios.put('/public/window/' + id,{window: window})
+    toggleWindow(window){
+      axios.put('/public/window/',{window: window})
     },
     // query 转json
     queryToJson(str){
@@ -885,16 +885,11 @@ export default {
     getMessageRecord(){
       const pageSize = 20
       let uid = this.userInfo.id
-      let token = this.userInfo.token
       let timestamp = this.messages.length == 0 ? parseInt((new Date().getTime() + " ").substr(0, 10)) : this.messages[0].timestamp
       axios.post('/public/messages',{
           "timestamp": timestamp,
           "page_size": pageSize,
           "account": uid
-        },{
-          "headers": {
-            'token': token
-          }
         })
         .then(response => {
           let messages = response.data.data.list || []

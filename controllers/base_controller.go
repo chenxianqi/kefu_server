@@ -13,7 +13,8 @@ import (
 type BaseControllerInterface interface {
 	JSON()
 	Prepare()
-	GetAuthInfo() *models.Auths
+	GetAdminAuthInfo() *models.Auths
+	GetUserInfo() *models.User
 }
 
 // BaseController Base class
@@ -40,14 +41,25 @@ func (c *BaseController) JSON(status configs.ResponseStatusType, message string,
 	c.StopRun()
 }
 
-// GetAuthInfo get current anth user that AuthInfo
-func (c *BaseController) GetAuthInfo() *models.Auths {
+// GetAdminAuthInfo get current anth admin that AuthInfo
+func (c *BaseController) GetAdminAuthInfo() *models.Auths {
 	token := c.Ctx.Input.Header("Authorization")
 	var authsRepository = services.GetAuthsRepositoryInstance()
-	auth := authsRepository.GetAuthInfo(token)
+	auth := authsRepository.GetAdminAuthInfo(token)
 	if auth == nil {
-		logs.Warn("GetAuthInfo fun error------------登录已失效！")
+		logs.Warn("GetAdminAuthInfo fun error------------登录已失效！")
 		c.JSON(configs.ResponseFail, "登录已失效！", nil)
 	}
 	return auth
+}
+
+// GetUserInfo get current user info
+func (c *BaseController) GetUserInfo() *models.User {
+	token := c.Ctx.Input.Header("Token")
+	var userRepository = services.GetUserRepositoryInstance()
+	user := userRepository.GetUserWithToken(token)
+	if user == nil {
+		logs.Warn("GetAdminAuthInfo fun error------------登录已失效！")
+	}
+	return user
 }

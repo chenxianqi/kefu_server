@@ -14,6 +14,19 @@ import axios from 'axios'
 
 axios.defaults.baseURL = '/v1'
 
+// axios添加请求拦截器
+axios.interceptors.request.use(function (config) {
+  const token = localStorage.getItem('Token') || ""
+  config.headers = Object.assign({}, {
+    'Token': token,
+  }, config.headers)
+  return config;
+}, function (error) {
+  // eslint-disable-next-line no-console
+  console.log(error)
+  return Promise.reject(error);
+});
+
 var options={
   clickToCloseNonZoomable: false,
   fullscreenEl:false, //关闭全屏按钮

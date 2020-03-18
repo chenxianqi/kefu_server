@@ -9,8 +9,8 @@ import (
 
 // AuthsRepositoryInterface interface
 type AuthsRepositoryInterface interface {
-	GetAuthInfo(token string) *models.Auths
-	GetAuthInfoWithTypeAndUID(authType int64, uid int64) *models.Auths
+	GetAdminAuthInfo(token string) *models.Auths
+	GetAdminAuthInfoWithTypeAndUID(authType int64, uid int64) *models.Auths
 	GetAdminOnlineCount(uid int64) int64
 	Delete(id int64) (int64, error)
 	Add(id *models.Auths) (int64, error)
@@ -29,21 +29,21 @@ func GetAuthsRepositoryInstance() *AuthsRepository {
 	return instance
 }
 
-// GetAuthInfo get a auth info
-func (r *AuthsRepository) GetAuthInfo(token string) *models.Auths {
+// GetAdminAuthInfo get a auth info
+func (r *AuthsRepository) GetAdminAuthInfo(token string) *models.Auths {
 	var auth models.Auths
 	if err := r.q.Filter("token", token).One(&auth); err != nil {
-		logs.Warn("GetAuthInfo get a auth info------------", err)
+		logs.Warn("GetAdminAuthInfo get a auth info------------", err)
 		return nil
 	}
 	return &auth
 }
 
-// GetAuthInfoWithTypeAndUID get a auth info with type and uid
-func (r *AuthsRepository) GetAuthInfoWithTypeAndUID(authType int64, uid int64) *models.Auths {
+// GetAdminAuthInfoWithTypeAndUID get a auth info with type and uid
+func (r *AuthsRepository) GetAdminAuthInfoWithTypeAndUID(authType int64, uid int64) *models.Auths {
 	var auth models.Auths
 	if err := r.q.Filter("auth_type", authType).Filter("uid", uid).One(&auth); err != nil {
-		logs.Warn("GetAuthInfoWithTypeAndUID get a auth info with type and uid------------", err)
+		logs.Warn("GetAdminAuthInfoWithTypeAndUID get a auth info with type and uid------------", err)
 		return nil
 	}
 	return &auth

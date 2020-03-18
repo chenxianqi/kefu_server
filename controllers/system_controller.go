@@ -47,8 +47,8 @@ func (c *SystemController) Put() {
 		c.JSON(configs.ResponseFail, "参数有误，请检查!", nil)
 	}
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 	admin := services.GetAdminRepositoryInstance().GetAdmin(auth.UID)
 	// is root ?
 	if admin.Root != 1 {

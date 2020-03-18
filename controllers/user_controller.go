@@ -91,8 +91,8 @@ func (c *UserController) Delete() {
 	// uid
 	id, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 	admin := services.GetAdminRepositoryInstance().GetAdmin(auth.UID)
 	if admin.Root != 1 {
 		c.JSON(configs.ResponseFail, "您没有权限删除用户!", nil)

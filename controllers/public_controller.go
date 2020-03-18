@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"crypto/md5"
 	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
 	"kefu_server/configs"
 	"kefu_server/models"
@@ -95,21 +97,34 @@ func (c *PublicController) Register() {
 
 		}
 
+		// Addr for this request IP
+		currentRemoteAddr := c.Ctx.Input.IP()
+
 		/// old user
 		if user != nil {
+
+			// The last login address is inconsistent with this time and the token is not empty
+			if user.Token != "" && user.RemoteAddr != "" && currentRemoteAddr != user.RemoteAddr {
+				c.JSON(configs.ResponseFail, "注册失败，请稍等重试!", "")
+			}
 
 			// fetchResult
 			fetchResult, fetchError = utils.CreateMiMcToken(strconv.FormatInt(user.ID, 10))
 			if err := json.Unmarshal([]byte(fetchResult), &imTokenDto); err != nil {
 				c.JSON(configs.ResponseFail, "注册失败!", err.Error())
 			}
+			// MD5 user token
+			m5 := md5.New()
+			m5.Write([]byte(imTokenDto.Data.Token))
+			_md5Token := hex.EncodeToString(m5.Sum(nil))
+
 			// update userinfo
 			c.UserRepository.Update(user.ID, orm.Params{
 				"Online":       1,
 				"Address":      sessionRequestDto.Address,
 				"Platform":     sessionRequestDto.Platform,
 				"LastActivity": time.Now().Unix(),
-				"Token":        imTokenDto.Data.Token,
+				"Token":        _md5Token,
 			})
 			user.Token = imTokenDto.Data.Token
 
@@ -120,6 +135,7 @@ func (c *PublicController) Register() {
 			user.CreateAt = time.Now().Unix()
 			user.ID = 0
 			user.Online = 1
+			user.RemoteAddr = currentRemoteAddr
 			user.LastActivity = time.Now().Unix()
 			user.Address = sessionRequestDto.Address
 
@@ -129,10 +145,14 @@ func (c *PublicController) Register() {
 				if err := json.Unmarshal([]byte(fetchResult), &imTokenDto); err != nil {
 					c.JSON(configs.ResponseFail, "注册失败!", err.Error())
 				}
+				// MD5 user token
+				m5 := md5.New()
+				m5.Write([]byte(imTokenDto.Data.Token))
+				_md5Token := hex.EncodeToString(m5.Sum(nil))
 
 				// update userinfo
 				c.UserRepository.Update(user.ID, orm.Params{
-					"Token":    imTokenDto.Data.Token,
+					"Token":    _md5Token,
 					"NickName": "访客" + strconv.FormatInt(accountID, 10),
 				})
 
@@ -143,8 +163,8 @@ func (c *PublicController) Register() {
 
 	} else {
 
-		// GetAuthInfo
-		auth := c.GetAuthInfo()
+		// GetAdminAuthInfo
+		auth := c.GetAdminAuthInfo()
 		admin = c.AdminRepository.GetAdmin(auth.UID)
 
 		// fetchResult
@@ -180,6 +200,12 @@ func (c *PublicController) Register() {
 // Read get user read count
 func (c *PublicController) Read() {
 
+	// get user
+	user := c.GetUserInfo()
+	if user == nil {
+		c.JSON(configs.ResponseSucess, "查询成功!", "")
+	}
+
 	id, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
 	readCount, err := c.MessageRepository.GetReadCount(id)
 	if err == nil {
@@ -192,6 +218,12 @@ func (c *PublicController) Read() {
 // Window set user window
 func (c *PublicController) Window() {
 
+	// get user
+	user := c.GetUserInfo()
+	if user == nil {
+		c.JSON(configs.ResponseSucess, "更新成功!", "")
+	}
+
 	type WindowType struct {
 		Window int `json:"window"`
 	}
@@ -200,16 +232,8 @@ func (c *PublicController) Window() {
 		c.JSON(configs.ResponseFail, "更新失败!", nil)
 	}
 
-	// get user info
-	uid, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
-	user := c.UserRepository.GetUser(uid)
-
-	if user == nil {
-		c.JSON(configs.ResponseFail, "更新失败，用户不存在!", nil)
-	}
-
 	// update
-	_, err := c.UserRepository.Update(uid, orm.Params{
+	_, err := c.UserRepository.Update(user.UID, orm.Params{
 		"IsWindow": wType.Window,
 	})
 	if err != nil {
@@ -221,15 +245,15 @@ func (c *PublicController) Window() {
 
 // CleanRead clean user read
 func (c *PublicController) CleanRead() {
-	uid, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
 
-	// Can't just clear customer service
-	if admin := c.AdminRepository.GetAdmin(uid); admin != nil {
-		c.JSON(configs.ResponseFail, "清除成功!", nil)
+	// get user
+	user := c.GetUserInfo()
+	if user == nil {
+		c.JSON(configs.ResponseSucess, "清除成功!", "")
 	}
 
 	// clear
-	if _, err := c.MessageRepository.ClearRead(uid); err != nil {
+	if _, err := c.MessageRepository.ClearRead(user.UID); err != nil {
 		c.JSON(configs.ResponseFail, "清除失败!", err.Error())
 	}
 
@@ -313,12 +337,11 @@ func (c *PublicController) UploadSecret() {
 // LastActivity change last Activity
 func (c *PublicController) LastActivity() {
 
-	// uid id if exist current request is user, else admin
-	uid, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
-
+	// get user
+	user := c.GetUserInfo()
 	// user
-	if uid > 0 {
-		_, err := c.UserRepository.Update(uid, orm.Params{
+	if user != nil {
+		_, err := c.UserRepository.Update(user.ID, orm.Params{
 			"LastActivity": time.Now().Unix(),
 		})
 		if err != nil {
@@ -327,9 +350,8 @@ func (c *PublicController) LastActivity() {
 		c.JSON(configs.ResponseSucess, "上报成功!", nil)
 	}
 
-	// admin
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 	_, err := c.AdminRepository.Update(auth.UID, orm.Params{
 		"LastActivity": time.Now().Unix(),
 	})
@@ -466,11 +488,6 @@ func (c *PublicController) GetMessageHistoryList() {
 		c.JSON(configs.ResponseFail, "参数有误，请检查!", nil)
 	}
 
-	token := c.Ctx.Input.Header("token")
-	if token == "" {
-		c.JSON(configs.ResponseFail, "参数有误，请检查!", nil)
-	}
-
 	// validation
 	valid := validation.Validation{}
 	valid.Required(messagePaginationDto.Account, "account").Message("account不能为空！")
@@ -489,6 +506,10 @@ func (c *PublicController) GetMessageHistoryList() {
 	}
 
 	/// validation TOKEN
+	token := c.Ctx.Input.Header("token")
+	if token == "" {
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", nil)
+	}
 	if token != user.Token {
 		c.JSON(configs.ResponseFail, "fail，用户不存在!", nil)
 	}
@@ -505,5 +526,46 @@ func (c *PublicController) GetMessageHistoryList() {
 	}
 
 	c.JSON(configs.ResponseSucess, "success", &returnMessagePaginationDto)
+
+}
+
+// CreateWorkOrder send word order
+func (c *PublicController) CreateWorkOrder() {
+
+	// get user
+	user := c.GetUserInfo()
+	if user == nil {
+		c.JSON(configs.ResponseFail, "工单创建失败!", "")
+	}
+
+	workOrder := models.WorkOrder{}
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &workOrder); err != nil {
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", nil)
+	}
+
+	// validation
+	valid := validation.Validation{}
+	valid.Required(workOrder.TID, "tid").Message("tid不能为空！")
+	valid.Required(workOrder.UID, "uid").Message("account不能为空！")
+	valid.Required(workOrder.Phone, "phone").Message("page_size不能为空！")
+	valid.Email(workOrder.Email, "email").Message("email格式不正确！")
+	valid.Required(workOrder.Content, "content").Message("content不能为空！")
+	if valid.HasErrors() {
+		for _, err := range valid.Errors {
+			c.JSON(configs.ResponseFail, err.Message, nil)
+		}
+	}
+	workOrder.CreateAt = time.Now().Unix()
+	workOrderRepository := services.GetWorkOrderRepositoryInstance()
+	wid, err := workOrderRepository.Add(workOrder)
+	if err != nil {
+		c.JSON(configs.ResponseFail, "fail", err.Error())
+	}
+	c.JSON(configs.ResponseSucess, "工单创建成功!", wid)
+
+}
+
+// ReplyWorkOrder send word order
+func (c *PublicController) ReplyWorkOrder() {
 
 }

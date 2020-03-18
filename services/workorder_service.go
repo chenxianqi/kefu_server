@@ -2,6 +2,7 @@ package services
 
 import (
 	"kefu_server/models"
+	"time"
 
 	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
@@ -18,14 +19,14 @@ type WorkOrderRepositoryInterface interface {
 // WorkOrderRepository struct
 type WorkOrderRepository struct {
 	BaseRepository
-	CommentRepository *WorkOrderCommentRepository
+	WorkOrderCommentRepository *WorkOrderCommentRepository
 }
 
 // GetWorkOrderRepositoryInstance get instance
 func GetWorkOrderRepositoryInstance() *WorkOrderRepository {
 	instance := new(WorkOrderRepository)
 	instance.Init(new(models.WorkOrder))
-	instance.CommentRepository = GetWorkOrderCommentRepositoryInstance()
+	instance.WorkOrderCommentRepository = GetWorkOrderCommentRepositoryInstance()
 	return instance
 }
 
@@ -36,18 +37,30 @@ func (r *WorkOrderRepository) Delete(id int64) (int64, error) {
 		logs.Warn("Delete delete WorkOrder------------", err)
 	}
 	if index > 0 {
-		GetWorkOrderCommentRepositoryInstance()
+		_, err := r.WorkOrderCommentRepository.DeleteAll(id)
+		if err != nil {
+			logs.Warn("Delete delete WorkOrder child------------", err)
+		}
 	}
 	return index, err
 }
 
 // Add add WorkOrder
 func (r *WorkOrderRepository) Add(workOrder models.WorkOrder) (int64, error) {
-	index, err := r.o.Insert(workOrder)
+	createAt := time.Now().Unix()
+	workOrder.CreateAt = createAt
+	wid, err := r.o.Insert(workOrder)
 	if err != nil {
 		logs.Warn("Add add WorkOrder------------", err)
 	}
-	return index, err
+	if wid > 0 {
+		r.WorkOrderCommentRepository.Add(models.WorkOrderComment{
+			WID:      wid,
+			Content:  workOrder.Content,
+			CreateAt: createAt,
+		})
+	}
+	return wid, err
 }
 
 // Update WorkOrder Info

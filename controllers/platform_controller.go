@@ -44,8 +44,8 @@ func (c *PlatformController) Get() {
 // Put update admin
 func (c *PlatformController) Put() {
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 	admin := services.GetAdminRepositoryInstance().GetAdmin(auth.UID)
 
 	// is admin root ?
@@ -99,8 +99,8 @@ func (c *PlatformController) Put() {
 // Post add new platform
 func (c *PlatformController) Post() {
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 	admin := services.GetAdminRepositoryInstance().GetAdmin(auth.UID)
 
 	if admin.Root != 1 {
@@ -149,8 +149,8 @@ func (c *PlatformController) Post() {
 // Delete delete remove admin
 func (c *PlatformController) Delete() {
 
-	// GetAuthInfo
-	auth := c.GetAuthInfo()
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
 	admin := services.GetAdminRepositoryInstance().GetAdmin(auth.UID)
 
 	if admin.Root != 1 {
