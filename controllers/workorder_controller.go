@@ -32,32 +32,8 @@ func (c *WorkOrderController) Prepare() {
 
 }
 
-// Finish Comparison like destructor
+// Finish Comparison like destructor or package init()
 func (c *WorkOrderController) Finish() {}
-
-// Get get one WorkOrder
-func (c *WorkOrderController) Get() {
-}
-
-// Post create WorkOrder
-func (c *WorkOrderController) Post() {
-
-}
-
-// Put update WorkOrder
-func (c *WorkOrderController) Put() {
-
-}
-
-// Delete delete WorkOrder
-func (c *WorkOrderController) Delete() {
-
-}
-
-// Comment send comment
-func (c *WorkOrderController) Comment() {
-
-}
 
 // PostWorkType add work order type
 func (c *WorkOrderController) PostWorkType() {

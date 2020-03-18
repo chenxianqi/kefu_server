@@ -26,7 +26,7 @@ func (c *UserController) Prepare() {
 
 }
 
-// Finish Comparison like destructor
+// Finish Comparison like destructor or package init()
 func (c *UserController) Finish() {}
 
 // Get get a user

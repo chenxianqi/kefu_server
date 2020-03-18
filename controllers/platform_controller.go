@@ -25,7 +25,7 @@ func (c *PlatformController) Prepare() {
 
 }
 
-// Finish Comparison like destructor
+// Finish Comparison like destructor or package init()
 func (c *PlatformController) Finish() {}
 
 // Get get a admin

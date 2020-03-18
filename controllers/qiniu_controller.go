@@ -29,7 +29,7 @@ func (c *QiniuController) Prepare() {
 
 }
 
-// Finish Comparison like destructor
+// Finish Comparison like destructor or package init()
 func (c *QiniuController) Finish() {}
 
 // Get get qiniu config info

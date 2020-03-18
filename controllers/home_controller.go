@@ -22,7 +22,7 @@ func (c *HomeController) Prepare() {
 
 }
 
-// Finish Comparison like destructor
+// Finish Comparison like destructor or package init()
 func (c *HomeController) Finish() {}
 
 // StatisticalRequest home Statistical

@@ -31,7 +31,7 @@ func (c *ContactController) Prepare() {
 
 }
 
-// Finish Comparison like destructor
+// Finish Comparison like destructor or package init()
 func (c *ContactController) Finish() {}
 
 // GetContacts get all Contacts

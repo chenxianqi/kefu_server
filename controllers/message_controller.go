@@ -25,7 +25,7 @@ func (c *MessageController) Prepare() {
 	c.MessageRepository = services.GetMessageRepositoryInstance()
 }
 
-// Finish Comparison like destructor
+// Finish Comparison like destructor or package init()
 func (c *MessageController) Finish() {}
 
 // List get messages

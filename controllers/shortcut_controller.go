@@ -25,7 +25,7 @@ func (c *ShortcutController) Prepare() {
 	c.ShortcutRepository = services.GetShortcutRepositoryInstance()
 }
 
-// Finish Comparison like destructor
+// Finish Comparison like destructor or package init()
 func (c *ShortcutController) Finish() {}
 
 // Get get shortcut

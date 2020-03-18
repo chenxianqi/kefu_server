@@ -41,7 +41,7 @@ func (c *PublicController) Prepare() {
 
 }
 
-// Finish Comparison like destructor
+// Finish Comparison like destructor or package init()
 func (c *PublicController) Finish() {}
 
 // Register mimc and user

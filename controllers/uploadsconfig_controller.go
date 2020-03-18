@@ -19,7 +19,7 @@ func (c *UploadsConfigController) Prepare() {
 
 }
 
-// Finish Comparison like destructor
+// Finish Comparison like destructor or package init()
 func (c *UploadsConfigController) Finish() {}
 
 // Config get upload config all

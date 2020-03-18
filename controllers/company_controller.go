@@ -25,7 +25,7 @@ func (c *CompanyController) Prepare() {
 
 }
 
-// Finish Comparison like destructor
+// Finish Comparison like destructor or package init()
 func (c *CompanyController) Finish() {}
 
 // Get get conpany info

@@ -31,7 +31,7 @@ func (c *KnowledgeBaseController) Prepare() {
 
 }
 
-// Finish Comparison like destructor
+// Finish Comparison like destructor or package init()
 func (c *KnowledgeBaseController) Finish() {}
 
 // Get get a  knowledge Base

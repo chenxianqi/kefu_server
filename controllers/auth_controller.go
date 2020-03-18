@@ -36,7 +36,7 @@ func (c *AuthController) Prepare() {
 
 }
 
-// Finish Comparison like destructor
+// Finish Comparison like destructor or package init()
 func (c *AuthController) Finish() {}
 
 // LoginRequest login

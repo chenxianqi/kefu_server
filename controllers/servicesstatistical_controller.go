@@ -22,7 +22,7 @@ func (c *ServicesStatisticalController) Prepare() {
 	c.StatisticalRepository = services.GetStatisticalRepositoryInstance()
 }
 
-// Finish Comparison like destructor
+// Finish Comparison like destructor or package init()
 func (c *ServicesStatisticalController) Finish() {}
 
 // List Services Statistical

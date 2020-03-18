@@ -25,7 +25,7 @@ func (c *SystemController) Prepare() {
 
 }
 
-// Finish Comparison like destructor
+// Finish Comparison like destructor or package init()
 func (c *SystemController) Finish() {}
 
 // Get get info
