@@ -39,7 +39,7 @@ func init() {
 			beego.NSRouter("/robot/:platform", &controllers.PublicController{}, "get:Robot"),
 			beego.NSRouter("/read", &controllers.PublicController{}, "get:Read"),
 			beego.NSRouter("/secret", &controllers.PublicController{}, "get:UploadSecret"),
-			beego.NSRouter("/activity/?:id", &controllers.PublicController{}, "get:LastActivity"),
+			beego.NSRouter("/activity", &controllers.PublicController{}, "get:LastActivity"),
 			beego.NSRouter("/company", &controllers.PublicController{}, "get:GetCompanyInfo"),
 			beego.NSRouter("/robot_info/:id", &controllers.PublicController{}, "get:RobotInfo"),
 			beego.NSRouter("/clean_read", &controllers.PublicController{}, "get:CleanRead"),

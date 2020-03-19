@@ -888,8 +888,7 @@ export default {
       let timestamp = this.messages.length == 0 ? parseInt((new Date().getTime() + " ").substr(0, 10)) : this.messages[0].timestamp
       axios.post('/public/messages',{
           "timestamp": timestamp,
-          "page_size": pageSize,
-          "account": uid
+          "page_size": pageSize
         })
         .then(response => {
           let messages = response.data.data.list || []

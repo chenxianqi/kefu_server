@@ -203,11 +203,10 @@ func (c *PublicController) Read() {
 	// get user
 	user := c.GetUserInfo()
 	if user == nil {
-		c.JSON(configs.ResponseSucess, "查询成功!", "")
+		c.JSON(configs.ResponseSucess, "查询成功!", 0)
 	}
 
-	id, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
-	readCount, err := c.MessageRepository.GetReadCount(id)
+	readCount, err := c.MessageRepository.GetReadCount(user.ID)
 	if err == nil {
 		readCount = 0
 	}
@@ -454,6 +453,16 @@ func (c *PublicController) Upload() {
 // CancelMessage cancel a message
 func (c *PublicController) CancelMessage() {
 
+	// get user
+	user := c.GetUserInfo()
+	if user == nil {
+		// GetAdminAuthInfo
+		auth := c.GetAdminAuthInfo()
+		if auth == nil {
+			c.JSON(configs.ResponseFail, "撤回失败!", nil)
+		}
+	}
+
 	removeMessageRequestDto := models.RemoveMessageRequestDto{}
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &removeMessageRequestDto); err != nil {
 		c.JSON(configs.ResponseFail, "参数有误，请检查!", nil)
@@ -488,31 +497,12 @@ func (c *PublicController) GetMessageHistoryList() {
 		c.JSON(configs.ResponseFail, "参数有误，请检查!", nil)
 	}
 
-	// validation
-	valid := validation.Validation{}
-	valid.Required(messagePaginationDto.Account, "account").Message("account不能为空！")
-	valid.Required(messagePaginationDto.PageSize, "page_size").Message("page_size不能为空！")
-
-	if valid.HasErrors() {
-		for _, err := range valid.Errors {
-			c.JSON(configs.ResponseFail, err.Message, nil)
-		}
-	}
-
-	// exist user
-	user := c.UserRepository.GetUser(messagePaginationDto.Account)
+	// get user
+	user := c.GetUserInfo()
 	if user == nil {
 		c.JSON(configs.ResponseFail, "fail，用户不存在!", nil)
 	}
-
-	/// validation TOKEN
-	token := c.Ctx.Input.Header("token")
-	if token == "" {
-		c.JSON(configs.ResponseFail, "参数有误，请检查!", nil)
-	}
-	if token != user.Token {
-		c.JSON(configs.ResponseFail, "fail，用户不存在!", nil)
-	}
+	messagePaginationDto.Account = user.ID
 
 	// Timestamp == 0
 	if messagePaginationDto.Timestamp == 0 {

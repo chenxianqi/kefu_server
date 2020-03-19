@@ -87,6 +87,9 @@ func (r *MessageRepository) GetUserMessages(messagePaginationDto models.MessageP
 		logs.Warn("GetUserMessages get user messages0------------", err)
 		return nil, err
 	}
+	if messagePaginationDto.PageSize == 0 {
+		messagePaginationDto.PageSize = 20
+	}
 	var end = messageCount.Count
 	start := int(messageCount.Count) - messagePaginationDto.PageSize
 	if start <= 0 {
