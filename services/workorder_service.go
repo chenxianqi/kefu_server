@@ -10,10 +10,12 @@ import (
 
 // WorkOrderRepositoryInterface interface
 type WorkOrderRepositoryInterface interface {
-	GetWorkOrder() models.WorkOrder
+	GetWorkOrder(id int64) (models.WorkOrder, error)
+	GetUserWorkOrders(uid int64) ([]models.WorkOrder, error)
 	Update(id int64, params *orm.Params) (int64, error)
 	Add(workOrder models.WorkOrder) (int64, error)
 	Delete(id int64) (int64, error)
+	Close(id int64) (int64, error)
 }
 
 // WorkOrderRepository struct
@@ -30,26 +32,53 @@ func GetWorkOrderRepositoryInstance() *WorkOrderRepository {
 	return instance
 }
 
+// Close close WorkOrder
+func (r *WorkOrderRepository) Close(id int64) (int64, error) {
+	row, err := r.q.Filter("id", id).Update(orm.Params{
+		"Status": 3,
+	})
+	if err != nil {
+		logs.Warn("Close close WorkOrder-----------", err)
+	}
+	return row, err
+}
+
+// GetUserWorkOrders get user WorkOrders
+func (r *WorkOrderRepository) GetUserWorkOrders(uid int64) ([]models.WorkOrder, error) {
+	var workOrders []models.WorkOrder
+	_, err := r.q.Filter("uid", uid).Filter("delete", 0).OrderBy("-id").All(&workOrders)
+	if err != nil {
+		logs.Warn("GetUserWorkOrders get user WorkOrders------------", err)
+	}
+	return workOrders, err
+}
+
+// GetWorkOrder get WorkOrder
+func (r *WorkOrderRepository) GetWorkOrder(id int64) (models.WorkOrder, error) {
+	var workOrder models.WorkOrder
+	err := r.q.Filter("id", id).One(&workOrder)
+	if err != nil {
+		logs.Warn("GetWorkOrder get WorkOrder------------", err)
+	}
+	return workOrder, err
+}
+
 // Delete delete WorkOrder
 func (r *WorkOrderRepository) Delete(id int64) (int64, error) {
-	index, err := r.q.Filter("id", id).Delete()
+	row, err := r.q.Filter("id", id).Update(orm.Params{
+		"Delete": 1,
+	})
 	if err != nil {
-		logs.Warn("Delete delete WorkOrder------------", err)
+		logs.Warn("Delete delete WorkOrder-----------", err)
 	}
-	if index > 0 {
-		_, err := r.WorkOrderCommentRepository.DeleteAll(id)
-		if err != nil {
-			logs.Warn("Delete delete WorkOrder child------------", err)
-		}
-	}
-	return index, err
+	return row, err
 }
 
 // Add add WorkOrder
 func (r *WorkOrderRepository) Add(workOrder models.WorkOrder) (int64, error) {
 	createAt := time.Now().Unix()
 	workOrder.CreateAt = createAt
-	wid, err := r.o.Insert(workOrder)
+	wid, err := r.o.Insert(&workOrder)
 	if err != nil {
 		logs.Warn("Add add WorkOrder------------", err)
 	}
@@ -65,6 +94,7 @@ func (r *WorkOrderRepository) Add(workOrder models.WorkOrder) (int64, error) {
 
 // Update WorkOrder Info
 func (r *WorkOrderRepository) Update(id int64, params orm.Params) (int64, error) {
+	params["UpdateAt"] = time.Now().Unix()
 	index, err := r.q.Filter("id", id).Update(params)
 	if err != nil {
 		logs.Warn("Update WorkOrder Info------------", err)

@@ -50,6 +50,10 @@ func init() {
 			beego.NSRouter("/message/cancel", &controllers.PublicController{}, "post:CancelMessage"),
 			beego.NSRouter("/workorder/create", &controllers.PublicController{}, "post:CreateWorkOrder"),
 			beego.NSRouter("/workorder/reply", &controllers.PublicController{}, "post:ReplyWorkOrder"),
+			beego.NSRouter("/workorders", &controllers.PublicController{}, "get:GetWorkOrders"),
+			beego.NSRouter("/workorder/comments/:wid", &controllers.PublicController{}, "get:GetWorkOrderComments"),
+			beego.NSRouter("/workorder/:wid", &controllers.PublicController{}, "get:GetWorkOrder"),
+			beego.NSRouter("/workorder/:wid", &controllers.PublicController{}, "delete:DeleteWorkOrder"),
 		),
 
 		// knowledge_base

@@ -59,7 +59,7 @@ func (c *BaseController) GetUserInfo() *models.User {
 	var userRepository = services.GetUserRepositoryInstance()
 	user := userRepository.GetUserWithToken(token)
 	if user == nil {
-		logs.Warn("GetAdminAuthInfo fun error------------登录已失效！")
+		logs.Warn("GetUserInfo get current user info error------------登录已失效！")
 	}
 	return user
 }

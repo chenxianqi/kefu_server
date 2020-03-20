@@ -121,6 +121,7 @@ func (c *PublicController) Register() {
 			// update userinfo
 			c.UserRepository.Update(user.ID, orm.Params{
 				"Online":       1,
+				"RemoteAddr":   currentRemoteAddr,
 				"Address":      sessionRequestDto.Address,
 				"Platform":     sessionRequestDto.Platform,
 				"LastActivity": time.Now().Unix(),
@@ -203,7 +204,7 @@ func (c *PublicController) Read() {
 	// get user
 	user := c.GetUserInfo()
 	if user == nil {
-		c.JSON(configs.ResponseSucess, "查询成功!", 0)
+		c.JSON(configs.ResponseFail, "查询失败!", 0)
 	}
 
 	readCount, err := c.MessageRepository.GetReadCount(user.ID)
@@ -220,7 +221,7 @@ func (c *PublicController) Window() {
 	// get user
 	user := c.GetUserInfo()
 	if user == nil {
-		c.JSON(configs.ResponseSucess, "更新成功!", "")
+		c.JSON(configs.ResponseFail, "更新失败!", "")
 	}
 
 	type WindowType struct {
@@ -248,7 +249,7 @@ func (c *PublicController) CleanRead() {
 	// get user
 	user := c.GetUserInfo()
 	if user == nil {
-		c.JSON(configs.ResponseSucess, "清除成功!", "")
+		c.JSON(configs.ResponseFail, "清除失败!", "")
 	}
 
 	// clear
@@ -262,6 +263,12 @@ func (c *PublicController) CleanRead() {
 
 // Robot get robot
 func (c *PublicController) Robot() {
+
+	// get user
+	user := c.GetUserInfo()
+	if user == nil {
+		c.JSON(configs.ResponseFail, "fail!", "")
+	}
 
 	// request body
 	pid, _ := strconv.ParseInt(c.Ctx.Input.Param(":platform"), 10, 64)
@@ -278,6 +285,16 @@ func (c *PublicController) Robot() {
 
 // RobotInfo get robot info
 func (c *PublicController) RobotInfo() {
+
+	// get user
+	user := c.GetUserInfo()
+	if user == nil {
+		// GetAdminAuthInfo
+		auth := c.GetAdminAuthInfo()
+		if auth == nil {
+			c.JSON(configs.ResponseFail, "fail,!", nil)
+		}
+	}
 
 	id, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
 
@@ -300,6 +317,16 @@ type UploadSecretMode struct {
 
 // UploadSecret update Secret
 func (c *PublicController) UploadSecret() {
+
+	// get user
+	user := c.GetUserInfo()
+	if user == nil {
+		// GetAdminAuthInfo
+		auth := c.GetAdminAuthInfo()
+		if auth == nil {
+			c.JSON(configs.ResponseFail, "fail!", nil)
+		}
+	}
 
 	// system info
 	system := services.GetSystemRepositoryInstance().GetSystem()
@@ -364,9 +391,19 @@ func (c *PublicController) LastActivity() {
 // GetCompanyInfo get Company info
 func (c *PublicController) GetCompanyInfo() {
 
-	// system info
-	system := services.GetSystemRepositoryInstance().GetSystem()
-	c.JSON(configs.ResponseSucess, "上报成功!", &system)
+	// get user
+	user := c.GetUserInfo()
+	if user == nil {
+		// GetAdminAuthInfo
+		auth := c.GetAdminAuthInfo()
+		if auth == nil {
+			c.JSON(configs.ResponseFail, "fail!", nil)
+		}
+	}
+
+	// company info
+	company := services.GetCompanyRepositoryInstance().GetCompany()
+	c.JSON(configs.ResponseSucess, "查询成功!", &company)
 
 }
 
@@ -410,6 +447,16 @@ func (c *PublicController) PushMessage() {
 
 // Upload upload image
 func (c *PublicController) Upload() {
+
+	// get user
+	user := c.GetUserInfo()
+	if user == nil {
+		// GetAdminAuthInfo
+		auth := c.GetAdminAuthInfo()
+		if auth == nil {
+			c.JSON(configs.ResponseFail, "上传失败,无权限上传!", nil)
+		}
+	}
 
 	f, h, er := c.GetFile("file")
 	fileName := c.GetString("file_name")
@@ -525,7 +572,7 @@ func (c *PublicController) CreateWorkOrder() {
 	// get user
 	user := c.GetUserInfo()
 	if user == nil {
-		c.JSON(configs.ResponseFail, "工单创建失败!", "")
+		c.JSON(configs.ResponseFail, "工单创建失败,请刷新重试!", "")
 	}
 
 	workOrder := models.WorkOrder{}
@@ -535,17 +582,24 @@ func (c *PublicController) CreateWorkOrder() {
 
 	// validation
 	valid := validation.Validation{}
-	valid.Required(workOrder.TID, "tid").Message("tid不能为空！")
-	valid.Required(workOrder.UID, "uid").Message("account不能为空！")
-	valid.Required(workOrder.Phone, "phone").Message("page_size不能为空！")
-	valid.Email(workOrder.Email, "email").Message("email格式不正确！")
-	valid.Required(workOrder.Content, "content").Message("content不能为空！")
+	valid.Required(workOrder.TID, "tid").Message("工单类型不能为空！")
+	valid.Required(workOrder.Title, "title").Message("工单名称不能为空！")
+	valid.MaxSize(workOrder.Title, 100, "title").Message("工单名称不能大于100个字符！")
+	valid.Required(workOrder.Phone, "phone").Message("手机号不能为空！")
+	valid.Phone(workOrder.Phone, "phone").Message("手机号格式不正确！")
+	if workOrder.Email != "" {
+		valid.Email(workOrder.Email, "email").Message("邮箱格式不正确！")
+	}
+	valid.Required(workOrder.Content, "content").Message("工单内容不能为空！")
+	valid.MinSize(workOrder.Content, 10, "content").Message("工单内容不能小于10个字符！")
+	valid.MaxSize(workOrder.Content, 2000, "content").Message("工单内容不能大于2000个字符！")
 	if valid.HasErrors() {
 		for _, err := range valid.Errors {
 			c.JSON(configs.ResponseFail, err.Message, nil)
 		}
 	}
 	workOrder.CreateAt = time.Now().Unix()
+	workOrder.UID = user.ID
 	workOrderRepository := services.GetWorkOrderRepositoryInstance()
 	wid, err := workOrderRepository.Add(workOrder)
 	if err != nil {
@@ -557,5 +611,170 @@ func (c *PublicController) CreateWorkOrder() {
 
 // ReplyWorkOrder send word order
 func (c *PublicController) ReplyWorkOrder() {
+
+	// request ctx
+	workOrderComment := models.WorkOrderComment{}
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &workOrderComment); err != nil {
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", nil)
+	}
+
+	// is user ?
+	isUser := true
+
+	// get user
+	user := c.GetUserInfo()
+	if user == nil {
+		isUser = false
+		// GetAdminAuthInfo
+		auth := c.GetAdminAuthInfo()
+		if auth == nil {
+			c.JSON(configs.ResponseFail, "发送失败!", nil)
+		}
+		workOrderComment.AID = auth.UID
+	}
+
+	// validation
+	valid := validation.Validation{}
+	valid.Required(workOrderComment.WID, "wid").Message("工单ID不能为空！")
+	valid.Required(workOrderComment.Content, "content").Message("工单ID不能为空！")
+	valid.Required(workOrderComment.Content, "content").Message("内容不能为空！")
+	valid.MaxSize(workOrderComment.Content, 2000, "content").Message("工单内容不能大于2000个字符！")
+	if valid.HasErrors() {
+		for _, err := range valid.Errors {
+			c.JSON(configs.ResponseFail, err.Message, nil)
+		}
+	}
+
+	// workorder exist
+	workOrderRepository := services.GetWorkOrderRepositoryInstance()
+	if _, err := workOrderRepository.GetWorkOrder(workOrderComment.WID); err != nil {
+		c.JSON(configs.ResponseFail, "发送失败,工单不存在!", nil)
+	}
+
+	// add
+	workOrderCommentRepository := services.GetWorkOrderCommentRepositoryInstance()
+	if _, err := workOrderCommentRepository.Add(workOrderComment); err != nil {
+		c.JSON(configs.ResponseFail, "发送失败!", nil)
+	}
+
+	// update WorkOrder params
+	var params = orm.Params{}
+
+	// change status
+	status := 2
+	if !isUser {
+		status = 1
+		params["LastReply"] = workOrderComment.AID
+	}
+	params["Status"] = status
+	if _, err := workOrderRepository.Update(workOrderComment.WID, params); err != nil {
+		c.JSON(configs.ResponseFail, "发送失败!", nil)
+	}
+	c.JSON(configs.ResponseSucess, "发送成功!", nil)
+
+}
+
+// GetWorkOrders user get word order all
+func (c *PublicController) GetWorkOrders() {
+
+	// get user
+	user := c.GetUserInfo()
+	if user == nil {
+		c.JSON(configs.ResponseFail, "查询失败!", nil)
+	}
+
+	workOrderRepository := services.GetWorkOrderRepositoryInstance()
+	workOrders, err := workOrderRepository.GetUserWorkOrders(user.ID)
+	if err != nil {
+		c.JSON(configs.ResponseFail, "查询失败!", nil)
+	}
+	c.JSON(configs.ResponseSucess, "查询成功!", &workOrders)
+
+}
+
+// GetWorkOrderComments get word order comments
+func (c *PublicController) GetWorkOrderComments() {
+
+	// get user
+	user := c.GetUserInfo()
+	if user == nil {
+		// GetAdminAuthInfo
+		auth := c.GetAdminAuthInfo()
+		if auth == nil {
+			c.JSON(configs.ResponseFail, "fail!", nil)
+		}
+	}
+
+	// wid
+	wid, _ := strconv.ParseInt(c.Ctx.Input.Param(":wid"), 10, 64)
+
+	workOrderCommentRepository := services.GetWorkOrderCommentRepositoryInstance()
+	workOrderComments, err := workOrderCommentRepository.GetWorkOrderComments(wid)
+	if err != nil {
+		c.JSON(configs.ResponseFail, "查询失败!", nil)
+	}
+
+	c.JSON(configs.ResponseSucess, "查询成功!", &workOrderComments)
+
+}
+
+// GetWorkOrder user get word order content
+func (c *PublicController) GetWorkOrder() {
+
+	// get user
+	user := c.GetUserInfo()
+	if user == nil {
+		// GetAdminAuthInfo
+		auth := c.GetAdminAuthInfo()
+		if auth == nil {
+			c.JSON(configs.ResponseFail, "fail!", nil)
+		}
+	}
+
+	// wid
+	wid, _ := strconv.ParseInt(c.Ctx.Input.Param(":wid"), 10, 64)
+
+	workOrderRepository := services.GetWorkOrderRepositoryInstance()
+	workOrder, err := workOrderRepository.GetWorkOrder(wid)
+	if err != nil {
+		c.JSON(configs.ResponseFail, "查询失败,工单不存在!", nil)
+	}
+	if user != nil && user.ID != workOrder.UID {
+		c.JSON(configs.ResponseFail, "查询失败,工单不存在!", nil)
+	}
+	c.JSON(configs.ResponseSucess, "查询成功!", &workOrder)
+
+}
+
+// DeleteWorkOrder user delete word order
+func (c *PublicController) DeleteWorkOrder() {
+
+	// get user
+	user := c.GetUserInfo()
+	if user == nil {
+		// GetAdminAuthInfo
+		auth := c.GetAdminAuthInfo()
+		if auth == nil {
+			c.JSON(configs.ResponseFail, "fail!", nil)
+		}
+	}
+
+	// wid
+	wid, _ := strconv.ParseInt(c.Ctx.Input.Param(":wid"), 10, 64)
+	workOrderRepository := services.GetWorkOrderRepositoryInstance()
+	workOrder, err := workOrderRepository.GetWorkOrder(wid)
+	if err != nil {
+		c.JSON(configs.ResponseFail, "查询失败,工单不存在!", nil)
+	}
+	if user != nil && user.ID != workOrder.UID {
+		c.JSON(configs.ResponseFail, "删除失败,工单不存在!", nil)
+	}
+	if workOrder.Status != 3 {
+		c.JSON(configs.ResponseFail, "删除失败,工单未结单不能删除!", nil)
+	}
+	if _, err := workOrderRepository.Update(wid, orm.Params{"Delete": 1}); err != nil {
+		c.JSON(configs.ResponseFail, "删除失败,工单不存在!", nil)
+	}
+	c.JSON(configs.ResponseSucess, "删除成功!", nil)
 
 }

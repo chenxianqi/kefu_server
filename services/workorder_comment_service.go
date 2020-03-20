@@ -2,14 +2,14 @@ package services
 
 import (
 	"kefu_server/models"
+	"time"
 
 	"github.com/astaxie/beego/logs"
 )
 
 // WorkOrderCommentRepositoryInterface interface
 type WorkOrderCommentRepositoryInterface interface {
-	GetWorkOrder() *models.WorkOrderComment
-	DeleteAll(wid int64) (int64, error)
+	GetWorkOrderComments(wid int64) ([]models.WorkOrderComment, error)
 	Add(workOrderComment models.WorkOrderComment) (int64, error)
 }
 
@@ -25,20 +25,22 @@ func GetWorkOrderCommentRepositoryInstance() *WorkOrderCommentRepository {
 	return instance
 }
 
-// Add add WorkOrderComment
-func (r *WorkOrderCommentRepository) Add(workOrderComment models.WorkOrderComment) (int64, error) {
-	index, err := r.o.Insert(workOrderComment)
+// GetWorkOrderComments get WorkOrderComments
+func (r *WorkOrderCommentRepository) GetWorkOrderComments(wid int64) ([]models.WorkOrderComment, error) {
+	var workOrderComments []models.WorkOrderComment
+	_, err := r.q.Filter("wid", wid).OrderBy("id").All(&workOrderComments)
 	if err != nil {
-		logs.Warn(" Add add WorkOrderComment------------", err)
+		logs.Warn("GetWorkOrderComments get WorkOrderComments-----------", err)
 	}
-	return index, err
+	return workOrderComments, err
 }
 
-// DeleteAll delete all WorkOrderComment
-func (r *WorkOrderCommentRepository) DeleteAll(wid int64) (int64, error) {
-	index, err := r.q.Filter("wid", wid).Delete()
+// Add add WorkOrderComment
+func (r *WorkOrderCommentRepository) Add(workOrderComment models.WorkOrderComment) (int64, error) {
+	workOrderComment.CreateAt = time.Now().Unix()
+	index, err := r.o.Insert(&workOrderComment)
 	if err != nil {
-		logs.Warn(" DeleteAll delete all WorkOrderComment------------", err)
+		logs.Warn(" Add add WorkOrderComment------------", err)
 	}
 	return index, err
 }

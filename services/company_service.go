@@ -9,7 +9,7 @@ import (
 
 // CompanyRepositoryInterface interface
 type CompanyRepositoryInterface interface {
-	GetCompany(id int64) *models.Company
+	GetCompany() *models.Company
 	Update(id int64, params *orm.Params) (int64, error)
 }
 
@@ -26,9 +26,9 @@ func GetCompanyRepositoryInstance() *CompanyRepository {
 }
 
 // GetCompany get one company
-func (r *CompanyRepository) GetCompany(id int64) *models.Company {
+func (r *CompanyRepository) GetCompany() *models.Company {
 	var company models.Company
-	if err := r.q.Filter("id", id).One(&company); err != nil {
+	if err := r.q.Filter("id", 1).One(&company); err != nil {
 		logs.Warn("GetCompany get one company------------", err)
 		return nil
 	}
@@ -36,8 +36,8 @@ func (r *CompanyRepository) GetCompany(id int64) *models.Company {
 }
 
 // Update company
-func (r *CompanyRepository) Update(id int64, params orm.Params) (int64, error) {
-	index, err := r.q.Filter("id", id).Update(params)
+func (r *CompanyRepository) Update(params orm.Params) (int64, error) {
+	index, err := r.q.Filter("id", 1).Update(params)
 	if err != nil {
 		logs.Warn("Update company------------", err)
 	}

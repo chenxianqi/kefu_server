@@ -30,7 +30,7 @@ func (c *CompanyController) Finish() {}
 
 // Get get conpany info
 func (c *CompanyController) Get() {
-	company := c.CompanyRepository.GetCompany(1)
+	company := c.CompanyRepository.GetCompany()
 	if company == nil {
 		c.JSON(configs.ResponseFail, "fail", nil)
 	}
@@ -62,7 +62,7 @@ func (c *CompanyController) Put() {
 	}
 
 	// orm
-	row, err := c.CompanyRepository.Update(1, orm.Params{
+	row, err := c.CompanyRepository.Update(orm.Params{
 		"Title":    company.Title,
 		"Address":  company.Address,
 		"Email":    company.Email,
