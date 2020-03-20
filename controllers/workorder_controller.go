@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/astaxie/beego/orm"
+	"github.com/astaxie/beego/validation"
 )
 
 // WorkOrderController  struct
@@ -135,4 +136,39 @@ func (c *WorkOrderController) GetWorkType() {
 func (c *WorkOrderController) GetWorkTypes() {
 	workOrderTypes := c.WorkOrderTypeRepository.GetWorkOrderTypes()
 	c.JSON(configs.ResponseSucess, "查询成功！", workOrderTypes)
+}
+
+// CloseWorkOrder close workorder
+func (c *WorkOrderController) CloseWorkOrder() {
+
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
+
+	type Request struct {
+		CID    int64  `json:"cid"`
+		WID    int64  `json:"wid"`
+		Remark string `json:"remark"`
+	}
+
+	request := Request{}
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &request); err != nil {
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", nil)
+	}
+
+	// validation
+	valid := validation.Validation{}
+	valid.Required(request.WID, "wid").Message("工单ID不能为空！")
+	valid.Required(request.Remark, "remark").Message("关闭原因不能为空！")
+	if valid.HasErrors() {
+		for _, err := range valid.Errors {
+			c.JSON(configs.ResponseFail, err.Message, nil)
+		}
+	}
+
+	rows, err := c.WorkOrderRepository.Close(request.WID, auth.UID, request.Remark)
+	if err != nil {
+		c.JSON(configs.ResponseFail, "关闭失败，出现异常!", nil)
+	}
+	c.JSON(configs.ResponseSucess, "工单已关闭！", rows)
+
 }
