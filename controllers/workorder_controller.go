@@ -5,8 +5,10 @@ import (
 	"kefu_server/configs"
 	"kefu_server/models"
 	"kefu_server/services"
+	"kefu_server/utils"
 	"strconv"
 
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego/validation"
 )
@@ -164,11 +166,27 @@ func (c *WorkOrderController) CloseWorkOrder() {
 			c.JSON(configs.ResponseFail, err.Message, nil)
 		}
 	}
-
+	workOrder, err := c.WorkOrderRepository.GetWorkOrder(request.WID)
+	if err != nil {
+		c.JSON(configs.ResponseFail, "关闭失败，工单不存在或已关闭!", nil)
+	}
 	rows, err := c.WorkOrderRepository.Close(request.WID, auth.UID, request.Remark)
 	if err != nil {
 		c.JSON(configs.ResponseFail, "关闭失败，出现异常!", nil)
 	}
+	// send email message
+	openWorkorderEmail, _ := beego.AppConfig.Bool("open_workorder_email")
+	if workOrder.Email != "" && openWorkorderEmail {
+		go func() {
+			mailTo := []string{workOrder.Email}
+			kefuClientURL := beego.AppConfig.String("kefu_client_url")
+			emailName := beego.AppConfig.String("email_name")
+			subject := "您的工单：" + workOrder.Title + "已关闭"
+			body := "工单标题：" + workOrder.Title + "<br>您的工单已被关闭，如此问题还未得到解决，您可以重新进入<a target='_blank' href='" + kefuClientURL + "'>在线客服</a>以得到更多的帮助。<br>" + emailName
+			utils.SendMail(mailTo, subject, body)
+		}()
+	}
+
 	c.JSON(configs.ResponseSucess, "工单已关闭！", rows)
 
 }

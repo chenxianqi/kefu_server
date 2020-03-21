@@ -127,7 +127,7 @@ func (c *PublicController) Register() {
 				"LastActivity": time.Now().Unix(),
 				"Token":        _md5Token,
 			})
-			user.Token = imTokenDto.Data.Token
+			user.Token = _md5Token
 
 		} else {
 
@@ -150,7 +150,7 @@ func (c *PublicController) Register() {
 				m5 := md5.New()
 				m5.Write([]byte(imTokenDto.Data.Token))
 				_md5Token := hex.EncodeToString(m5.Sum(nil))
-
+				user.Token = _md5Token
 				// update userinfo
 				c.UserRepository.Update(user.ID, orm.Params{
 					"Token":    _md5Token,
@@ -445,7 +445,7 @@ func (c *PublicController) PushMessage() {
 
 }
 
-// Upload upload image
+// Upload upload file
 func (c *PublicController) Upload() {
 
 	// get user
@@ -476,6 +476,9 @@ func (c *PublicController) Upload() {
 		".JPG":  true,
 		".JPEG": true,
 		".PNG":  true,
+		".zip":  true,
+		".ZIP":  true,
+		".mp4":  true,
 	}
 	if _, ok := AllowExtMap[ext]; !ok {
 		c.JSON(configs.ResponseFail, "上传失败,上传文件不合法!", nil)
@@ -647,7 +650,8 @@ func (c *PublicController) ReplyWorkOrder() {
 
 	// workorder exist
 	workOrderRepository := services.GetWorkOrderRepositoryInstance()
-	if _, err := workOrderRepository.GetWorkOrder(workOrderComment.WID); err != nil {
+	workOrder, err := workOrderRepository.GetWorkOrder(workOrderComment.WID)
+	if err != nil {
 		c.JSON(configs.ResponseFail, "发送失败,工单不存在!", nil)
 	}
 
@@ -665,6 +669,21 @@ func (c *PublicController) ReplyWorkOrder() {
 	if !isUser {
 		status = 1
 		params["LastReply"] = workOrderComment.AID
+
+		// send email message
+		openWorkorderEmail, _ := beego.AppConfig.Bool("open_workorder_email")
+		if workOrder.Email != "" && openWorkorderEmail {
+			go func() {
+				mailTo := []string{
+					workOrder.Email,
+				}
+				subject := "您的工单：" + workOrder.Title + "已被回复"
+				kefuClientURL := beego.AppConfig.String("kefu_client_url")
+				body := "工单标题：" + workOrder.Title + "<br>回复：" + workOrderComment.Content + "<br>您可以点<a target='_blank' href='" + kefuClientURL + "'>此链接</a>去查看完整内容"
+				utils.SendMail(mailTo, subject, body)
+			}()
+		}
+
 	}
 	params["Status"] = status
 	if _, err := workOrderRepository.Update(workOrderComment.WID, params); err != nil {

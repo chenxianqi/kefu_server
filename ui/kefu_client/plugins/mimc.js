@@ -1,6 +1,5 @@
 import axios from "axios";
 import { Toast } from 'mint-ui';
-var md5 = require('blueimp-md5')
 var MimcPlugin = {};
 MimcPlugin.install = function (Vue, options) {
 
@@ -20,11 +19,10 @@ MimcPlugin.install = function (Vue, options) {
         init(request, callback){
             this.platform = request.platform
             this.fetchMIMCToken(request, callback)
-            this.getRobot()
         },
         // 获取本地已经登录过的User
-        getLocalCacheUser(uid){
-            const userString = localStorage.getItem("miniImAppUser_" + uid)
+        getLocalCacheUser(){
+            const userString = localStorage.getItem("user")
             if(userString) return JSON.parse(userString)
             return null
         },
@@ -35,29 +33,25 @@ MimcPlugin.install = function (Vue, options) {
             axios.post('/public/register', request)
             .then(response => {
                 this.fetchMIMCTokenResult = response.data.data.token
-                localStorage.setItem("miniImAppUser_" + response.data.data.user.id, JSON.stringify(response.data.data.user))
-                localStorage.setItem("Token", md5(response.data.data.user.token))
+                localStorage.setItem("user", JSON.stringify(response.data.data.user))
+                localStorage.setItem("Token", response.data.data.user.token)
                 console.log("MIMC初始化成功")
+                this.getRobot()
                 if(callback) callback(response.data.data.user)
             })
             .catch((error)=>{
                 if(callback) callback(null)
                 console.log(error.response)
-                Toast({
-                    message: error.response.data.message
-                })
             })
         },
         // 获取机器人
         getRobot(){
-            axios.get('/public/robot/1')
+            axios.get('/public/robot/'+this.platform)
             .then(response => {
                 this.robot = response.data.data
             })
             .catch((error)=>{
-                Toast({
-                    message: "mimc初始化失败,请刷新重试" + error.response.data.message
-                })
+                console.log("mimc初始化失败,请刷新重试", error)
             })
         },
         // pushMessage

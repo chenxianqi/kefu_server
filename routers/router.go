@@ -1,9 +1,9 @@
-// @APIVersion 1.0.0
-// @Title MIMC server API
+// @APIVersion 2.0.0
+// @Title KEFU server API
 // @Description kefu server APIs.
 // @Contact 361554012@qq.com
 
-package routers
+package routers	
 
 import (
 	"kefu_server/controllers"
@@ -25,7 +25,7 @@ func init() {
 		AllowCredentials: true,
 	}))
 
-	ns := beego.NewNamespace("/v1",
+	ns := beego.NewNamespace("/api",
 
 		// auth
 		beego.NSNamespace("/auth",

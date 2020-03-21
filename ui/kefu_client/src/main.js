@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import App from './App.vue'
 import preview from 'vue-photo-preview'
+import router from "./router"
+import store from './store'
 import 'vue-photo-preview/dist/skin.css'
 import MintUI from 'mint-ui'
 import 'mint-ui/lib/style.css'
@@ -12,7 +14,7 @@ moment.locale("zh-cn", momentLocal)
 
 import axios from 'axios'
 
-axios.defaults.baseURL = '/v1'
+axios.defaults.baseURL = '/api'
 
 // axios添加请求拦截器
 axios.interceptors.request.use(function (config) {
@@ -37,5 +39,7 @@ Vue.use(MimcPlugin)
 Vue.use(MintUI)
 Vue.config.productionTip = false
 new Vue({
+  router,
+  store,
   render: h => h(App)
 }).$mount('#app')
