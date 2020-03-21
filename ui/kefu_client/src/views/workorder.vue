@@ -1,27 +1,34 @@
 <template>
   <div class="container">
     
-    <mt-header v-if="isShowHeader" fixed :title="isInputPongIng ? inputPongIngString : '在线客服'">
+    <mt-header v-if="isShowHeader" fixed title="工单">
       <div slot="left">
-        <mt-button @click="back" icon="back"></mt-button>
+        <mt-button @click="$router.go(-1)" icon="back"></mt-button>
       </div>
-      <mt-button @click="headRightBtn" slot="right">
-        <img title="人工客服" v-if="!isArtificial" src="http://qiniu.cmp520.com/kefu_icon_2000.png" alt />
-        <span v-else>结束会话</span>
+      <mt-button @click="$router.push('/workorder/create')" slot="right">
+        <span>创建工单</span>
       </mt-button>
     </mt-header>
 
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex'
 export default {
   name: "workorder",
   components: {},
   data() {
     return {};
   },
+  computed: {
+    ...mapGetters([
+      'isShowHeader'
+    ])
+  },
   mounted() {},
-  methods: {}
+  methods: {
+   
+  }
 };
 </script>
 <style lang="stylus" scoped>

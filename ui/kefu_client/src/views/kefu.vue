@@ -9,7 +9,7 @@
     >{{inputPongIngString}}</span>
     <mt-header v-if="isShowHeader" fixed :title="isInputPongIng ? inputPongIngString : '在线客服'">
       <div slot="left">
-        <mt-button @click="back" icon="back"></mt-button>
+        <mt-button @click="$router.go(-1)" icon="back"></mt-button>
       </div>
       <mt-button @click="headRightBtn" slot="right">
         <img title="人工客服" v-if="!isArtificial" src="http://qiniu.cmp520.com/kefu_icon_2000.png" alt />
@@ -162,7 +162,6 @@
         <span>正在连接中~</span>
       </div>
     </div>
-
     <div class="mini-im-loading" v-if="isLoading">
       <mt-spinner type="triple-bounce" color="#26a2ff"></mt-spinner>
     </div>
@@ -229,32 +228,23 @@
 </template>
 
 <script>
-import axios from "axios";
 import { Toast, MessageBox } from "mint-ui";
-import * as qiniu from "qiniu-js";
 var emojiService = require("../../resource/emoji");
 import BScroll from "better-scroll";
-import { mapGetters } from 'vuex'
+import { mapGetters } from "vuex";
 export default {
   name: "app",
   data() {
     return {
-      messages: [],
       isLoading: true,
       isShowTopLoading: true,
-      userLocal: "", // 用户地理位置
       isFirstGetMessage: true, // 第一次获取本地消息
       chatValue: "", // 发送消息的内容
       emojis: emojiService.emojiData, // emoji数据
       showEmoji: false, // 是否显示emoji面板
-      userInfo: {}, // 用户信息
-      companyInfo: null, // 公司信息
-      uploadToken: null, // 上传token
-      isLoadMorEnd: false,
       isUserSendLongTimeSystemMessage: false, // 本次用户会话超时了是否发送了结束前提示语
       isAdminSendLongTimeSystemMessage: false, // 本次客服会话超时了是否发送了结束前提示语
       isInputPongIng: false,
-      isLoadMorLoading: false,
       isSendPong: false,
       qiniuObservable: null,
       inputPongIngString: "对方正在输入...",
@@ -271,18 +261,6 @@ export default {
     account() {
       return this.isArtificial ? this.artificialAccount : this.robotAccount;
     },
-    isIOS() {
-      return !!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
-    },
-    isSafari() {
-      return (
-        navigator.userAgent.indexOf("Safari") > -1 &&
-        navigator.userAgent.indexOf("Chrome") < 1
-      );
-    },
-    isJudgeBigScreen() {
-      return this.$judgeBigScreen();
-    },
     viewMessage() {
       var messages = this.messages;
       for (let i = 0; i < messages.length; i++) {
@@ -295,21 +273,31 @@ export default {
       }
       return messages;
     },
+    messages() {
+      return this.$store.getters.messages.map(i => this.handlerMessage(i));
+    },
     ...mapGetters([
-      'platform',
-      'isArtificial',
-      'isShowHeader',
-      'isMobile',
-      'uid',
-      'userAccount',
-      'artificialAccount',
-      'robotInfo',
-      'robotAccount',
+      "platform",
+      "isArtificial",
+      "isShowHeader",
+      "isMobile",
+      "uid",
+      "userAccount",
+      "artificialAccount",
+      "robotInfo",
+      "robotAccount",
+      "isLoadMorEnd",
+      "userLocal",
+      "isLoadMorLoading",
+      "userInfo",
+      "isSafari",
+      "isIOS",
+      "isJudgeBigScreen"
     ])
   },
   mounted() {
     setTimeout(() => {
-      this.isLoading = false;
+      this.isLoading = true;
       this.scroll = new BScroll(this.$refs.miniImBody, {
         click: true,
         tab: true,
@@ -337,12 +325,11 @@ export default {
     document.addEventListener("paste", this.inputPaste, false);
   },
   beforeDestroy() {
-    this.toggleWindow(0);
+    this.$store.dispatch("onToggleWindow", 0);
   },
   methods: {
     // runApp
     runApp() {
-      const IM = this.$mimcInstance;
       const user = this.$mimcInstance.getLocalCacheUser();
       if (
         user &&
@@ -352,7 +339,7 @@ export default {
       ) {
         localStorage.clear();
       }
-      IM.init(
+      this.$mimcInstance.init(
         {
           type: 0, // 默认0
           address: this.userLocal,
@@ -365,31 +352,31 @@ export default {
           if (!user) {
             setTimeout(() => this.runApp(), 1000);
           } else {
+             this.isLoading = false;
             // handelEvent
             this.handelEvent();
             // user
-            this.userInfo = user;
-            this.$store.commit("updateState", { userAccount: user.id });
+            this.$store.commit("updateState", { userAccount: user.id, userInfo: user });
             // robot
-            var robot = IM.robot
-            console.log(robot)
+            var robot = this.$mimcInstance.robot;
+            console.log(robot);
             localStorage.setItem("robot_" + robot.id, JSON.stringify(robot));
             this.$store.commit("updateState", {
               robotAccount: robot.id,
               robotInfo: robot
             });
             // 清除未读消息
-            this.cleanRead(user.id);
+            this.$store.dispatch("onCleanRead");
             // 更换toggle
-            this.toggleWindow(1);
+            this.$store.dispatch("onToggleWindow", 1);
             // 登录完成发送一条握手消息给机器人
-            IM.login(() => {
+            this.$mimcInstance.login(() => {
               setTimeout(() => {
                 // 获取消息记录
                 this.getMessageRecord();
                 if (!this.artificialAccount) {
                   console.log("握手消息");
-                  IM.sendMessage("handshake", this.robotAccount, "");
+                  this.$mimcInstance.sendMessage("handshake", this.robotAccount, "");
                 }
                 this.scrollIntoBottom();
               }, 500);
@@ -403,8 +390,12 @@ export default {
     },
     // handelEvent
     handelEvent() {
-      // 发起请求
-      this.getAllhttp();
+      
+      // 获取公司信息
+      this.$store.dispatch("onGetCompanyInfo")
+
+      // 获取上传配置信息
+      this.$store.dispatch("onGetUploadSecret")
 
       // 上报活动时间
       this.upLastActivity();
@@ -445,25 +436,14 @@ export default {
 
       // 计算用户是否长时间未回复弹出给出提示
       this.onCheckIsloogTimeNotCallBack();
+
+      // 关闭top loading
+      setTimeout(()=> this.isShowTopLoading = false, 1000)
+
     },
     // 根据IP获取用户地理位置
     getLocal() {
-      var APPKey = ""; // 高德地图web应用key
-      axios
-        .get("https://restapi.amap.com/v3/ip?key=" + APPKey)
-        .then(response => {
-          if (response.data.province) {
-            console.log(response.data.province + response.data.city);
-            this.userLocal = response.data.province + response.data.city;
-          }
-        })
-        .catch(error => {
-          console.error(error);
-        });
-    },
-    // 刷新页面
-    resetLoad() {
-      window.location.reload();
+      this.$store.dispatch("onGetLocal", this.$store.state.AmapAPPKey);
     },
     // 快捷键换行
     enterShift(event) {
@@ -499,18 +479,6 @@ export default {
         );
       }
     },
-    // 清除未读消息
-    cleanRead(id) {
-      axios.get("/public/clean_read/");
-    },
-    //  用户是否在当前聊天页面
-    toggleWindow(window) {
-      axios.put("/public/window/", { window: window });
-    },
-    // 返回上一页按钮
-    back() {
-      history.go(-1);
-    },
     // 是否显示用户头像信息（系统消息隐藏）
     isShowInfo(biz_type) {
       return (
@@ -535,7 +503,7 @@ export default {
     upLastActivity() {
       this.onCheckIsOutSession();
       const user = this.$mimcInstance.getLocalCacheUser();
-      if (user) axios.get("/public/activity/");
+      if (user) this.$store.dispatch("onUpdateLastActivity");
       if (this.isArtificial) {
         localStorage.setItem("artificialTime", Date.now());
       }
@@ -554,15 +522,15 @@ export default {
         }
       }
     },
-    // 获取本地更多数据
+    // 获取更多数据
     loadMorData() {
       if (this.isLoadMorLoading) return;
       if (this.isLoadMorEnd) return;
-      this.isLoadMorLoading = true;
+      this.$store.commit("updateState", { isLoadMorLoading: true });
       setTimeout(() => {
         // 获取消息记录
         this.getMessageRecord();
-        this.isLoadMorLoading = false;
+        this.$store.commit("updateState", { isLoadMorLoading: false });
       }, 1000);
     },
     // 获取本地缓存的客服信息
@@ -606,8 +574,7 @@ export default {
           Toast({
             message: "上传失败，请重新上传！"
           });
-          const IM = self.$mimcInstance;
-          var message = IM.createLocalMessage(
+          var message = this.$mimcInstance.createLocalMessage(
             "system",
             self.account,
             "您刚刚上传的图片失败了，请重新上传！"
@@ -641,71 +608,30 @@ export default {
         self.$previewRefresh();
         self.scrollIntoBottom();
 
-        // 系统内置
-        if (self.uploadToken.mode == 1) {
-          let fd = new FormData();
-          fd.append("file", file);
-          fd.append("file_name", fileName);
-          axios
-            .post("/public/upload", fd)
-            .then(res => {
-              uploadSuccess(res.data.data);
-            })
-            .catch(() => {
-              uploadError();
-            });
-        }
-        // 七牛云
-        else if (self.uploadToken.mode == 2) {
-          let options = {
-            quality: 0.92,
-            noCompressIfLarger: true,
-            maxWidth: 1500
-          };
-          qiniu.compressImage(file, options).then(data => {
-            const observable = qiniu.upload(
-              data.dist,
-              fileName,
-              self.uploadToken.secret,
-              {},
-              {
-                mimeType: null
+        // 上传
+        self.qiniuObservable = self.$uploadFile({
+          file,
+          mode: self.uploadToken.mode,
+          // 七牛才会执行
+          percent(res){
+            localMessage.percent = Math.ceil(res.total.percent);
+              if (res.total.size < 1) {
+                self.qiniuObservable.unsubscribe();
+                self.cancelMessage(localMessage.key);
+                Toast({
+                  message: "上传失败，该图片已损坏！"
+                });
               }
-            );
-            self.qiniuObservable = observable.subscribe({
-              next: function(res) {
-                localMessage.percent = Math.ceil(res.total.percent);
-                if (res.total.size < 1) {
-                  self.qiniuObservable.unsubscribe();
-                  self.cancelMessage(localMessage.key);
-                  Toast({
-                    message: "上传失败，该图片已损坏！"
-                  });
-                }
-              },
-              error: function() {
-                // 失败后再次使用FormData上传
-                var formData = new FormData();
-                formData.append("fileType", "image");
-                formData.append("fileName", "file");
-                formData.append("key", fileName);
-                formData.append("token", self.uploadToken.secret);
-                formData.append("file", file);
-                axios
-                  .post("https://upload.qiniup.com", formData)
-                  .then(() => {
-                    uploadSuccess(fileName);
-                  })
-                  .catch(() => {
-                    uploadError();
-                  });
-              },
-              complete: function(res) {
-                uploadSuccess(res.key);
-              }
-            });
-          });
-        }
+          },
+          success(src){
+            uploadSuccess(src);
+          },
+          fail(){
+            uploadError();
+          }
+        });
+
+
       };
     },
     // 滚动条置底
@@ -724,36 +650,6 @@ export default {
     chatInputBlur() {
       window.chatInputInterval = null;
       window.scroll(0, 0);
-    },
-    // 获取上传配置
-    getUploadSecret() {
-      return axios.get("/public/secret").then(response => {
-        this.uploadToken = response.data.data;
-      });
-    },
-    // 获取公司信息
-    getCompanyInfo() {
-      return axios
-        .get("/public/company")
-        .then(response => {
-          this.companyInfo = response.data.data;
-        })
-        .catch(error => {
-          Toast({
-            message: error.response.data.message
-          });
-        });
-    },
-    // 发起并发请求
-    getAllhttp() {
-      axios
-        .all([this.getCompanyInfo(), this.getUploadSecret()])
-        .then(
-          axios.spread(() => {
-            this.isShowTopLoading = false;
-          })
-        )
-        .catch(() => setTimeout(() => this.getAllhttp(), 1000));
     },
     // 接收消息
     receiveP2PMsg(message) {
@@ -849,8 +745,7 @@ export default {
       }
       var chatValue = this.chatValue.trim();
       if (chatValue == "") return;
-      const IM = this.$mimcInstance;
-      const message = IM.sendMessage("text", this.account, chatValue);
+      const message = this.$mimcInstance.sendMessage("text", this.account, chatValue);
       message.isShowCancel = true;
       setTimeout(() => (message.isShowCancel = false), 10000);
       this.messagesPushMemory(message);
@@ -859,8 +754,7 @@ export default {
     },
     // 撤回消息
     cancelMessage(key) {
-      const IM = this.$mimcInstance;
-      const message = IM.sendMessage("cancel", this.account, key);
+      const message = this.$mimcInstance.sendMessage("cancel", this.account, key);
       this.messagesPushMemory(message);
       this.removeMessage(this.userInfo.id, key);
       if (this.qiniuObservable) this.qiniuObservable.unsubscribe();
@@ -868,8 +762,7 @@ export default {
     // 点击知识库消息
     sendKnowledgeMessage(content) {
       this.handshakeKeywordList = [];
-      const IM = this.$mimcInstance;
-      const message = IM.sendMessage("text", this.account, content);
+      const message = this.$mimcInstance.sendMessage("text", this.account, content);
       this.messagesPushMemory(message);
       this.chatValue = "";
     },
@@ -927,33 +820,16 @@ export default {
     },
     // 获取服务器消息列表
     getMessageRecord() {
-      const pageSize = 20;
-      let uid = this.userInfo.id;
       let timestamp =
         this.messages.length == 0
           ? parseInt((new Date().getTime() + " ").substr(0, 10))
           : this.messages[0].timestamp;
-      axios
-        .post("/public/messages", {
-          timestamp: timestamp,
-          page_size: pageSize
-        })
-        .then(response => {
-          let messages = response.data.data.list || [];
-          if (messages.length < pageSize) this.isLoadMorEnd = true;
-          if (this.messages.length == 0 && messages.length > 0) {
-            this.messages = response.data.data.list.map(i =>
-              this.handlerMessage(i)
-            );
-            this.scrollIntoBottom();
-          } else if (messages.length > 0) {
-            messages = messages.map(i => this.handlerMessage(i));
-            this.messages = messages.concat(this.messages);
-          }
-        })
-        .catch(error => {
-          console.log(error);
-        });
+      let oldMsg = this.messages;
+      this.$store.dispatch("onGetMessages", {
+        timestamp,
+        oldMsg,
+        callback: () => this.scrollIntoBottom()
+      });
     },
     // 敲键盘发送pong事件消息
     keyUpEvent() {
@@ -974,7 +850,7 @@ export default {
           continue;
         newMessages.push(this.messages[i]);
       }
-      this.messages = newMessages;
+      this.$store.commit("updateState", { messages: newMessages });
     },
     // 生成query
     createLinkQuery() {
@@ -987,7 +863,11 @@ export default {
       let uid = this.uid ? "&uid=" + this.uid : "";
       let query =
         "?h=" + h + "&m=" + m + "&p=" + p + "&r=" + r + "&a=" + a + u + uid;
-      history.replaceState(null, null, query);
+      history.replaceState(
+        null,
+        null,
+        location.origin + "/#" + this.$route.path + query
+      );
       if (
         this.userAccount != null &&
         this.userAccount != "null" &&
@@ -1009,8 +889,7 @@ export default {
         !this.isUserSendLongTimeSystemMessage &&
         Date.now() - lastCallBackMessageTime >= 1000 * 60 * 5
       ) {
-        const IM = this.$mimcInstance;
-        var message = IM.createLocalMessage(
+        var message = this.$mimcInstance.createLocalMessage(
           "system",
           this.account,
           "您已超过5分钟未回复消息，系统3分钟后将结束对话"
@@ -1034,8 +913,7 @@ export default {
         loogTimeWaitText.trim() != "" &&
         Date.now() - lastCallBackMessageTime >= 1000 * 60 * 2
       ) {
-        const IM = this.$mimcInstance;
-        var message = IM.createLocalMessage(
+        var message = this.$mimcInstance.createLocalMessage(
           "text",
           this.account,
           loogTimeWaitText
@@ -1054,9 +932,8 @@ export default {
         return;
       }
       if (this.searchHandshakeTimer) clearTimeout(this.searchHandshakeTimer);
-      const IM = this.$mimcInstance;
       this.searchHandshakeTimer = setTimeout(() => {
-        IM.sendMessage("search_knowledge", this.robotAccount, this.chatValue);
+        this.$mimcInstance.sendMessage("search_knowledge", this.robotAccount, this.chatValue);
         this.searchHandshakeTimer = null;
       }, 500);
     },
@@ -1126,40 +1003,6 @@ export default {
 </script>
 
 <style lang="stylus">
-body {
-  min-width: 240px;
-  overflow: hidden;
-  height: 100vh;
-  background-color: #f3f3f3;
-}
-
-.mint-header.is-fixed {
-  height: 50px !important;
-  background: -webkit-linear-gradient(to right, #26a2ff, #736cde);
-  background: -o-linear-gradient(to right, #26a2ff, #736cde);
-  background: -moz-linear-gradient(to right, #26a2ff, #736cde);
-  background: linear-gradient(to right, #26a2ff, #736cde);
-
-  .mint-header-title {
-    font-size: 15px;
-  }
-}
-
-.mint-header, .mint-tabbar {
-  min-width: 240px;
-  z-index: 999999999 !important;
-}
-
-.mint-header .is-right {
-  img {
-    width: 25px;
-  }
-}
-
-.mint-header .mint-button .mintui {
-  font-size: 23px !important;
-}
-
 .mint-tabbar {
   z-index: 999999999 !important;
   background-color: #fff !important;
@@ -1198,11 +1041,12 @@ body {
 
   .mini-im-loading {
     display: flex;
-    min-width: 240px;
     width: 100%;
     position: fixed;
+    height 100vh
     top: 0;
     left: 0;
+    z-index: 9;
     right: 0;
     background-color: #fff !important;
     margin: auto;
@@ -1456,7 +1300,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 9;
+    z-index: 8;
 
     span {
       color: #999;

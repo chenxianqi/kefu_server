@@ -8,4 +8,12 @@ export default {
     artificialAccount: null,    // 客服账号ID
     robotInfo: null,            // 机器人信息
     robotAccount: null,         // 机器人账号ID
+    messages: [],               // 消息列表
+    isLoadMorEnd: false,        // 是否已经到末尾
+    userLocal: "",              // 用户地理位置
+    AmapAPPKey: "",             // 高德地图web appkey
+    isLoadMorLoading: false,    // 是否在加装更多消息loading
+    userInfo: {},               // 用户信息
+    companyInfo: null,          // 公司信息
+    uploadToken: null,          // 上传token
 }

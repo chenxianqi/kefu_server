@@ -7,7 +7,11 @@ const router = new Router({
     routes: [
         {
             path: '/',
-            name: 'kefu',
+            redirect: '/index'
+        },
+        {
+            path: '/index',
+            name: 'index',
             component: () => import('./views/kefu.vue')
         },
         {
