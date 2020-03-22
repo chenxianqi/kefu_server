@@ -36,20 +36,22 @@ MimcPlugin.install = function (Vue, options) {
                 localStorage.setItem("user", JSON.stringify(response.data.data.user))
                 localStorage.setItem("Token", response.data.data.user.token)
                 console.log("MIMC初始化成功")
-                this.getRobot()
-                if(callback) callback(response.data.data.user)
+                this.getRobot(()=>{
+                    if(callback) callback(response.data.data.user)
+                })
             })
             .catch((error)=>{
                 if(callback) callback(null)
-                console.log(error.response)
+                console.log(error)
             })
         },
         // 获取机器人
-        getRobot(){
+        getRobot(callback){
             axios.get('/public/robot/'+this.platform)
             .then(response => {
                 this.robot = response.data.data
-            })
+                if(callback)callback()
+            }) 
             .catch((error)=>{
                 console.log("mimc初始化失败,请刷新重试", error)
             })

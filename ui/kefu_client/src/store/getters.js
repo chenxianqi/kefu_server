@@ -62,5 +62,14 @@ export default {
         let limit = window.screen.height == window.screen.availHeight ? 1.8 : 1.65;
         if (rate > limit) yes = true;
         return yes;
+    },
+    isShowPageLoading(state){
+        return state.isShowPageLoading
+    },
+    workorders(state){
+        return state.workorders
+    },
+    workorderTypes(state){
+        return state.workorderTypes
     }
 }

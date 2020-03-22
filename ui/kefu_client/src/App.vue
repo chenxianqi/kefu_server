@@ -1,24 +1,127 @@
 <template>
-    <div>
-       <router-view />
+  <div>
+    <div
+      class="mini-im-loading"
+      :class="{'pc-mini-im-loading': !isMobile}"
+      v-if="isShowPageLoading"
+    >
+      <mt-spinner type="triple-bounce" color="#26a2ff"></mt-spinner>
     </div>
+    <router-view />
+  </div>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
   name: "app",
   data() {
-    return {
-
-    };
+    return {};
   },
   computed: {
-    
+    ...mapGetters([
+      "isShowPageLoading",
+      "userAccount",
+      "isArtificial",
+      "isMobile",
+      "artificialAccount",
+      "robotAccount",
+      "platform",
+      "userLocal",
+      "uid",
+      "uid",
+    ])
   },
-  mounted() {
-    this.handelUrl()
+  created() {
+    this.getLocal();
+    setTimeout(() => {
+      this.handelUrl()
+      this.runApp()
+    }, 500);
+    // 判断是否被踢出对话
+    this.onCheckIsOutSession();
   },
   methods: {
+    runApp() {
+      const user = this.$mimcInstance.getLocalCacheUser();
+      if (
+        user &&
+        this.userAccount != null &&
+        this.userAccount != user.id &&
+        this.userAccount != 0
+      ) {
+        localStorage.clear();
+      }
+      this.$mimcInstance.init(
+        {
+          type: 0, // 默认0
+          address: this.userLocal,
+          uid: this.uid || 0, // 预留字段扩展自己平台业务
+          platform: this.platform, // 渠道（平台）
+          account_id: this.userAccount || 0 // 用户ID
+          // 初始化完成这里返回一个user
+        },
+        user => {
+
+          // 上报活动时间
+          this.upLastActivity();
+
+          // 获取公司信息
+          this.$store.dispatch("onGetCompanyInfo");
+
+          // 获取上传配置信息
+          this.$store.dispatch("onGetUploadSecret");
+
+          // 获取工单类型
+          this.$store.dispatch("onGetWorkorderTypes");
+
+          // 获取工单列表
+          this.$store.dispatch("onGetWorkorders");
+
+          // 重试
+          if (!user) {
+            setTimeout(() => this.runApp(), 1000);
+            return;
+          }
+
+          // user
+          this.$store.commit("updateState", {
+            userAccount: user.id,
+            userInfo: user
+          });
+
+          // robot
+          var robot = this.$mimcInstance.robot;
+          localStorage.setItem("robot_" + robot.id, JSON.stringify(robot));
+          this.$store.commit("updateState", {
+            robotAccount: robot.id,
+            robotInfo: robot
+          });
+
+          // 登录mimc
+          this.$mimcInstance.login();
+
+          // 发送一条握手消息给机器人
+          var sentHandshake =() =>{
+            if (this.$mimcInstance.user == null || !this.$mimcInstance.user.isLogin()) {
+                setTimeout(() => sentHandshake(), 200);
+                return
+            }
+            if (!this.artificialAccount) {
+              console.log("握手消息");
+              this.$mimcInstance.sendMessage(
+                "handshake",
+                this.robotAccount,
+                ""
+              );
+            }
+          }
+          sentHandshake()
+
+
+        }
+      );
+    },
     // Handelurl
     handelUrl() {
       // url query 介绍
@@ -30,8 +133,15 @@ export default {
       // u == userAccount  会话用户账号
       // uid == userId  业务平台的ID
       // c = 1          清除本地缓存
-      var isShowHeader,isMobile,userAccount,uid,isArtificial,artificialAccount,robotAccount,platform
-      var query = this.queryToJson(location.search);
+      var isShowHeader,
+        isMobile,
+        userAccount,
+        uid,
+        isArtificial,
+        artificialAccount,
+        robotAccount,
+        platform;
+      var query = this.$route.query;
       if (query && query.c) localStorage.clear();
       // 获取本地缓存
       var urlQuery = this.queryToJson(localStorage.getItem("urlQuery"));
@@ -48,19 +158,28 @@ export default {
         if (query.p) platform = parseInt(query.p);
         if (query.uid) uid = parseInt(query.uid);
         if (query.r == "0") {
-            isArtificial = true
-            artificialAccount = parseInt(query.a)
+          isArtificial = true;
+          artificialAccount = parseInt(query.a);
         } else {
-            robotAccount = parseInt(query.a)
+          robotAccount = parseInt(query.a);
         }
       }
       var isArtificialString = localStorage.getItem("isArtificial");
       var artificialAccountString = localStorage.getItem("artificialAccount");
       if (isArtificialString == "true") {
-          isArtificial = true
-          artificialAccount = parseInt(artificialAccountString)
+        isArtificial = true;
+        artificialAccount = parseInt(artificialAccountString);
       }
-      this.$store.commit("updateState", {isShowHeader,isMobile,userAccount,uid,isArtificial,artificialAccount,robotAccount, platform})
+      this.$store.commit("updateState", {
+        isShowHeader,
+        isMobile,
+        userAccount,
+        uid,
+        isArtificial,
+        artificialAccount,
+        robotAccount,
+        platform
+      });
     },
     // query 转json
     queryToJson(str) {
@@ -74,7 +193,33 @@ export default {
       }
       return mapData;
     },
-
+    // 根据IP获取用户地理位置
+    getLocal() {
+      this.$store.dispatch("onGetLocal", this.$store.state.AmapAPPKey);
+    },
+    // 上报最后活动时间
+    upLastActivity() {
+      this.onCheckIsOutSession();
+      const user = this.$mimcInstance.getLocalCacheUser();
+      if (user) this.$store.dispatch("onUpdateLastActivity");
+      if (this.isArtificial) {
+        localStorage.setItem("artificialTime", Date.now());
+      }
+      setTimeout(() => this.upLastActivity(), 1000 * 60);
+    },
+    // 判断是否被踢出对话
+    onCheckIsOutSession() {
+      var artificialTime = localStorage.getItem("artificialTime");
+      if (artificialTime) {
+        artificialTime = parseInt(artificialTime);
+        if (Date.now() > artificialTime + 60 * 1000 * 10) {
+          this.$store.commit("updateState", {
+            isArtificial: false,
+            artificialAccount: null
+          });
+        }
+      }
+    },
   }
 };
 </script>
@@ -114,5 +259,26 @@ body {
   font-size: 23px !important;
 }
 
+.mini-im-loading {
+  display: flex;
+  width: 100%;
+  position: fixed;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  z-index: 9;
+  right: 0;
+  background-color: #fff !important;
+  margin: auto;
+  align-items: center;
+  justify-content: center;
 
+  &.pc-mini-im-loading {
+    width: 360px !important;
+    height: 360px !important;
+    top: -48px;
+    bottom: 0;
+    margin: auto !important;
+  }
+}
 </style>

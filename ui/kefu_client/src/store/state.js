@@ -1,5 +1,6 @@
 export default {
     platform: 5,                // 平台（渠道）
+    isShowPageLoading: false,   // page loading
     isShowHeader: true,         // 是否显示header
     isMobile: true,             // 是否是移动端
     isArtificial: false,        // 是否是人工服务
@@ -16,4 +17,9 @@ export default {
     userInfo: {},               // 用户信息
     companyInfo: null,          // 公司信息
     uploadToken: null,          // 上传token
+
+    // workorder
+    workorders: [],             // 工单列表
+    workorderTypes: [],         // 工单类型列表
+    
 }

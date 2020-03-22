@@ -14,13 +14,15 @@ export default {
       .then(response => {
         let newMessage = [];
         let messages = response.data.data.list || [];
-        if (messages.length < pageSize) {
+        if (messages.length < pageSize || messages.length == 0) {
           context.commit('updateState', { isLoadMorEnd: true })
         }
         if (params.oldMsg.length == 0 && messages.length > 0) {
           newMessage = response.data.data.list
         } else if (messages.length > 0) {
           newMessage = messages.concat(params.oldMsg);
+        }else{
+          newMessage = params.oldMsg
         }
         context.commit('updateState', { messages: newMessage })
         if (params.callback) params.callback()
@@ -70,6 +72,18 @@ export default {
   onGetUploadSecret(context){
     axios.get("/public/secret").then(response => {
       context.commit('updateState', { uploadToken: response.data.data })
+    });
+  },
+  // 获取工单类型
+  onGetWorkorderTypes(context){
+    axios.get("/public/workorder/types").then(response => {
+      context.commit('updateState', { workorderTypes: response.data.data })
+    });
+  },
+  // 获取工单列表
+  onGetWorkorders(context){
+    axios.get("/public/workorders").then(response => {
+      context.commit('updateState', { workorders: response.data.data })
     });
   }
 }

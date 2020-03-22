@@ -601,6 +601,13 @@ func (c *PublicController) CreateWorkOrder() {
 			c.JSON(configs.ResponseFail, err.Message, nil)
 		}
 	}
+
+	// type is exist?
+	workOrderTypeRepository := services.GetWorkOrderTypeRepositoryInstance()
+	if _, err := workOrderTypeRepository.GetWorkOrderType(workOrder.CID); err != nil {
+		c.JSON(configs.ResponseFail, "创建失败,工单类型不存在~", err.Error())
+	}
+
 	workOrder.CreateAt = time.Now().Unix()
 	workOrder.UID = user.ID
 	workOrderRepository := services.GetWorkOrderRepositoryInstance()
@@ -708,6 +715,20 @@ func (c *PublicController) GetWorkOrders() {
 		c.JSON(configs.ResponseFail, "查询失败!", nil)
 	}
 	c.JSON(configs.ResponseSucess, "查询成功!", &workOrders)
+
+}
+
+// GetWorkOrderTypes user get word order type all
+func (c *PublicController) GetWorkOrderTypes() {
+
+	// get user
+	user := c.GetUserInfo()
+	if user == nil {
+		c.JSON(configs.ResponseFail, "查询失败!", nil)
+	}
+	workOrderTypeRepository := services.GetWorkOrderTypeRepositoryInstance()
+	workOrderTypes := workOrderTypeRepository.GetWorkOrderTypes()
+	c.JSON(configs.ResponseSucess, "查询成功！", workOrderTypes)
 
 }
 

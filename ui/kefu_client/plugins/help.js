@@ -18,6 +18,10 @@ Helps.install = function (Vue, options) {
         }
         return moment(parseInt(unix + '000')).format(format)
     }
+    // 格式化日期(相对日期)
+    Vue.prototype.$formatDate = function (unix, format = "YYYY-MM-DD HH:mm:ss") {
+        return moment(parseInt(unix + '000')).format(format)
+    }
     Vue.prototype.$robotNickname = function (id) {
         var nickname
         var robots = this.$store.getters.robots

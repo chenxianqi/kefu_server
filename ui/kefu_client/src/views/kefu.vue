@@ -162,9 +162,6 @@
         <span>正在连接中~</span>
       </div>
     </div>
-    <div class="mini-im-loading" v-if="isLoading">
-      <mt-spinner type="triple-bounce" color="#26a2ff"></mt-spinner>
-    </div>
     <div class="mini-im-emoji" v-show="showEmoji">
       <div class="mini-im-emoji-content">
         <span @click="()=>clickEmoji(item)" v-for="(item, index) in emojis" :key="index">{{item}}</span>
@@ -196,7 +193,11 @@
       <span class="expression-btn" @click="showEmoji = !showEmoji">
         <img src="../assets/expression.png" alt />
       </span>
-      <span class="workorder-btn" @click="$router.push('/workorder')">
+      <span
+        class="workorder-btn"
+        :class="{'show-header': !isShowHeader && isMobile}"
+        @click="$router.push('/workorder')"
+      >
         <img src="../assets/workorder.png" />
         <i>工单</i>
       </span>
@@ -236,8 +237,7 @@ export default {
   name: "app",
   data() {
     return {
-      isLoading: true,
-      isShowTopLoading: true,
+      isShowTopLoading: false, // top loading is connect loading
       isFirstGetMessage: true, // 第一次获取本地消息
       chatValue: "", // 发送消息的内容
       emojis: emojiService.emojiData, // emoji数据
@@ -254,8 +254,7 @@ export default {
     };
   },
   created() {
-    // this.getLocal()
-    this.runApp();
+    this.init();
   },
   computed: {
     account() {
@@ -296,8 +295,10 @@ export default {
     ])
   },
   mounted() {
+    
+    document.title = "在线客服"
+
     setTimeout(() => {
-      this.isLoading = true;
       this.scroll = new BScroll(this.$refs.miniImBody, {
         click: true,
         tab: true,
@@ -312,93 +313,56 @@ export default {
           this.loadMorData();
         }
       });
+
       // 监听发送按钮触摸事件
       this.addSendButtonTouchEventListener();
       this.createLinkQuery();
       this.scrollIntoBottom();
+      
     }, 500);
-
-    // 判断是否被踢出对话
-    this.onCheckIsOutSession();
 
     // 粘贴事件
     document.addEventListener("paste", this.inputPaste, false);
+
   },
   beforeDestroy() {
     this.$store.dispatch("onToggleWindow", 0);
   },
   methods: {
-    // runApp
-    runApp() {
-      const user = this.$mimcInstance.getLocalCacheUser();
-      if (
-        user &&
-        this.userAccount != null &&
-        this.userAccount != user.id &&
-        this.userAccount != 0
-      ) {
-        localStorage.clear();
+    // init
+    init() {
+      this.$store.commit("updateState", {isShowPageLoading: true});
+
+      // 重试
+      if (this.$mimcInstance.user == null || !this.$mimcInstance.user.isLogin()) {
+        setTimeout(() => this.init(), 1000);
+        return
       }
-      this.$mimcInstance.init(
-        {
-          type: 0, // 默认0
-          address: this.userLocal,
-          uid: this.uid || 0, // 预留字段扩展自己平台业务
-          platform: this.platform, // 渠道（平台）
-          account_id: this.userAccount || 0 // 用户ID
-          // 初始化完成这里返回一个user
-        },
-        user => {
-          if (!user) {
-            setTimeout(() => this.runApp(), 1000);
-          } else {
-             this.isLoading = false;
-            // handelEvent
-            this.handelEvent();
-            // user
-            this.$store.commit("updateState", { userAccount: user.id, userInfo: user });
-            // robot
-            var robot = this.$mimcInstance.robot;
-            console.log(robot);
-            localStorage.setItem("robot_" + robot.id, JSON.stringify(robot));
-            this.$store.commit("updateState", {
-              robotAccount: robot.id,
-              robotInfo: robot
-            });
-            // 清除未读消息
-            this.$store.dispatch("onCleanRead");
-            // 更换toggle
-            this.$store.dispatch("onToggleWindow", 1);
-            // 登录完成发送一条握手消息给机器人
-            this.$mimcInstance.login(() => {
-              setTimeout(() => {
-                // 获取消息记录
-                this.getMessageRecord();
-                if (!this.artificialAccount) {
-                  console.log("握手消息");
-                  this.$mimcInstance.sendMessage("handshake", this.robotAccount, "");
-                }
-                this.scrollIntoBottom();
-              }, 500);
-            });
-          }
-        }
-      );
+
+      // handelEvent
+      this.handelEvent();
+
+      // 清除未读消息
+      this.$store.dispatch("onCleanRead");
+
+      // 更换toggle
+      this.$store.dispatch("onToggleWindow", 1);
+
+      // 获取消息记录
+      this.getMessageRecord();
+
+
+      this.scrollIntoBottom();
+
+      // 关闭loading
+      setTimeout(()=>this.$store.commit("updateState", {isShowPageLoading: false}), 500)
 
       // 计算客服最后回复时间
       this.onServciceLastMessageTimeNotCallBack();
+
     },
     // handelEvent
     handelEvent() {
-      
-      // 获取公司信息
-      this.$store.dispatch("onGetCompanyInfo")
-
-      // 获取上传配置信息
-      this.$store.dispatch("onGetUploadSecret")
-
-      // 上报活动时间
-      this.upLastActivity();
 
       // 监听消息
       this.$mimcInstance.addEventListener("receiveP2PMsg", this.receiveP2PMsg);
@@ -414,6 +378,9 @@ export default {
       this.$mimcInstance.addEventListener(
         "statusChange",
         (bindResult, errType, errReason, errDesc) => {
+          if (bindResult) {
+            this.isShowTopLoading = false;
+          }
           console.log("状态发生变化", bindResult, errType, errReason, errDesc);
         }
       );
@@ -438,12 +405,8 @@ export default {
       this.onCheckIsloogTimeNotCallBack();
 
       // 关闭top loading
-      setTimeout(()=> this.isShowTopLoading = false, 1000)
+      setTimeout(() => (this.isShowTopLoading = false), 1000);
 
-    },
-    // 根据IP获取用户地理位置
-    getLocal() {
-      this.$store.dispatch("onGetLocal", this.$store.state.AmapAPPKey);
     },
     // 快捷键换行
     enterShift(event) {
@@ -497,29 +460,6 @@ export default {
         newWin.document.close();
       } else {
         window.open(url);
-      }
-    },
-    // 上报最后活动时间
-    upLastActivity() {
-      this.onCheckIsOutSession();
-      const user = this.$mimcInstance.getLocalCacheUser();
-      if (user) this.$store.dispatch("onUpdateLastActivity");
-      if (this.isArtificial) {
-        localStorage.setItem("artificialTime", Date.now());
-      }
-      setTimeout(() => this.upLastActivity(), 1000 * 60);
-    },
-    // 判断是否被踢出对话
-    onCheckIsOutSession() {
-      var artificialTime = localStorage.getItem("artificialTime");
-      if (artificialTime) {
-        artificialTime = parseInt(artificialTime);
-        if (Date.now() > artificialTime + 60 * 1000 * 10) {
-          this.$store.commit("updateState", {
-            isArtificial: false,
-            artificialAccount: null
-          });
-        }
       }
     },
     // 获取更多数据
@@ -613,25 +553,23 @@ export default {
           file,
           mode: self.uploadToken.mode,
           // 七牛才会执行
-          percent(res){
+          percent(res) {
             localMessage.percent = Math.ceil(res.total.percent);
-              if (res.total.size < 1) {
-                self.qiniuObservable.unsubscribe();
-                self.cancelMessage(localMessage.key);
-                Toast({
-                  message: "上传失败，该图片已损坏！"
-                });
-              }
+            if (res.total.size < 1) {
+              self.qiniuObservable.unsubscribe();
+              self.cancelMessage(localMessage.key);
+              Toast({
+                message: "上传失败，该图片已损坏！"
+              });
+            }
           },
-          success(src){
+          success(src) {
             uploadSuccess(src);
           },
-          fail(){
+          fail() {
             uploadError();
           }
         });
-
-
       };
     },
     // 滚动条置底
@@ -745,7 +683,11 @@ export default {
       }
       var chatValue = this.chatValue.trim();
       if (chatValue == "") return;
-      const message = this.$mimcInstance.sendMessage("text", this.account, chatValue);
+      const message = this.$mimcInstance.sendMessage(
+        "text",
+        this.account,
+        chatValue
+      );
       message.isShowCancel = true;
       setTimeout(() => (message.isShowCancel = false), 10000);
       this.messagesPushMemory(message);
@@ -754,7 +696,11 @@ export default {
     },
     // 撤回消息
     cancelMessage(key) {
-      const message = this.$mimcInstance.sendMessage("cancel", this.account, key);
+      const message = this.$mimcInstance.sendMessage(
+        "cancel",
+        this.account,
+        key
+      );
       this.messagesPushMemory(message);
       this.removeMessage(this.userInfo.id, key);
       if (this.qiniuObservable) this.qiniuObservable.unsubscribe();
@@ -762,7 +708,11 @@ export default {
     // 点击知识库消息
     sendKnowledgeMessage(content) {
       this.handshakeKeywordList = [];
-      const message = this.$mimcInstance.sendMessage("text", this.account, content);
+      const message = this.$mimcInstance.sendMessage(
+        "text",
+        this.account,
+        content
+      );
       this.messagesPushMemory(message);
       this.chatValue = "";
     },
@@ -793,9 +743,12 @@ export default {
         msg.biz_type == "pong" ||
         msg.biz_type == "handshake" ||
         msg.biz_type == "into"
-      )
+      ) {
         return;
-      this.messages.push(this.handlerMessage(msg));
+      }
+      var messages = JSON.parse(JSON.stringify(this.messages));
+      messages.push(this.handlerMessage(msg));
+      this.$store.commit("updateState", { messages });
       this.scrollIntoBottom();
     },
     // 处理头像昵称
@@ -933,7 +886,11 @@ export default {
       }
       if (this.searchHandshakeTimer) clearTimeout(this.searchHandshakeTimer);
       this.searchHandshakeTimer = setTimeout(() => {
-        this.$mimcInstance.sendMessage("search_knowledge", this.robotAccount, this.chatValue);
+        this.$mimcInstance.sendMessage(
+          "search_knowledge",
+          this.robotAccount,
+          this.chatValue
+        );
         this.searchHandshakeTimer = null;
       }, 500);
     },
@@ -1038,21 +995,6 @@ export default {
     font-size: 14px;
     line-height: 25px;
   }
-
-  .mini-im-loading {
-    display: flex;
-    width: 100%;
-    position: fixed;
-    height 100vh
-    top: 0;
-    left: 0;
-    z-index: 9;
-    right: 0;
-    background-color: #fff !important;
-    margin: auto;
-    align-items: center;
-    justify-content: center;
-  }
 }
 
 .mini-im-container-no-pto {
@@ -1112,14 +1054,14 @@ export default {
 
     &.expression-btn {
       position: absolute;
-      left: 45px;
+      left: 40px;
       top: 6px;
       z-index: 99;
     }
 
     &.workorder-btn {
       position: absolute;
-      left: 70px;
+      left: 62px;
       top: 6px;
       z-index: 99;
       width: 70px;
@@ -1127,9 +1069,13 @@ export default {
       font-size: 14px;
       display: flex;
 
+      &.show-header {
+        left: 100px;
+      }
+
       img {
-        width: 28px;
-        hieght: 28px;
+        width: 23px;
+        height: 23px;
       }
 
       i {
@@ -1600,13 +1546,6 @@ export default {
   overflow: hidden;
   box-shadow: 1px 1px 8px 2px #ccc;
 
-  .mini-im-loading, .mini-im-emoji {
-    width: 360px !important;
-    height: 500px !important;
-    bottom: 0;
-    margin: auto !important;
-  }
-
   .mini-im-emoji {
     box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -1718,7 +1657,7 @@ export default {
     }
 
     span.expression-btn {
-      left: 30px;
+      left: 35px;
     }
   }
 }

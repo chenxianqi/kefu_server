@@ -25,7 +25,7 @@ const router = new Router({
             component: () => import('./views/workorder_create.vue')
         },
         {
-            path: '/workorder/detail',
+            path: '/workorder/detail/:id',
             name: 'workorder_detail',
             component: () => import('./views/workorder_detail.vue')
         },
