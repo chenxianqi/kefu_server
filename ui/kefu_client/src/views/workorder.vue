@@ -22,9 +22,9 @@
               <span class="type">{{getTypeName(item.tid)}}</span>
               <span class="date">{{$formatDate(item.create_at)}}</span>
             </div>
-            <i v-if="item.status == 1" style="color:#FF9800;">客服已回复</i>
-            <i v-if="item.status == 3" style="color:#ccc">工单已结束</i>
-            <i v-if="item.status == 0 || item.status == 2" style="color:green">待回复</i>
+            <i v-if="item.status == 1" style="color:#8bc34a;">已回复</i>
+            <i v-if="item.status == 3" style="color:#ccc">已结束</i>
+            <i v-if="item.status == 0 || item.status == 2" style="color:#FF9800">待处理</i>
           </li>
         </template>
       </ul>        

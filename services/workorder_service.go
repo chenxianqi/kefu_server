@@ -53,7 +53,7 @@ func (r *WorkOrderRepository) Close(id int64, cid int64, remark string) (int64, 
 // GetUserWorkOrders get user WorkOrders
 func (r *WorkOrderRepository) GetUserWorkOrders(uid int64) ([]models.WorkOrder, error) {
 	var workOrders []models.WorkOrder
-	_, err := r.q.Filter("uid", uid).Filter("delete", 0).OrderBy("-id").All(&workOrders)
+	_, err := r.q.Filter("uid", uid).Filter("delete", 0).OrderBy("-id").OrderBy("status").All(&workOrders)
 	if err != nil {
 		logs.Warn("GetUserWorkOrders get user WorkOrders------------", err)
 	}
@@ -88,13 +88,6 @@ func (r *WorkOrderRepository) Add(workOrder models.WorkOrder) (int64, error) {
 	wid, err := r.o.Insert(&workOrder)
 	if err != nil {
 		logs.Warn("Add add WorkOrder------------", err)
-	}
-	if wid > 0 {
-		r.WorkOrderCommentRepository.Add(models.WorkOrderComment{
-			WID:      wid,
-			Content:  workOrder.Content,
-			CreateAt: createAt,
-		})
 	}
 	return wid, err
 }

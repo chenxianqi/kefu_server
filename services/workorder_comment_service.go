@@ -5,11 +5,12 @@ import (
 	"time"
 
 	"github.com/astaxie/beego/logs"
+	"github.com/astaxie/beego/orm"
 )
 
 // WorkOrderCommentRepositoryInterface interface
 type WorkOrderCommentRepositoryInterface interface {
-	GetWorkOrderComments(wid int64) ([]models.WorkOrderComment, error)
+	GetWorkOrderComments(wid int64) ([]orm.Params, error)
 	Add(workOrderComment models.WorkOrderComment) (int64, error)
 }
 
@@ -26,9 +27,9 @@ func GetWorkOrderCommentRepositoryInstance() *WorkOrderCommentRepository {
 }
 
 // GetWorkOrderComments get WorkOrderComments
-func (r *WorkOrderCommentRepository) GetWorkOrderComments(wid int64) ([]models.WorkOrderComment, error) {
-	var workOrderComments []models.WorkOrderComment
-	_, err := r.q.Filter("wid", wid).OrderBy("id").All(&workOrderComments)
+func (r *WorkOrderCommentRepository) GetWorkOrderComments(wid int64) ([]orm.Params, error) {
+	var workOrderComments []orm.Params
+	_, err := r.o.Raw("SELECT * FROM (SELECT w.*,a.nickname,a.avatar FROM work_order_comment w LEFT JOIN (SELECT * FROM admin) a ON w.a_i_d = a.id AND w.wid = ? ORDER BY w.id DESC) b WHERE wid = ?", wid, wid).Values(&workOrderComments)
 	if err != nil {
 		logs.Warn("GetWorkOrderComments get WorkOrderComments-----------", err)
 	}
