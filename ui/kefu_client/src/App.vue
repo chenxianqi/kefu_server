@@ -281,4 +281,7 @@ body {
     margin: auto !important;
   }
 }
+.workorder-create-picker .picker-item{
+  font-size 15px
+}
 </style>
