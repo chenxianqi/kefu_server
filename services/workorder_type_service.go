@@ -55,7 +55,7 @@ func (r *WorkOrderTypeRepository) GetWorkOrderType(id int64) (models.WorkOrderTy
 	var workOrderType models.WorkOrderType
 	err := r.q.Filter("id", id).One(&workOrderType)
 	if err != nil {
-		logs.Warn(" GetWorkOrderType get------------", err)
+		logs.Warn(" GetWorkOrderType get------------", id, err)
 	}
 	return workOrderType, err
 }

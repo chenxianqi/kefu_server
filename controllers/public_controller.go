@@ -604,7 +604,7 @@ func (c *PublicController) CreateWorkOrder() {
 
 	// type is exist?
 	workOrderTypeRepository := services.GetWorkOrderTypeRepositoryInstance()
-	if _, err := workOrderTypeRepository.GetWorkOrderType(workOrder.CID); err != nil {
+	if _, err := workOrderTypeRepository.GetWorkOrderType(workOrder.TID); err != nil {
 		c.JSON(configs.ResponseFail, "创建失败,工单类型不存在~", err.Error())
 	}
 
@@ -691,6 +691,9 @@ func (c *PublicController) ReplyWorkOrder() {
 			}()
 		}
 
+	}
+	if workOrder.Status == 0 {
+		status = 0
 	}
 	params["Status"] = status
 	if _, err := workOrderRepository.Update(workOrderComment.WID, params); err != nil {
@@ -816,5 +819,30 @@ func (c *PublicController) DeleteWorkOrder() {
 		c.JSON(configs.ResponseFail, "删除失败,工单不存在!", nil)
 	}
 	c.JSON(configs.ResponseSucess, "删除成功!", nil)
+
+}
+
+// CloseWorkOrder user close word order
+func (c *PublicController) CloseWorkOrder() {
+
+	// get user
+	user := c.GetUserInfo()
+	if user == nil {
+		c.JSON(configs.ResponseFail, "fail!", nil)
+	}
+	// wid
+	wid, _ := strconv.ParseInt(c.Ctx.Input.Param(":wid"), 10, 64)
+	workOrderRepository := services.GetWorkOrderRepositoryInstance()
+	workOrder, err := workOrderRepository.GetWorkOrder(wid)
+	if err != nil {
+		c.JSON(configs.ResponseFail, "查询失败,工单不存在!", nil)
+	}
+	if user != nil && user.ID != workOrder.UID {
+		c.JSON(configs.ResponseFail, "关闭失败,工单不存在!", nil)
+	}
+	if _, err := workOrderRepository.Update(wid, orm.Params{"Status": 3}); err != nil {
+		c.JSON(configs.ResponseFail, "关闭失败,工单不存在!", nil)
+	}
+	c.JSON(configs.ResponseSucess, "关闭成功!", nil)
 
 }

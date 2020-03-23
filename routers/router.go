@@ -55,6 +55,7 @@ func init() {
 			beego.NSRouter("/workorder/comments/:wid", &controllers.PublicController{}, "get:GetWorkOrderComments"),
 			beego.NSRouter("/workorder/:wid", &controllers.PublicController{}, "get:GetWorkOrder"),
 			beego.NSRouter("/workorder/:wid", &controllers.PublicController{}, "delete:DeleteWorkOrder"),
+			beego.NSRouter("/workorder/close/:wid", &controllers.PublicController{}, "put:CloseWorkOrder"),
 		),
 
 		// knowledge_base

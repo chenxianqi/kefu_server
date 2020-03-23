@@ -47,8 +47,8 @@ Helps.install = function (Vue, options) {
                 .then(res => {
                     if (success) success(res.data.data);
                 })
-                .catch(() => {
-                    if (fail) fail();
+                .catch((e) => {
+                    if (fail) fail(e);
                 });
         }
         // 七牛云
@@ -85,8 +85,8 @@ Helps.install = function (Vue, options) {
                             .then(() => {
                                 if (success) success(fileName);
                             })
-                            .catch(() => {
-                                if (fail) fail();
+                            .catch((e) => {
+                                if (fail) fail(e);
                             });
                     },
                     complete: function (res) {

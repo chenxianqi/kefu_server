@@ -32,9 +32,15 @@
         fieldset, img { border:0; }
         button, input, select, textarea { font-size:100%; outline: none;}
         table { border-collapse:collapse; border-spacing:0; }
+        *{
+          -webkit-overflow-scrolling: touch!important;
+          -webkit-appearance: none!important;
+          -webkit-tap-highlight-color:rgba(0,0,0,0)!important;
+          outline:none!important;
+        }
         input{
             border:0;
-            outline: none;
+            outline: none !important;
         }
         html{
             overflow: hidden;

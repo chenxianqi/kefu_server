@@ -24,7 +24,8 @@
             </div>
             <i v-if="item.status == 1" style="color:#8bc34a;">已回复</i>
             <i v-if="item.status == 3" style="color:#ccc">已结束</i>
-            <i v-if="item.status == 0 || item.status == 2" style="color:#FF9800">待处理</i>
+            <i v-if="item.status == 0" style="color:#FF9800">待处理</i>
+            <i v-if="item.status == 2" style="color:#FF9800">待回复</i>
           </li>
         </template>
       </ul>        
@@ -96,24 +97,24 @@ export default {
     position relative
     height 40px
     .title{
-      font-size 14px
+      font-size 15px
       color #333
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
     }
     .type{
-      font-size 12px
+      font-size 13px
       color #666
     }
     .date{
       margin-left 10px
-      font-size 12px
+      font-size 13px
       color #999
     }
     i{
       font-style normal
-      font-size 11px
+      font-size 13px
       position absolute
       right 10px
       top 0

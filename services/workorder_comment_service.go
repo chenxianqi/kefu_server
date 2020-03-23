@@ -29,7 +29,7 @@ func GetWorkOrderCommentRepositoryInstance() *WorkOrderCommentRepository {
 // GetWorkOrderComments get WorkOrderComments
 func (r *WorkOrderCommentRepository) GetWorkOrderComments(wid int64) ([]orm.Params, error) {
 	var workOrderComments []orm.Params
-	_, err := r.o.Raw("SELECT * FROM (SELECT w.*,a.nickname,a.avatar FROM work_order_comment w LEFT JOIN (SELECT * FROM admin) a ON w.a_i_d = a.id AND w.wid = ? ORDER BY w.id DESC) b WHERE wid = ?", wid, wid).Values(&workOrderComments)
+	_, err := r.o.Raw("SELECT id,wid,aid,avatar,content,create_at,nickname FROM (SELECT w.*,w.a_i_d AS `aid`,a.nickname,a.avatar FROM work_order_comment w LEFT JOIN (SELECT * FROM admin) a ON w.a_i_d = a.id AND w.wid = ? ORDER BY w.id ASC) b WHERE wid = ?", wid, wid).Values(&workOrderComments)
 	if err != nil {
 		logs.Warn("GetWorkOrderComments get WorkOrderComments-----------", err)
 	}
