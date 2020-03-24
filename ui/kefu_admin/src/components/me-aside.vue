@@ -28,7 +28,7 @@
           <el-badge :hidden="$store.getters.readCount == 0" :value="$store.getters.readCount" :max="99" style="width: 100%;">
             <div>
               <i class="el-icon-tickets"></i>
-              <span slot="title">工单系统</span>
+              <span slot="title">工单管理</span>
             </div>
             </el-badge>
         </el-menu-item>

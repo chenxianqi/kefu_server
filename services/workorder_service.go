@@ -89,13 +89,15 @@ func (r *WorkOrderRepository) GetWorkOrders(request models.WorkOrderPaginationDt
 		request.PageOn = 1
 	}
 	var maps []orm.Params
-	SQL := "SELECT *,t_i_d AS tid,c_i_d AS cid FROM (SELECT w.*,u.nickname FROM	work_order w LEFT JOIN (SELECT id, nickname FROM `user`) u ON w.uid = u.id) w WHERE `delete` = 0 " + statusSQL + tidSQL + " ORDER BY id,create_at,update_at DESC"
-	_, err := r.o.Raw(SQL+"  LIMIT ? OFFSET ?", request.PageSize, (request.PageOn-1)*request.PageSize).Values(&maps)
+	SQLSUB := "SELECT w.*,u.nickname AS u_nickname,a.nickname  AS a_nickname FROM work_order w LEFT JOIN (SELECT id, nickname FROM `user`) u ON w.uid = u.id LEFT JOIN (SELECT id, nickname FROM `admin`) a ON w.last_reply = a.id"
+	SQL := "SELECT *,t_i_d AS tid,c_i_d AS cid FROM (" + SQLSUB + ") w WHERE `delete` = 0 " + statusSQL + tidSQL + " ORDER BY status ASC, create_at DESC"
+	_, err := r.o.Raw(SQL+" LIMIT ? OFFSET ?", request.PageSize, (request.PageOn-1)*request.PageSize).Values(&maps)
 	if err != nil {
 		logs.Warn("GetWorkOrders get WorkOrders------------", err)
 		request.List = []int{}
 	}
-	total, _ := r.o.Raw(SQL).Values(&maps)
+	var _maps []orm.Params
+	total, _ := r.o.Raw(SQL).Values(&_maps)
 	request.List = maps
 	request.Total = total
 	return request, err

@@ -44,6 +44,9 @@ func (c *BaseController) JSON(status configs.ResponseStatusType, message string,
 // GetAdminAuthInfo get current anth admin that AuthInfo
 func (c *BaseController) GetAdminAuthInfo() *models.Auths {
 	token := c.Ctx.Input.Header("Authorization")
+	if token == "" {
+		c.JSON(configs.ResponseFail, "用户效验失败！", nil)
+	}
 	var authsRepository = services.GetAuthsRepositoryInstance()
 	auth := authsRepository.GetAdminAuthInfo(token)
 	if auth == nil {
@@ -56,8 +59,12 @@ func (c *BaseController) GetAdminAuthInfo() *models.Auths {
 // GetUserInfo get current user info
 func (c *BaseController) GetUserInfo() *models.User {
 	token := c.Ctx.Input.Header("Token")
+	if token == "" {
+		return nil
+	}
 	var userRepository = services.GetUserRepositoryInstance()
 	user := userRepository.GetUserWithToken(token)
+	print("user==", user)
 	if user == nil {
 		logs.Warn("GetUserInfo get current user info error------------用户效验失败！")
 	}

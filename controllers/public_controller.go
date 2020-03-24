@@ -770,6 +770,7 @@ func (c *PublicController) GetWorkOrder() {
 
 	// get user
 	user := c.GetUserInfo()
+	print(&user)
 	if user == nil {
 		// GetAdminAuthInfo
 		auth := c.GetAdminAuthInfo()
@@ -784,10 +785,10 @@ func (c *PublicController) GetWorkOrder() {
 	workOrderRepository := services.GetWorkOrderRepositoryInstance()
 	workOrder, err := workOrderRepository.GetWorkOrder(wid)
 	if err != nil {
-		c.JSON(configs.ResponseFail, "查询失败,工单不存在!", nil)
+		c.JSON(configs.ResponseFail, "查询失败,工单不存在1!", nil)
 	}
 	if user != nil && user.ID != workOrder.UID {
-		c.JSON(configs.ResponseFail, "查询失败,工单不存在!", nil)
+		c.JSON(configs.ResponseFail, "查询失败,工单不存在2!", nil)
 	}
 	c.JSON(configs.ResponseSucess, "查询成功!", &workOrder)
 
