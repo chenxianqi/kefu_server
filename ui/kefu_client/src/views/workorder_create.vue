@@ -31,8 +31,8 @@
       </div>
       <div class="field-line arrow-right file">
         <span>附件:</span>
-        <span>{{file || '上传附件'}}</span>
-        <input type="file" />
+        <span :class="{'ed': source != ''}">{{source ? '已上传附件，重新上传可替换~' : '上传附件'}}</span>
+        <input type="file" @change="uploadFile" />
       </div>
       <span class="sub-btn" @click="submit()">提交</span>
     </div>
@@ -69,7 +69,7 @@ export default {
         "email": ""
       },
       selectTyped: "",
-      file: "",
+      source: "",
       isShowTypesPicker: false
     };
   },
@@ -113,6 +113,44 @@ export default {
       }
       console.log(_)
     },
+    uploadFile(e) {
+      var fileDom = e.target;
+      var file = fileDom.files[0];
+      this.isShowUploadLoading = true;
+      const self = this;
+      this.$uploadFile({
+        file,
+        mode: this.uploadToken.mode,
+        // 七牛才会执行
+        percent() {},
+        success(src) {
+
+          self.isShowUploadLoading = false;
+          var html
+          var fullPath = self.uploadToken.host + "/" + src;
+          var fileType = src.substr(src.lastIndexOf(".") + 1);
+          if ("jpg,jpeg,png,JPG,JPEG,PNG".indexOf(fileType) != -1) {
+              html = "<br><img style='max-width:60%' preview='1' src='" + fullPath + "' />"
+          }else{
+              html = "<br><img style='width:20px;height:30px;top:3px; right:3px;position: relative;' preview='1' src='http://qiniu.cmp520.com/fj.png' />"
+              html += "<a target='_blank' href='"+fullPath+"'>下载附件</a>"
+          }
+          self.source = html
+          Toast({
+            message: "上传成功~"
+          });
+        },
+        fail(e) {
+          self.isShowUploadLoading = false;
+          if (e.response && e.response.data) {
+            Toast({
+              message: e.response.data.message
+            });
+            return;
+          }
+        }
+      });
+    },
     submit(){
       if(this.request.tid == 0){
         Toast({
@@ -134,6 +172,7 @@ export default {
       }
       if(this.isSubmit) return
       this.isSubmit = true
+      this.request.content += this.source
       axios
         .post("/public/workorder/create", this.request)
         .then(response => {
@@ -194,6 +233,9 @@ export default {
       overflow hidden
       margin-top 20px
       border-top 1px solid #ddd
+      .ed{
+        color #8bc34a
+      }
       input{
         font-size 100px
         opacity 0

@@ -17,7 +17,6 @@
 
     <div class="mini-im-chat-message-box" :class="{'self': item.from_account != seviceCurrentUser.id}" v-for="(item, index) in messages" :key="index">
       
-     
 
           <!-- 用户信息 -->
           <template v-if="item.biz_type == 'text' || item.biz_type == 'photo' || item.biz_type == 'knowledge' || item.biz_type == 'knowledge_list'">

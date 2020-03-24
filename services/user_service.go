@@ -33,9 +33,9 @@ func GetUserRepositoryInstance() *UserRepository {
 	return instance
 }
 
-// CheckUsersLoginTimeOutAndSetOffline  Check if user login timeout
-func (r *UserRepository) CheckUsersLoginTimeOutAndSetOffline(lastMessageUnixTimer int64) int64 {
-	count, err := r.q.Filter("online__in", 1, 2).Filter("last_activity__lte", lastMessageUnixTimer).Update(orm.Params{
+// CheckUsersLoginTimeOutAndSetOffline Check if user login timeout
+func (r *UserRepository) CheckUsersLoginTimeOutAndSetOffline(userOffLineUnixTimer int64) int64 {
+	count, err := r.q.Filter("online__in", 1, 2).Filter("last_activity__lte", userOffLineUnixTimer).Update(orm.Params{
 		"online":      0,
 		"remote_addr": "",
 		"token":       "",

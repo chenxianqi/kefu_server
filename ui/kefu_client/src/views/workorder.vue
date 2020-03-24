@@ -10,7 +10,7 @@
       </mt-button>
     </mt-header>
     <div class="list" :class="{'hide-header': !isShowHeader}">
-      <div class="no-data" v-if="workorders.lenght <= 0">
+      <div class="no-data" v-if="workorders.length <= 0">
         <img src="../assets/workorder.png" alt="">
         <div>您还没有发布过工单~</div>
       </div>
@@ -79,7 +79,7 @@ export default {
   }
   div{
     color #666
-    font-size 12px
+    font-size 14px
   }
 }
 .list{

@@ -47,8 +47,8 @@ func (c *BaseController) GetAdminAuthInfo() *models.Auths {
 	var authsRepository = services.GetAuthsRepositoryInstance()
 	auth := authsRepository.GetAdminAuthInfo(token)
 	if auth == nil {
-		logs.Warn("GetAdminAuthInfo fun error------------登录已失效！")
-		c.JSON(configs.ResponseFail, "登录已失效！", nil)
+		logs.Warn("GetAdminAuthInfo fun error------------用户效验失败！")
+		c.JSON(configs.ResponseFail, "用户效验失败！", nil)
 	}
 	return auth
 }
@@ -59,7 +59,7 @@ func (c *BaseController) GetUserInfo() *models.User {
 	var userRepository = services.GetUserRepositoryInstance()
 	user := userRepository.GetUserWithToken(token)
 	if user == nil {
-		logs.Warn("GetUserInfo get current user info error------------登录已失效！")
+		logs.Warn("GetUserInfo get current user info error------------用户效验失败！")
 	}
 	return user
 }

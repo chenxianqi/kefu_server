@@ -45,6 +45,10 @@ export default new Router({
           path: 'chat_record',
           component: () => import('./views/record/index.vue')
         },
+        {
+          path: 'workorder',
+          component: () => import('./views/workorder/index.vue')
+        }
       ]
     },
     {

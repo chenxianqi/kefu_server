@@ -5,12 +5,14 @@ import (
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
+	"github.com/astaxie/beego/toolbox"
 	_ "github.com/go-sql-driver/mysql"
 
 	"kefu_server/controllers"
 	"kefu_server/db"
 	"kefu_server/grpcs"
 	_ "kefu_server/routers"
+	"kefu_server/task"
 )
 
 // Initialization log
@@ -38,9 +40,9 @@ func main() {
 	initLog()
 
 	// init task
-	// task.Run()
-	// toolbox.StartTask()
-	// defer toolbox.StopTask()
+	task.Run()
+	toolbox.StartTask()
+	defer toolbox.StopTask()
 
 	/// Static file configuration
 	beego.SetStaticPath("/", "public/client")

@@ -58,14 +58,14 @@
             <div class="right">
               <div class="nickname" v-if="item.aid == '0'">我</div>
               <div class="nickname" v-else>{{item.nickname}}</div>
-              <div class="detail" v-html="commentView(item.content)"></div>
+              <div class="detail" v-html="item.content"></div>
               <div class="date">{{$formatDate(item.create_at)}}</div>
             </div>
           </div>
         </template>
         <div class="workorder-close" v-if="workorder.status == 3">工单已结束~</div>
       </div>
-      <div class="file-view" v-if="request.file != '' || isShowUploadLoading">
+      <div class="file-view" v-if="request.source != '' || isShowUploadLoading">
         <span v-if="isShowUploadLoading">
           <img src="./../assets/loading.gif" alt />
           <i>上传中~</i>
@@ -100,7 +100,7 @@ export default {
       comments: [],
       fileType: "",
       request: {
-        file: "",
+        source: "",
         content: ""
       }
     };
@@ -125,24 +125,12 @@ export default {
     );
   },
   methods: {
-    commentView(comment) {
-      var res = comment.match(/\[file=(.*)\]/);
-      if (res == null) return comment;
-      var fileType = res[1].substr(res[1].lastIndexOf(".") + 1);
-      if ("jpg,jpeg,png,JPG,JPEG,PNG".indexOf(fileType) != -1) {
-        comment = comment.replace(
-          res[0],
-          "<br><img style='max-width:60%' preview='1' src='" + res[1] + "' />"
-        );
-        this.$previewRefresh();
-      }
-      return comment;
-    },
     getWorkOrder(id) {
       return axios
         .get("/public/workorder/" + id)
         .then(response => {
           this.workorder = response.data.data;
+          setTimeout(()=>this.$previewRefresh(), 200)
         })
         .catch(error => {
           console.log(error);
@@ -154,13 +142,14 @@ export default {
         .then(response => {
           if (response.data.data == null) return;
           this.comments = response.data.data;
+          setTimeout(()=>this.$previewRefresh(), 200)
         })
         .catch(error => {
           console.log(error);
         });
     },
     reply() {
-      const content = this.request.content + this.request.file;
+      const content = this.request.content + this.request.source;
       if (content.trim() == "") {
         Toast({
           message: "请输入内容~"
@@ -177,9 +166,10 @@ export default {
           console.log(response);
           this.getComments(wid);
           this.request = {
-            file: "",
+            source: "",
             content: ""
           };
+          document.querySelector(".container").scrollTop = 10000
         })
         .catch(error => {
           this.isSubmit = false
@@ -206,9 +196,21 @@ export default {
         // 七牛才会执行
         percent() {},
         success(src) {
-          self.request.file =
-            "[file=" + self.uploadToken.host + "/" + src + "]";
+
           self.isShowUploadLoading = false;
+          var html
+          var fullPath = self.uploadToken.host + "/" + src;
+          var fileType = src.substr(src.lastIndexOf(".") + 1);
+          if ("jpg,jpeg,png,JPG,JPEG,PNG".indexOf(fileType) != -1) {
+              html = "<br><img style='max-width:60%' preview='1' src='" + fullPath + "' />"
+          }else{
+              html = "<br><img style='width:20px;height:30px;top:3px; right:3px;position: relative;' preview='1' src='http://qiniu.cmp520.com/fj.png' />"
+              html += "<a target='_blank' href='"+fullPath+"'>下载附件</a>"
+          }
+          self.request.source = html
+          Toast({
+            message: "上传成功~"
+          });
         },
         fail(e) {
           self.isShowUploadLoading = false;

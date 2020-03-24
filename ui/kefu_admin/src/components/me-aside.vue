@@ -23,7 +23,15 @@
               <span slot="title">工作台</span>
             </div>
             </el-badge>
-          </el-menu-item>
+        </el-menu-item>
+        <el-menu-item index="/workorder">
+          <el-badge :hidden="$store.getters.readCount == 0" :value="$store.getters.readCount" :max="99" style="width: 100%;">
+            <div>
+              <i class="el-icon-tickets"></i>
+              <span slot="title">工单系统</span>
+            </div>
+            </el-badge>
+        </el-menu-item>
         <el-menu-item index="/knowledge">
           <i class="el-icon-reading"></i>
           <span slot="title">知识库</span>
@@ -88,6 +96,9 @@ export default {
           break
         case "/customer":
           title = "客服管理"
+          break
+        case "/workorder":
+          title = "工单管理"
           break
         case "/users":
           title = "用户管理"

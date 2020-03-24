@@ -14,7 +14,7 @@ import (
 func appTask() {
 
 	// Task scheduling (will be executed once every 5 minute)
-	checkOnLineTk := toolbox.NewTask("checkOnLine", "0 */5 * * * *", func() error {
+	checkOnLineTk := toolbox.NewTask("checkOnLine", "0 */1 * * * *", func() error {
 
 		// timers
 		userOffLineUnixTimer := time.Now().Unix() - (60 * 10)  // User's last activity time T out online status rule
@@ -22,7 +22,7 @@ func appTask() {
 		lastMessageUnixTimer := time.Now().Unix() - (60 * 8)   // Determine if the user will not use it for a certain period of time and force them to go offline
 
 		// user
-		userOfflineCount := services.GetUserRepositoryInstance().CheckUsersLoginTimeOutAndSetOffline(lastMessageUnixTimer)
+		userOfflineCount := services.GetUserRepositoryInstance().CheckUsersLoginTimeOutAndSetOffline(userOffLineUnixTimer)
 		logs.Info("清理登录超时user", userOfflineCount, "个被强制下线")
 
 		// admin
@@ -38,6 +38,9 @@ func appTask() {
 		contacts := services.GetContactRepositoryInstance().GetTimeOutList(lastMessageUnixTimer)
 		logs.Info("清理会话超时用户,有", len(contacts), "个被结束对话")
 		for _, contact := range contacts {
+
+			// set end is session end
+			services.GetContactRepositoryInstance().UpdateIsSessionEnd(contact.FromAccount)
 
 			// Does not handle customer service
 			if admin := services.GetAdminRepositoryInstance().GetAdmin(contact.FromAccount); admin != nil {
@@ -61,9 +64,10 @@ func appTask() {
 			var messageString string
 			messageString = utils.InterfaceToString(message)
 			utils.PushMessage(contact.FromAccount, messageString)
+			utils.MessageInto(message)
 
 			// Send a reminder message to customer service
-			message.FromAccount = contact.FromAccount
+			message.FromAccount = robot.ID
 			message.ToAccount = contact.ToAccount
 			message.Payload = "用户长时间无应答，会话结束"
 			if _lastBackAdmin == nil {

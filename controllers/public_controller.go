@@ -267,7 +267,11 @@ func (c *PublicController) Robot() {
 	// get user
 	user := c.GetUserInfo()
 	if user == nil {
-		c.JSON(configs.ResponseFail, "fail!", "")
+		// GetAdminAuthInfo
+		auth := c.GetAdminAuthInfo()
+		if auth == nil {
+			c.JSON(configs.ResponseFail, "fail,!", nil)
+		}
 	}
 
 	// request body

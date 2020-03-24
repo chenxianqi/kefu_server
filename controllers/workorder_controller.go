@@ -190,3 +190,20 @@ func (c *WorkOrderController) CloseWorkOrder() {
 	c.JSON(configs.ResponseSucess, "工单已关闭！", rows)
 
 }
+
+// GetWorkOrders get workorders
+func (c *WorkOrderController) GetWorkOrders() {
+
+	request := models.WorkOrderPaginationDto{}
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &request); err != nil {
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", nil)
+	}
+
+	res, err := c.WorkOrderRepository.GetWorkOrders(request)
+	if err != nil {
+		c.JSON(configs.ResponseFail, "查询失败!", &res)
+	}
+
+	c.JSON(configs.ResponseSucess, "查询成功", &res)
+
+}

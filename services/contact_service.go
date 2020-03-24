@@ -12,7 +12,7 @@ import (
 type ContactRepositoryInterface interface {
 	GetContact(id int64) *models.Contact
 	GetContacts(uid int64) ([]models.ContactDto, error)
-	UpdateIsSessionEnd(usersID []int64, isSessionEnd int) (int64, error)
+	UpdateIsSessionEnd(uid int64) (int64, error)
 	Update(id int64, params *orm.Params) (int64, error)
 	Delete(id int64, uid int64) (int64, error)
 	DeleteAll(uid int64) (int64, error)
@@ -85,8 +85,8 @@ func (r *ContactRepository) GetContactWithIds(ids ...int64) (*models.Contact, er
 }
 
 // UpdateIsSessionEnd update
-func (r *ContactRepository) UpdateIsSessionEnd(usersID []int64, isSessionEnd int) (int64, error) {
-	res, err := r.o.Raw("UPDATE contact SET is_session_end = 1 WHERE to_account IN(?,?) AND from_account IN(?,?)", usersID, usersID).Exec()
+func (r *ContactRepository) UpdateIsSessionEnd(uid int64) (int64, error) {
+	res, err := r.o.Raw("UPDATE contact SET is_session_end = 1 WHERE from_account = ?", uid).Exec()
 	rows, _ := res.RowsAffected()
 	if err != nil {
 		logs.Warn(" UpdateIsSessionEnd update------------", err)

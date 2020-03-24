@@ -2,6 +2,7 @@ package services
 
 import (
 	"kefu_server/models"
+	"strconv"
 	"time"
 
 	"github.com/astaxie/beego/logs"
@@ -10,6 +11,7 @@ import (
 
 // WorkOrderRepositoryInterface interface
 type WorkOrderRepositoryInterface interface {
+	GetWorkOrders(request models.WorkOrderPaginationDto) (models.WorkOrderPaginationDto, error)
 	GetWorkOrder(id int64) (models.WorkOrder, error)
 	GetUserWorkOrders(uid int64) ([]models.WorkOrder, error)
 	Update(id int64, params *orm.Params) (int64, error)
@@ -68,6 +70,35 @@ func (r *WorkOrderRepository) GetWorkOrder(id int64) (models.WorkOrder, error) {
 		logs.Warn("GetWorkOrder get WorkOrder------------", err)
 	}
 	return workOrder, err
+}
+
+// GetWorkOrders get WorkOrders
+func (r *WorkOrderRepository) GetWorkOrders(request models.WorkOrderPaginationDto) (models.WorkOrderPaginationDto, error) {
+	statusSQL := ""
+	if request.Status >= 0 {
+		statusSQL = " AND `status` = " + strconv.Itoa(request.Status) + " "
+	}
+	tidSQL := ""
+	if request.Tid != 0 {
+		tidSQL = " ADN `t_i_d` = " + strconv.FormatInt(request.Tid, 10) + " "
+	}
+	if request.PageSize == 0 {
+		request.PageSize = 10
+	}
+	if request.PageOn == 0 {
+		request.PageOn = 1
+	}
+	var maps []orm.Params
+	SQL := "SELECT *,t_i_d AS tid,c_i_d AS cid FROM (SELECT w.*,u.nickname FROM	work_order w LEFT JOIN (SELECT id, nickname FROM `user`) u ON w.uid = u.id) w WHERE `delete` = 0 " + statusSQL + tidSQL + " ORDER BY id,create_at,update_at DESC"
+	_, err := r.o.Raw(SQL+"  LIMIT ? OFFSET ?", request.PageSize, (request.PageOn-1)*request.PageSize).Values(&maps)
+	if err != nil {
+		logs.Warn("GetWorkOrders get WorkOrders------------", err)
+		request.List = []int{}
+	}
+	total, _ := r.o.Raw(SQL).Values(&maps)
+	request.List = maps
+	request.Total = total
+	return request, err
 }
 
 // Delete delete WorkOrder

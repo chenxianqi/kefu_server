@@ -14,7 +14,7 @@ moment.locale("zh-cn", momentLocal)
 
 import axios from 'axios'
 
-axios.defaults.baseURL = '/v1'
+axios.defaults.baseURL = '/api'
 
 // 添加请求拦截器
 axios.interceptors.request.use((config) => {

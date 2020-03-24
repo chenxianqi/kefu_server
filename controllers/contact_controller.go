@@ -172,11 +172,10 @@ func (c *ContactController) Transfer() {
 	tk := time.NewTimer(1 * time.Second)
 	select {
 	case <-tk.C:
-		usersID := []int64{admin.ID, transferDto.UserAccount}
 
 		// ContactRepository instance
 		contactRepository := services.GetContactRepositoryInstance()
-		_, err := contactRepository.UpdateIsSessionEnd(usersID, 1)
+		_, err := contactRepository.UpdateIsSessionEnd(transferDto.UserAccount)
 
 		if err != nil {
 			logs.Info(err)
