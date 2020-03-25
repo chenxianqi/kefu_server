@@ -64,7 +64,6 @@ func (c *BaseController) GetUserInfo() *models.User {
 	}
 	var userRepository = services.GetUserRepositoryInstance()
 	user := userRepository.GetUserWithToken(token)
-	print("user==", user)
 	if user == nil {
 		logs.Warn("GetUserInfo get current user info error------------用户效验失败！")
 	}

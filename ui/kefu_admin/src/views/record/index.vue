@@ -46,6 +46,7 @@
        <el-table-column
         type="index"
         :index="indexMethod"
+         label="#序号"
         width="60">
       </el-table-column>
       <el-table-column prop="service_account" label="接待客服">

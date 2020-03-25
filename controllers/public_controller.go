@@ -697,7 +697,7 @@ func (c *PublicController) ReplyWorkOrder() {
 		}
 
 	}
-	if workOrder.Status == 0 {
+	if workOrder.Status == 0 && user != nil {
 		status = 0
 	}
 	params["Status"] = status

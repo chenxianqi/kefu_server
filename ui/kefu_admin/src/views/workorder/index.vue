@@ -10,7 +10,7 @@
     </div>
     <el-divider />
     <el-table :data="tableData.list" style="width: 100%" v-loading="loading">
-      <el-table-column type="index" :index="indexMethod" width="60"></el-table-column>
+      <el-table-column type="index" :index="indexMethod" width="60" label="#序号"></el-table-column>
       <el-table-column prop="title" label="工单标题"></el-table-column>
       <el-table-column prop="status" label="当前状态">
         <template slot-scope="scope">

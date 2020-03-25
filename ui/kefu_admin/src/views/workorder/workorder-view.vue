@@ -11,61 +11,67 @@
           <i class="el-icon-close"></i>
         </span>
         <div class="content">
-          <div class="form-line">
-            <span class="lable">标题：</span>
-            <div class="con">{{showData.title}}</div>
-          </div>
-          <div class="form-line">
-            <span class="lable">用户：</span>
-            <div class="con">{{showData.u_nickname}}</div>
-          </div>
-          <div class="form-line">
-            <span class="lable">手机：</span>
-            <div class="con">{{showData.phone}}</div>
-          </div>
-          <div class="form-line">
-            <span class="lable">邮箱：</span>
-            <div class="con">{{showData.email || '未预留邮箱'}}</div>
-          </div>
-          <div class="form-line">
-            <span class="lable">状态：</span>
-            <div class="con">
-              <span style="color:#e6a23c;" v-if="showData.status == 0">待处理</span>
-              <span style="color:#e6a23c;" v-if="showData.status == 1">待回复</span>
-              <span style="color:#67c23a;" v-if="showData.status == 2">已回复</span>
-              <span style="color:#909399;" v-if="showData.status == 3">已结束</span>
+          <div class="scroll">
+            <div class="form-line">
+              <span class="lable">标题：</span>
+              <div class="con">{{showData.title}}</div>
             </div>
-          </div>
-          <div class="form-line">
-            <span class="lable">内容：</span>
-            <div class="con" v-html="showData.content"></div>
-          </div>
-          <el-divider style="height:10px;" />
-          <div class="comments">
-            <div class="no-data" v-if="comments.length <= 0">暂无回复内容~</div>
-            <template v-else v-for="(item,index) in comments">
-              <div :key="index" class="item">
-                <div class="avatar">
-                  <img
-                    v-if="item.aid == adminInfo.id"
-                    :src="adminInfo.avatar || 'http://qiniu.cmp520.com/avatar_degault_3.png'"
-                    alt
-                  />
-                  <img
-                    v-else
-                    :src="item.a_avatar || 'http://qiniu.cmp520.com/avatar_degault_3.png'"
-                    alt
-                  />
-                </div>
-                <div class="right">
-                  <div class="nickname" v-if="item.aid == 0">{{item.u_nickname}}</div>
-                  <div class="nickname" v-else>{{item.a_nickname}}</div>
-                  <div class="detail" v-html="item.content"></div>
-                  <div class="date">{{$formatDate(item.create_at)}}</div>
-                </div>
+            <div class="form-line">
+              <span class="lable">用户：</span>
+              <div class="con">{{showData.u_nickname}}</div>
+            </div>
+            <div class="form-line">
+              <span class="lable">手机：</span>
+              <div class="con">{{showData.phone}}</div>
+            </div>
+            <div class="form-line">
+              <span class="lable">邮箱：</span>
+              <div class="con">{{showData.email || '未预留邮箱'}}</div>
+            </div>
+            <div class="form-line">
+              <span class="lable">状态：</span>
+              <div class="con">
+                <span style="color:#e6a23c;" v-if="showData.status == 0">待处理</span>
+                <span style="color:#e6a23c;" v-if="showData.status == 1">待回复</span>
+                <span style="color:#67c23a;" v-if="showData.status == 2">已回复</span>
+                <span style="color:#909399;" v-if="showData.status == 3">已结束</span>
               </div>
-            </template>
-            <div class="workorder-close" v-if="showData && showData.status == 3">工单已结束~</div>
+            </div>
+            <div class="form-line">
+              <span class="lable">内容：</span>
+              <div class="con" v-html="showData.content"></div>
+            </div>
+            <el-divider style="height:10px;" />
+            <div class="comments">
+              <div class="no-data" v-if="comments.length <= 0 && !isShowGetCommentsLoading">暂无回复内容~</div>
+              <div class="comments-loading" v-if="isShowGetCommentsLoading">
+                <i class="el-icon-loading"></i>
+                <span> 正在努力加载中~</span>
+              </div>
+              <template v-else v-for="(item,index) in comments">
+                <div :key="index" class="item">
+                  <div class="avatar">
+                    <img
+                      v-if="item.aid == adminInfo.id"
+                      :src="adminInfo.avatar || 'http://qiniu.cmp520.com/avatar_degault_3.png'"
+                      alt
+                    />
+                    <img
+                      v-else
+                      :src="item.a_avatar || 'http://qiniu.cmp520.com/avatar_degault_3.png'"
+                      alt
+                    />
+                  </div>
+                  <div class="right">
+                    <div class="nickname" v-if="item.aid == 0">{{item.u_nickname}}</div>
+                    <div class="nickname" v-else>{{item.a_nickname}}</div>
+                    <div class="detail" v-html="item.content"></div>
+                    <div class="date">{{$formatDate(item.create_at)}}</div>
+                  </div>
+                </div>
+              </template>
+              <div class="workorder-close" v-if="showData && showData.status == 3">工单已结束~</div>
+            </div>
           </div>
         </div>
          <div class="file-view" v-if="request.source != '' || isShowUploadLoading">
@@ -98,6 +104,7 @@ export default {
   data() {
     return {
       isShowUploadLoading: false,
+      isShowGetCommentsLoading: false,
       isSubmit: false,
       workorder: null,
       comments: [],
@@ -114,6 +121,9 @@ export default {
       type: Boolean
     },
     prop: Object
+  },
+  created() {
+    this.comments = []
   },
   computed: {
     showData() {
@@ -136,10 +146,16 @@ export default {
       });
     },
     getComments() {
+      this.isShowGetCommentsLoading = true
       axios.get("/public/workorder/comments/" + this.prop.id).then(response => {
         if(response.data.data != null)this.comments = response.data.data;
         setTimeout(() => this.$previewRefresh(), 500);
-      });
+        this.isShowGetCommentsLoading = false
+      }).catch(error => {
+          console.log(error);
+          this.isShowGetCommentsLoading = false
+          this.$message.error('加载失败，请刷新尝试~');
+        });
     },
     reply() {
       const content = this.request.content + this.request.source;
@@ -161,8 +177,12 @@ export default {
             source: "",
             content: ""
           };
-          document.querySelector(".content").scrollTop = 10000
           this.$message.success('回复成功~');
+          setTimeout(()=>{
+            var sBoxHeight = document.querySelector(".content").clientHeight
+            var sHeight = document.querySelector(".scroll").clientHeight
+            document.querySelector(".content").scrollTop = sHeight - sBoxHeight + 20
+          }, 500)
         })
         .catch(error => {
           this.isSubmit = false
@@ -193,7 +213,7 @@ export default {
           if ("jpg,jpeg,png,JPG,JPEG,PNG".indexOf(fileType) != -1) {
               html = "<br><img style='max-width:45%' preview='1' src='" + fullPath + "' />"
           }else{
-              html = "<br><img style='width:20px;height:30px;top:3px; right:3px;position: relative;' preview='1' src='http://qiniu.cmp520.com/fj.png' />"
+              html = "<br><img style='width:20px;height:20px;top:3px; right:3px;position: relative;' preview='1' src='http://qiniu.cmp520.com/fj.png' />"
               html += "<a target='_blank' style='color: #2e9dfc;' href='"+fullPath+"'>下载附件</a>"
           }
           self.request.source = html
@@ -202,9 +222,7 @@ export default {
         error(e) {
           self.isShowUploadLoading = false;
           if (e.response && e.response.data) {
-            Toast({
-              message: e.response.data.message
-            });
+            self.$message.error(e.response.data.message);
             return;
           }
         }
@@ -243,7 +261,7 @@ export default {
     font-size: 14px;
   }
 
-  .workorder-close {
+  .workorder-close ,.comments-loading{
     text-align: center;
     color: #666;
     font-size: 14px;
@@ -300,7 +318,7 @@ export default {
     }
   }
   .content-box {
-    width: 550px;
+    width: 600px;
     height: 100%;
     background-color: #fff;
     position: fixed;
@@ -311,7 +329,7 @@ export default {
     overflow: hidden;
     border-radius: 5px 5px 0 0;
     padding-top: 40px;
-    padding-bottom 115px
+    padding-bottom 135px
     box-sizing: border-box;
     .content{
       box-sizing: border-box;
@@ -326,7 +344,7 @@ export default {
     }
     .file-view {
       position: absolute;
-      bottom: 115px;
+      bottom: 135px;
       left: 0;
       right: 0;
       padding: 5px 10px;
@@ -356,18 +374,18 @@ export default {
       right: 0;
       margin: 0 auto;
       width: 100%;
-      height: 80px;
+      height: 100px;
       background-color: #fff;
       border-top: 1px solid rgba(158, 158, 158, 0.13);
       display: flex;
       justify-content: space-between;
-      padding: 0 10px;
+      padding: 10px 10px 0;
       box-sizing: border-box;
       align-content: center;
       align-items: center;
 
       textarea {
-        height: 45px;
+        height: 90%;
         flex-grow: 1;
         border-radius: 0;
         border: 0;

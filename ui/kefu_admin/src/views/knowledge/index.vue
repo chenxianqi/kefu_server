@@ -28,7 +28,7 @@
     </div>
     <el-divider />
     <el-table :data="tableData.list" style="width: 100%" v-loading="loading">
-      <el-table-column type="index" :index="indexMethod" width="60"></el-table-column>
+      <el-table-column type="index" :index="indexMethod" width="60" label="#序号"></el-table-column>
       <el-table-column prop="title" label="主标题"></el-table-column>
       <el-table-column prop="sub_title" label="子标题">
         <template slot-scope="scope">

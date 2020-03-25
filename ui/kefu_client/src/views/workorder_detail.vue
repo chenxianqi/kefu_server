@@ -169,7 +169,11 @@ export default {
             source: "",
             content: ""
           };
-          document.querySelector(".container").scrollTop = 10000
+          setTimeout(()=>{
+            var sBoxHeight = document.querySelector(".container").clientHeight
+            var sHeight = document.querySelector(".content").clientHeight
+            document.querySelector(".container").scrollTop = sHeight - sBoxHeight + 20
+          }, 500)
         })
         .catch(error => {
           this.isSubmit = false
@@ -204,7 +208,7 @@ export default {
           if ("jpg,jpeg,png,JPG,JPEG,PNG".indexOf(fileType) != -1) {
               html = "<br><img style='max-width:45%' preview='1' src='" + fullPath + "' />"
           }else{
-              html = "<br><img style='width:20px;height:30px;top:3px; right:3px;position: relative;' preview='1' src='http://qiniu.cmp520.com/fj.png' />"
+              html = "<br><img style='width:20px;height:20px;top:3px; right:3px;position: relative;' preview='1' src='http://qiniu.cmp520.com/fj.png' />"
               html += "<a target='_blank' style='color: #2e9dfc;' href='"+fullPath+"'>下载附件</a>"
           }
           self.request.source = html
