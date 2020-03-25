@@ -21,6 +21,10 @@ Helps.install = function (Vue, options) {
         return moment(parseInt(unix + '000')).format(format)
     }
     // 格式化日期(相对日期)
+    Vue.prototype.$formatDate = function (unix, format = "YYYY-MM-DD HH:mm:ss") {
+        return moment(parseInt(unix + '000')).format(format)
+    }
+    // 格式化日期(相对日期)
     Vue.prototype.$formatFromNowDate = function(unix){
         if(moment().format("YYYYMMDD") == moment(parseInt(unix + '000')).format("YYYYMMDD")){
             return moment(parseInt(unix + '000')).format("HH:mm")

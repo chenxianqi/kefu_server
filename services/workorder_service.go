@@ -12,7 +12,7 @@ import (
 // WorkOrderRepositoryInterface interface
 type WorkOrderRepositoryInterface interface {
 	GetWorkOrders(request models.WorkOrderPaginationDto) (models.WorkOrderPaginationDto, error)
-	GetWorkOrder(id int64) (models.WorkOrder, error)
+	GetWorkOrder(id int64) (models.WorkOrderDto, error)
 	GetUserWorkOrders(uid int64) ([]models.WorkOrder, error)
 	Update(id int64, params *orm.Params) (int64, error)
 	Add(workOrder models.WorkOrder) (int64, error)
@@ -55,7 +55,7 @@ func (r *WorkOrderRepository) Close(id int64, cid int64, remark string) (int64, 
 // GetUserWorkOrders get user WorkOrders
 func (r *WorkOrderRepository) GetUserWorkOrders(uid int64) ([]models.WorkOrder, error) {
 	var workOrders []models.WorkOrder
-	_, err := r.q.Filter("uid", uid).Filter("delete", 0).OrderBy("-id").OrderBy("status").All(&workOrders)
+	_, err := r.q.Filter("uid", uid).Filter("delete", 0).OrderBy("-id").OrderBy("status").OrderBy("-create_at").All(&workOrders)
 	if err != nil {
 		logs.Warn("GetUserWorkOrders get user WorkOrders------------", err)
 	}
@@ -63,9 +63,9 @@ func (r *WorkOrderRepository) GetUserWorkOrders(uid int64) ([]models.WorkOrder, 
 }
 
 // GetWorkOrder get WorkOrder
-func (r *WorkOrderRepository) GetWorkOrder(id int64) (models.WorkOrder, error) {
-	var workOrder models.WorkOrder
-	err := r.q.Filter("id", id).Filter("delete", 0).One(&workOrder)
+func (r *WorkOrderRepository) GetWorkOrder(id int64) (models.WorkOrderDto, error) {
+	var workOrder models.WorkOrderDto
+	err := r.o.Raw("SELECT * FROM (SELECT w.*,w.id AS i_d, w.uid AS u_i_d,u.nickname AS u_nickname FROM work_order w LEFT JOIN (SELECT * FROM `user`) u ON w.uid = u.id) w WHERE w.id = ? AND w.`delete` = 0", id).QueryRow(&workOrder)
 	if err != nil {
 		logs.Warn("GetWorkOrder get WorkOrder------------", err)
 	}
@@ -88,17 +88,17 @@ func (r *WorkOrderRepository) GetWorkOrders(request models.WorkOrderPaginationDt
 	if request.PageOn == 0 {
 		request.PageOn = 1
 	}
-	var maps []orm.Params
-	SQLSUB := "SELECT w.*,u.nickname AS u_nickname,a.nickname  AS a_nickname FROM work_order w LEFT JOIN (SELECT id, nickname FROM `user`) u ON w.uid = u.id LEFT JOIN (SELECT id, nickname FROM `admin`) a ON w.last_reply = a.id"
+	var workOrders []models.WorkOrderDto
+	SQLSUB := "SELECT w.*,u.nickname AS u_nickname,a.nickname  AS a_nickname,w.id AS i_d,w.uid AS u_i_d FROM work_order w LEFT JOIN (SELECT id, nickname FROM `user`) u ON w.uid = u.id LEFT JOIN (SELECT id, nickname FROM `admin`) a ON w.last_reply = a.id"
 	SQL := "SELECT *,t_i_d AS tid,c_i_d AS cid FROM (" + SQLSUB + ") w WHERE `delete` = 0 " + statusSQL + tidSQL + " ORDER BY status ASC, create_at DESC"
-	_, err := r.o.Raw(SQL+" LIMIT ? OFFSET ?", request.PageSize, (request.PageOn-1)*request.PageSize).Values(&maps)
+	_, err := r.o.Raw(SQL+" LIMIT ? OFFSET ?", request.PageSize, (request.PageOn-1)*request.PageSize).QueryRows(&workOrders)
 	if err != nil {
 		logs.Warn("GetWorkOrders get WorkOrders------------", err)
 		request.List = []int{}
 	}
 	var _maps []orm.Params
 	total, _ := r.o.Raw(SQL).Values(&_maps)
-	request.List = maps
+	request.List = workOrders
 	request.Total = total
 	return request, err
 }

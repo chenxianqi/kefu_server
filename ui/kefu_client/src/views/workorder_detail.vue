@@ -49,15 +49,15 @@
           <div :key="index" class="item">
             <div class="avatar">
               <img
-                v-if="item.aid == '0'"
+                v-if="item.aid == 0"
                 :src="userInfo.avatar || 'http://qiniu.cmp520.com/avatar_degault_3.png'"
                 alt
               />
-              <img v-else :src="item.avatar || 'http://qiniu.cmp520.com/avatar_degault_3.png'" alt />
+              <img v-else :src="item.a_avatar || 'http://qiniu.cmp520.com/avatar_degault_3.png'" alt />
             </div>
             <div class="right">
-              <div class="nickname" v-if="item.aid == '0'">我</div>
-              <div class="nickname" v-else>{{item.nickname}}</div>
+              <div class="nickname" v-if="item.aid == 0">我</div>
+              <div class="nickname" v-else>{{item.a_nickname}}</div>
               <div class="detail" v-html="item.content"></div>
               <div class="date">{{$formatDate(item.create_at)}}</div>
             </div>
@@ -78,7 +78,7 @@
       <div class="input-form" v-if="workorder.status != 3">
         <textarea v-model="request.content" @blur="inputBlur()" placeholder="请输入内容~"></textarea>
         <span class="icon-btn">
-          <input type="file" @change="uploadFile" onclick="this.value = null" />
+          <input title="添加附件"  type="file" @change="uploadFile" onclick="this.value = null" />
         </span>
         <span class="sub-btn" @click="reply()">提交</span>
       </div>

@@ -667,6 +667,7 @@ func (c *PublicController) ReplyWorkOrder() {
 	}
 
 	// add
+	workOrderComment.UID = workOrder.UID
 	workOrderCommentRepository := services.GetWorkOrderCommentRepositoryInstance()
 	if _, err := workOrderCommentRepository.Add(workOrderComment); err != nil {
 		c.JSON(configs.ResponseFail, "发送失败!", nil)
@@ -785,10 +786,10 @@ func (c *PublicController) GetWorkOrder() {
 	workOrderRepository := services.GetWorkOrderRepositoryInstance()
 	workOrder, err := workOrderRepository.GetWorkOrder(wid)
 	if err != nil {
-		c.JSON(configs.ResponseFail, "查询失败,工单不存在1!", nil)
+		c.JSON(configs.ResponseFail, "查询失败,工单不存在!", nil)
 	}
 	if user != nil && user.ID != workOrder.UID {
-		c.JSON(configs.ResponseFail, "查询失败,工单不存在2!", nil)
+		c.JSON(configs.ResponseFail, "查询失败,工单不存在!", nil)
 	}
 	c.JSON(configs.ResponseSucess, "查询成功!", &workOrder)
 

@@ -13,19 +13,10 @@ import (
 	"github.com/astaxie/beego/plugins/cors"
 )
 
-func init() {
+// routers
+func routers(prefix string) *beego.Namespace {
 
-	/// 跨域处理
-	beego.InsertFilter("*", beego.BeforeRouter, cors.Allow(&cors.Options{
-		AllowAllOrigins: true,
-		//AllowOrigins:      []string{"https://192.168.0.102"}, // 开放跨域白名单
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Authorization", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Content-Type", "token"},
-		ExposeHeaders:    []string{"Content-Length", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Content-Type"},
-		AllowCredentials: true,
-	}))
-
-	ns := beego.NewNamespace("/api",
+	return beego.NewNamespace(prefix,
 
 		// auth
 		beego.NSNamespace("/auth",
@@ -172,6 +163,27 @@ func init() {
 			beego.NSRouter("/list", &controllers.WorkOrderController{}, "post:GetWorkOrders"),
 		),
 	)
-	beego.AddNamespace(ns)
+
+}
+
+func init() {
+
+	/// 跨域处理
+	beego.InsertFilter("*", beego.BeforeRouter, cors.Allow(&cors.Options{
+		AllowAllOrigins: true,
+		//AllowOrigins:      []string{"https://192.168.0.102"}, // 开放跨域白名单
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Authorization", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Content-Type", "token"},
+		ExposeHeaders:    []string{"Content-Length", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Content-Type"},
+		AllowCredentials: true,
+	}))
+
+	// a new ns used /api
+	newNs := routers("/api")
+
+	// scrapped /v1
+	oldNs := routers("/v1")
+
+	beego.AddNamespace(newNs, oldNs)
 
 }
