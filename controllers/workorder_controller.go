@@ -201,9 +201,21 @@ func (c *WorkOrderController) GetWorkOrders() {
 
 	res, err := c.WorkOrderRepository.GetWorkOrders(request)
 	if err != nil {
-		c.JSON(configs.ResponseFail, "查询失败!", &res)
+		c.JSON(configs.ResponseFail, "查询失败!", err.Error())
 	}
 
 	c.JSON(configs.ResponseSucess, "查询成功", &res)
+
+}
+
+// GetWorkOrderCounts get workorders counts
+func (c *WorkOrderController) GetWorkOrderCounts() {
+
+	counts, err := c.WorkOrderRepository.GetCounts()
+	if err != nil {
+		c.JSON(configs.ResponseFail, "查询失败!", err.Error())
+	}
+
+	c.JSON(configs.ResponseSucess, "查询成功", &counts)
 
 }

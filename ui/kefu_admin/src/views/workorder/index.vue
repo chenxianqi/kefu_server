@@ -11,16 +11,6 @@
              条待回复工单</span>
       </span>
       <div>
-        <el-button-group>
-        <el-radio size="small" v-model="workStatus" label="-1" border>全部</el-radio>
-        <el-radio size="small" v-model="workStatus" label="0" border>待处理</el-radio>
-        <el-radio size="small" v-model="workStatus" label="2" border>待回复</el-radio>
-        <el-radio size="small" v-model="workStatus" label="1" border>已回复</el-radio>
-        <el-radio size="small" v-model="workStatus" label="3" border>已关闭</el-radio>
-        </el-button-group>
-      </div>
-      <div>
-        <el-button size="mini">回收站 ( 52654 )</el-button>
         <el-button size="mini">分类设置</el-button>
       </div>
     </div>
@@ -74,7 +64,7 @@
       </el-row>
       </div>
     </div>
-     <WorkOrderView :prop="showWorkOrder" v-model="isShowWorkOrderView" />
+     <WorkOrderView :workorderTypes="workorderTypes" :prop="showWorkOrder" v-model="isShowWorkOrderView" />
   </div>
 </template>
 <script>
@@ -90,15 +80,17 @@ export default {
       loading: true,
       isShowWorkOrderView: false,
       showWorkOrder: {},
-      workStatus: "-1",
       tableData: {
         list: [],
         page_on: 1,
         page_size: 10,
         total: 0,
-        status: -1,
+        status: "",
+        del: 0,
         tid: 0
       },
+      tabIndex: 0,
+      del: 0,
       workorderTypes:[
         {
           "id": 0,
@@ -107,6 +99,14 @@ export default {
         }
       ],
     };
+  },
+  computed: {
+    workStatus(){
+      if(this.tabIndex == this.workorderTypes.length-1 && this.workorderTypes.length > 1){
+        return '0,1,2,3'
+      }
+      return "0,1,2"
+    }
   },
   created() {
     this.getWorkorderList();
@@ -118,7 +118,10 @@ export default {
       this.isShowWorkOrderView = true
     },
     tabsChange(tab){
-      this.changeType(this.workorderTypes[parseInt(tab.index)].id)
+      this.tabIndex = parseInt(tab.index)
+      this.del = 0
+      if(this.tabIndex == this.workorderTypes.length-1) this.del = 1
+      this.changeType(this.workorderTypes[this.tabIndex].id)
     },
     // 行号
     indexMethod(index) {
@@ -133,9 +136,11 @@ export default {
     // 获取数据
     getWorkorderList(index) {
       if (index) this.tableData.page_on = index;
-      const { page_on, page_size, tid, status } = this.tableData;
+       this.tableData.status =  this.workStatus
+       this.tableData.del = this.del
+      const { page_on, page_size, tid, status, del } = this.tableData;
       axios
-        .post("/workorder/list", { page_on, page_size, tid, status })
+        .post("/workorder/list", { page_on, page_size, tid, status, del })
         .then(response => {
           this.loading = false;
           this.tableData = response.data.data;
@@ -154,6 +159,16 @@ export default {
            for(var i=0; i<response.data.data.length; i++){
              this.workorderTypes[0].count += response.data.data[i].count
            }
+           this.workorderTypes.push({
+            "id": -1,
+            "count": 0,
+            "title": "已结单"
+          })
+          this.workorderTypes.push({
+            "id": -2,
+            "count": 0,
+            "title": "回收站"
+          })
         })
         .catch(error => {
           this.$message.error(error.response.data.message);
@@ -175,10 +190,6 @@ export default {
       if(!show){
         this.getWorkorderList();
       }
-    },
-    workStatus(status){
-       this.tableData.status =  parseInt(status)
-       this.getWorkorderList();
     }
   }
 };

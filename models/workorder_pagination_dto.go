@@ -6,6 +6,7 @@ type WorkOrderPaginationDto struct {
 	PageOn   int         `json:"page_on"`
 	Total    int64       `json:"total"`
 	Tid      int64       `json:"tid"`
-	Status   int         `json:"status"`
+	Del      int         `json:"del"`
+	Status   string      `json:"status"`
 	List     interface{} `json:"list"`
 }

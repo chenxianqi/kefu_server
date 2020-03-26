@@ -11,15 +11,16 @@
           <el-button
             size="mini"
             @click="closeWorkorder"
-            v-if="showData.status == 1 || showData.status == 2"
+            v-if="(showData.status == 1 || showData.status == 2) && showData.delete == 0"
             type="warning"
           >关闭工单</el-button>
           <el-button
             size="mini"
             @click="delWorkorder"
-            v-if="showData.status == 3 && adminInfo.root == 1"
+            v-if="showData.status == 3 && adminInfo.root == 1 && showData.delete == 0"
             type="danger"
           >删除工单</el-button>
+          <div v-if="showData.delete == 1" style="font-size:13px;margin-top:5px;color:#f44336">该工单已删除</div>
         </div>
         <span class="close" @click="close">
           <i class="el-icon-close"></i>
@@ -41,6 +42,10 @@
             <div class="form-line">
               <span class="lable">邮箱：</span>
               <div class="con">{{showData.email || '未预留邮箱'}}</div>
+            </div>
+            <div class="form-line">
+              <span class="lable">类型：</span>
+              <div class="con">{{typeName || '---'}}</div>
             </div>
             <div class="form-line">
               <span class="lable">状态：</span>
@@ -134,7 +139,8 @@ export default {
       default: false,
       type: Boolean
     },
-    prop: Object
+    prop: Object,
+    workorderTypes: Array
   },
   created() {
     this.comments = [];
@@ -145,6 +151,13 @@ export default {
     },
     isShowAside() {
       return this.$store.state.isShowAside;
+    },
+    typeName(){
+      try{
+        return this.workorderTypes.filter((i)=>i.id == this.showData.tid)[0].title
+      }catch(e){
+        return ""
+      }
     },
     ...mapGetters(["adminInfo", "uploadToken"])
   },
@@ -185,7 +198,7 @@ export default {
         let remark = value
         axios
           .post("/workorder/close", { wid, remark })
-          .then(response => {
+          .then(() => {
             this.getWorkOrder()
             this.$notify({
               title: "温馨提示！",
@@ -194,7 +207,7 @@ export default {
               type: "success"
             });
           })
-          .catch(error => {
+          .catch(() => {
             this.$message.error("工单关闭失败~");
           });
       });
@@ -208,7 +221,7 @@ export default {
         const wid = this.showData.id;
         axios
           .delete("/public/workorder/" +wid)
-          .then(response => {
+          .then(() => {
               this.$notify({
                 title: "温馨提示！",
                 message: "工单已删除~",
@@ -217,7 +230,7 @@ export default {
               });
               this.close()
           })
-          .catch(error => {
+          .catch(() => {
             this.$message.error("工单删除失败~");
           });
       });

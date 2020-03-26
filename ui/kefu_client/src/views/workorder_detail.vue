@@ -34,6 +34,10 @@
           <span>{{$formatDate(workorder.create_at)}}</span>
         </div>
         <div class="con">
+          <span>类型：</span>
+          <span>{{typeName || "---"}}</span>
+        </div>
+        <div class="con">
           <span>状态：</span>
           <span>
             <i v-if="workorder.status == 1" style="color:#8bc34a;">已回复</i>
@@ -112,7 +116,15 @@ export default {
       "userInfo",
       "workorderTypes",
       "uploadToken"
-    ])
+    ]),
+    typeName(){
+      try{
+      return this.workorderTypes.filter((i)=>i.id == this.workorder.tid)[0].title
+      }catch(e){
+        console.log(e)
+        return ""
+      }
+    }
   },
   created() {
     document.title = "工单详细";
