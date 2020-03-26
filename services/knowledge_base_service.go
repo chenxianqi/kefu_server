@@ -176,7 +176,7 @@ func (r *KnowledgeBaseRepository) Delete(id int64) (int64, error) {
 // GetKnowledgeBasePlatformsTotal get Group count
 func (r *KnowledgeBaseRepository) GetKnowledgeBasePlatformsTotal() []orm.Params {
 	var maps []orm.Params
-	_, err := r.o.Raw("select P.id,p.title,IFNULL(k.count,0) as count FROM platform p LEFT JOIN (SELECT  platform,COUNT(*) AS count FROM `knowledge_base` GROUP BY platform) k ON k.platform = p.id").Values(&maps)
+	_, err := r.o.Raw("SELECT P.id,p.title,IFNULL(k.count,0) as count FROM platform p LEFT JOIN (SELECT  platform,COUNT(*) AS count FROM `knowledge_base` GROUP BY platform) k ON k.platform = p.id").Values(&maps)
 	if err != nil {
 		logs.Warn("GetKnowledgeBasePlatformsTotal get Group count------------", err)
 		return []orm.Params{}

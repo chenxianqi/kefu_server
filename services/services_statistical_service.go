@@ -14,7 +14,7 @@ import (
 type StatisticalRepositoryInterface interface {
 	Add(servicesStatistical *models.ServicesStatistical) (int64, error)
 	GetStatisticals(startDate string, endDate string) (map[string]interface{}, error)
-	GetTodayActionStatistical(startDate string, endDate string) ([]orm.Params, error)
+	GetFlowStatistical(startDate string, endDate string) ([]orm.Params, error)
 	GetCustomerServiceList(request models.ServicesStatisticalPaginationDto) models.ServicesStatisticalPaginationDto
 	CheckIsReplyAndSetReply(uid int64, aid int64, platform int64)
 }
@@ -70,7 +70,7 @@ func (r *StatisticalRepository) GetCustomerServiceList(request models.ServicesSt
 		addSQL1 = " GROUP BY `user_account` "
 	}
 
-	if counter, err := r.o.Raw("SELECT s.id, s.user_account, s.service_account,s.create_at,s.is_reception, s.transfer_account,s.platform,u.nickname FROM services_statistical AS s INNER JOIN (SELECT * FROM `user` ) AS u ON s.user_account = u.id AND s.service_account = ? AND s.create_at > ? AND s.create_at < ? AND is_reception IN("+ INReception +") "+addSQL1+" ORDER BY s.create_at DESC LIMIT ?,?", request.Cid, startDate.Unix(), endDate.Unix(), (request.PageOn-1)*request.PageSize, request.PageSize).Values(&params); counter <= 0 {
+	if counter, err := r.o.Raw("SELECT s.id, s.user_account, s.service_account,s.create_at,s.is_reception, s.transfer_account,s.platform,u.nickname FROM services_statistical AS s INNER JOIN (SELECT * FROM `user` ) AS u ON s.user_account = u.id AND s.service_account = ? AND s.create_at > ? AND s.create_at < ? AND is_reception IN("+INReception+") "+addSQL1+" ORDER BY s.create_at DESC LIMIT ?,?", request.Cid, startDate.Unix(), endDate.Unix(), (request.PageOn-1)*request.PageSize, request.PageSize).Values(&params); counter <= 0 {
 		logs.Warn("GetCustomerServiceList get Customer Service List2------------", err)
 		request.List = []string{}
 		return request
@@ -144,8 +144,8 @@ func (r *StatisticalRepository) GetStatisticals(startDate string, endDate string
 	return countsArr, nil
 }
 
-// GetTodayActionStatistical get Today Action Statistical
-func (r *StatisticalRepository) GetTodayActionStatistical(startDate string, endDate string) ([]orm.Params, error) {
+// GetFlowStatistical get Today Action Statistical
+func (r *StatisticalRepository) GetFlowStatistical(startDate string, endDate string) ([]orm.Params, error) {
 	// transform date
 	layoutDate := "2006-01-02 15:04:05"
 	loc, _ := time.LoadLocation("Local")
@@ -157,7 +157,7 @@ func (r *StatisticalRepository) GetTodayActionStatistical(startDate string, endD
 	var statisticalData []orm.Params
 	_, err := r.o.Raw("SELECT p.id platform,p.title, IFNULL(u.count,0) AS `count` FROM platform as p LEFT  JOIN (SELECT platform,COUNT(*) AS count FROM `user` WHERE last_activity BETWEEN ? AND ? GROUP BY platform) u ON p.id = u.platform", dateStart.Unix(), dateEnd.Unix()).Values(&statisticalData)
 	if err != nil {
-		logs.Warn("GetTodayActionStatistical get Today Action Statistical------------", err)
+		logs.Warn("GetFlowStatistical get Today Action Statistical------------", err)
 		return nil, err
 	}
 	return statisticalData, nil

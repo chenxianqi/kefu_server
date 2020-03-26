@@ -11,8 +11,8 @@
             :class="{'el-button--primary': item.id + '' == tableData.platform + ''}"
             @click="onTogglePlatform(item.id)"
             :key="item.id"
-            size="mini"
-          >{{item.title}} ({{item.count}})</el-button>
+            size="small"
+          >{{item.title}} ( {{item.count}} )</el-button>
         </template>
       </el-button-group>
       <el-col :span="5">

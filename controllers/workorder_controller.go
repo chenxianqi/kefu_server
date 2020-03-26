@@ -136,7 +136,7 @@ func (c *WorkOrderController) GetWorkType() {
 
 // GetWorkTypes get work order types
 func (c *WorkOrderController) GetWorkTypes() {
-	workOrderTypes := c.WorkOrderTypeRepository.GetWorkOrderTypes()
+	workOrderTypes := c.WorkOrderTypeRepository.GetWorkOrderTypesAndCountWorkorder()
 	c.JSON(configs.ResponseSucess, "查询成功！", workOrderTypes)
 }
 

@@ -771,7 +771,6 @@ func (c *PublicController) GetWorkOrder() {
 
 	// get user
 	user := c.GetUserInfo()
-	print(&user)
 	if user == nil {
 		// GetAdminAuthInfo
 		auth := c.GetAdminAuthInfo()
@@ -805,6 +804,10 @@ func (c *PublicController) DeleteWorkOrder() {
 		auth := c.GetAdminAuthInfo()
 		if auth == nil {
 			c.JSON(configs.ResponseFail, "fail!", nil)
+		}
+		admin := services.GetAdminRepositoryInstance().GetAdmin(auth.UID)
+		if admin.Root == 0 {
+			c.JSON(configs.ResponseFail, "无权限删除!", nil)
 		}
 	}
 

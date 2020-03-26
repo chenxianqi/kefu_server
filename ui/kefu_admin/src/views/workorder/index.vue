@@ -5,49 +5,76 @@
       <span>
         <i class="el-icon-tickets"></i>
         <span slot="title">工单管理</span>
+        <span style="font-size:15px;margin-left: 30px;color:#e7a646">当前有
+           <strong style="color: #f56c6c">5</strong>
+            条待处理, 和<strong style="color: #f56c6c"> 8</strong>
+             条待回复工单</span>
       </span>
-      <el-button size="mini">设置</el-button>
+      <div>
+        <el-button-group>
+        <el-radio size="small" v-model="workStatus" label="-1" border>全部</el-radio>
+        <el-radio size="small" v-model="workStatus" label="0" border>待处理</el-radio>
+        <el-radio size="small" v-model="workStatus" label="2" border>待回复</el-radio>
+        <el-radio size="small" v-model="workStatus" label="1" border>已回复</el-radio>
+        <el-radio size="small" v-model="workStatus" label="3" border>已关闭</el-radio>
+        </el-button-group>
+      </div>
+      <div>
+        <el-button size="mini">回收站 ( 52654 )</el-button>
+        <el-button size="mini">分类设置</el-button>
+      </div>
     </div>
     <el-divider />
-    <el-table :data="tableData.list" style="width: 100%" v-loading="loading">
-      <el-table-column type="index" :index="indexMethod" width="60" label="#序号"></el-table-column>
-      <el-table-column prop="title" label="工单标题"></el-table-column>
-      <el-table-column prop="status" label="当前状态">
-        <template slot-scope="scope">
-          <el-tag type="warning" v-if="scope.row.status == 0">待处理</el-tag>
-          <el-tag type="warning" v-if="scope.row.status == 1">待回复</el-tag>
-          <el-tag type="success" v-if="scope.row.status == 2">已回复</el-tag>
-          <el-tag type="info" v-if="scope.row.status == 3">已结束</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="u_nickname" label="用户（发布者）"></el-table-column>
-      <el-table-column prop="a_nickname" label="最后回复者（客服）">
-         <template slot-scope="scope">
-           {{scope.row.a_nickname || '-----'}}
-         </template>
-      </el-table-column>
-      <el-table-column prop="create_at" label="创建时间">
-        <template slot-scope="scope">{{$formatUnixDate(scope.row.create_at, "YYYY/MM/DD")}}</template>
-      </el-table-column>
-      <el-table-column prop="operating" align="center" width="150" label="操作">
-        <template slot-scope="scope">
-          <el-button @click="onShow(scope.row)" size="mini">查 看</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <el-row type="flex" style="margin-top: 20px;" justify="space-between">
-      <span style="color:#666;font-size: 14px;">共找到{{tableData.total}}条数据</span>
-      <el-pagination
-        background
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        layout="sizes, prev, pager, next"
-        :current-page="tableData.page_on"
-        :page-sizes="[5, 10, 15, 20]"
-        :total="tableData.total"
-      ></el-pagination>
-    </el-row>
-    <WorkOrderView :prop="showWorkOrder" v-model="isShowWorkOrderView" />
+    <div class="container-box">
+      <div class="menu">
+        <el-tabs @tab-click="tabsChange" tab-position="left" style="width:200px;height: 80vh;">
+          <template size="small" v-for="item in workorderTypes" border>
+            <el-tab-pane :key="item.id" :label="item.title + '（'+item.count+'）'"></el-tab-pane>
+          </template>
+        </el-tabs>
+      </div>
+      <div class="table-content">
+        <el-table :data="tableData.list" style="width: 100%" v-loading="loading">
+        <el-table-column type="index" :index="indexMethod" width="60" label="#序号"></el-table-column>
+        <el-table-column prop="title" label="工单标题"></el-table-column>
+        <el-table-column prop="status" label="当前状态">
+          <template slot-scope="scope">
+            <el-tag type="warning" v-if="scope.row.status == 0">等待客服处理</el-tag>
+            <el-tag type="warning" v-if="scope.row.status == 2">等待客服回复</el-tag>
+            <el-tag type="success" v-if="scope.row.status == 1">已有客服回复</el-tag>
+            <el-tag type="info" v-if="scope.row.status == 3"> 工单已结束 </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="u_nickname" label="用户（发布者）"></el-table-column>
+        <el-table-column prop="a_nickname" label="最后回复者（客服）">
+          <template slot-scope="scope">
+            {{scope.row.a_nickname || '-----'}}
+          </template>
+        </el-table-column>
+        <el-table-column prop="create_at" label="创建时间">
+          <template slot-scope="scope">{{$formatUnixDate(scope.row.create_at, "YYYY/MM/DD")}}</template>
+        </el-table-column>
+        <el-table-column prop="operating" align="center" width="150" label="操作">
+          <template slot-scope="scope">
+            <el-button @click="onShow(scope.row)" size="mini">查 看</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-row type="flex" style="margin-top: 20px;" justify="space-between">
+        <span style="color:#666;font-size: 14px;">共找到{{tableData.total}}条数据</span>
+        <el-pagination
+          background
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          layout="sizes, prev, pager, next"
+          :current-page="tableData.page_on"
+          :page-sizes="[5, 10, 15, 20]"
+          :total="tableData.total"
+        ></el-pagination>
+      </el-row>
+      </div>
+    </div>
+     <WorkOrderView :prop="showWorkOrder" v-model="isShowWorkOrderView" />
   </div>
 </template>
 <script>
@@ -63,6 +90,7 @@ export default {
       loading: true,
       isShowWorkOrderView: false,
       showWorkOrder: {},
+      workStatus: "-1",
       tableData: {
         list: [],
         page_on: 1,
@@ -70,24 +98,37 @@ export default {
         total: 0,
         status: -1,
         tid: 0
-      }
+      },
+      workorderTypes:[
+        {
+          "id": 0,
+          "count": 0,
+          "title": "全部工单"
+        }
+      ],
     };
   },
   created() {
-    setTimeout(() => {
-      this.getWorkorderList();
-    }, 500);
+    this.getWorkorderList();
+    this.getWorkorderTypes()
   },
   methods: {
     onShow(item){
       this.showWorkOrder = item
       this.isShowWorkOrderView = true
     },
+    tabsChange(tab){
+      this.changeType(this.workorderTypes[parseInt(tab.index)].id)
+    },
     // 行号
     indexMethod(index) {
       return (
         (this.tableData.page_on - 1) * this.tableData.page_size + index + 1
       );
+    },
+    changeType(tid){
+      this.tableData.tid = tid;
+      this.getWorkorderList(1);
     },
     // 获取数据
     getWorkorderList(index) {
@@ -104,6 +145,20 @@ export default {
           this.$message.error(error.response.data.message);
         });
     },
+    // 获取类型数据
+    getWorkorderTypes() {
+      axios
+        .get("/workorder/types")
+        .then(response => {
+          this.workorderTypes = this.workorderTypes.concat(response.data.data);
+           for(var i=0; i<response.data.data.length; i++){
+             this.workorderTypes[0].count += response.data.data[i].count
+           }
+        })
+        .catch(error => {
+          this.$message.error(error.response.data.message);
+        });
+    },
     // 改变每页条数
     handleSizeChange(val) {
       this.tableData.page_size = val;
@@ -113,6 +168,17 @@ export default {
     handleCurrentChange(val) {
       this.tableData.page_on = val;
       this.getWorkorderList();
+    }
+  },
+  watch: {
+    isShowWorkOrderView(show){
+      if(!show){
+        this.getWorkorderList();
+      }
+    },
+    workStatus(status){
+       this.tableData.status =  parseInt(status)
+       this.getWorkorderList();
     }
   }
 };
@@ -128,6 +194,16 @@ export default {
 
   i {
     margin-right: 5px;
+  }
+}
+.container-box{
+  display flex
+  .menu{
+    flex-shrink: 0;
+    width 180px;
+  }
+  .table-content{
+    flex-grow 1
   }
 }
 </style>

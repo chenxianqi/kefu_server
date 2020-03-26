@@ -59,8 +59,8 @@ func (c *HomeController) Statistical() {
 
 }
 
-// TodayActionStatistical today Statistical
-func (c *HomeController) TodayActionStatistical() {
+// GetFlowStatistical flow Statistical
+func (c *HomeController) GetFlowStatistical() {
 
 	// request body
 	statisticalRequest := StatisticalRequest{}
@@ -78,7 +78,7 @@ func (c *HomeController) TodayActionStatistical() {
 		}
 	}
 
-	statisticalData, err := c.StatisticalRepository.GetTodayActionStatistical(statisticalRequest.DateStart, statisticalRequest.DateEnd)
+	statisticalData, err := c.StatisticalRepository.GetFlowStatistical(statisticalRequest.DateStart, statisticalRequest.DateEnd)
 	if err != nil {
 		c.JSON(configs.ResponseFail, err.Error(), err.Error())
 	}

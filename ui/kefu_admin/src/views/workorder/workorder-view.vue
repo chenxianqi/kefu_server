@@ -3,9 +3,23 @@
   <div class="workorder-view" :class="{'is-show-aside': !isShowAside}" v-show="value">
     <div class="mask" @dblclick="close"></div>
     <transition name="el-zoom-in-bottom">
-      <div class="content-box" v-show="value">
+      <div class="content-box" :class="{'padding-bottom30': showData.status == 3}" v-show="value">
         <div class="title">
           <i class="el-icon-tickets"></i> 工单详细
+        </div>
+        <div class="buttons">
+          <el-button
+            size="mini"
+            @click="closeWorkorder"
+            v-if="showData.status == 1 || showData.status == 2"
+            type="warning"
+          >关闭工单</el-button>
+          <el-button
+            size="mini"
+            @click="delWorkorder"
+            v-if="showData.status == 3 && adminInfo.root == 1"
+            type="danger"
+          >删除工单</el-button>
         </div>
         <span class="close" @click="close">
           <i class="el-icon-close"></i>
@@ -31,10 +45,10 @@
             <div class="form-line">
               <span class="lable">状态：</span>
               <div class="con">
-                <span style="color:#e6a23c;" v-if="showData.status == 0">待处理</span>
-                <span style="color:#e6a23c;" v-if="showData.status == 1">待回复</span>
-                <span style="color:#67c23a;" v-if="showData.status == 2">已回复</span>
-                <span style="color:#909399;" v-if="showData.status == 3">已结束</span>
+                <span style="color:#e6a23c;" v-if="showData.status == 0">等待客服处理</span>
+                <span style="color:#e6a23c;" v-if="showData.status == 2">等待客服回复</span>
+                <span style="color:#67c23a;" v-if="showData.status == 1">已有客服回复</span>
+                <span style="color:#909399;" v-if="showData.status == 3">工单已结束</span>
               </div>
             </div>
             <div class="form-line">
@@ -46,7 +60,7 @@
               <div class="no-data" v-if="comments.length <= 0 && !isShowGetCommentsLoading">暂无回复内容~</div>
               <div class="comments-loading" v-if="isShowGetCommentsLoading">
                 <i class="el-icon-loading"></i>
-                <span> 正在努力加载中~</span>
+                <span>正在努力加载中~</span>
               </div>
               <template v-else v-for="(item,index) in comments">
                 <div :key="index" class="item">
@@ -74,7 +88,7 @@
             </div>
           </div>
         </div>
-         <div class="file-view" v-if="request.source != '' || isShowUploadLoading">
+        <div class="file-view" v-if="request.source != '' || isShowUploadLoading">
           <span v-if="isShowUploadLoading">
             <i class="el-icon-loading"></i>
             <i>上传中~</i>
@@ -85,12 +99,12 @@
           </span>
         </div>
         <div class="input-form" v-if="showData.status != 3">
-            <textarea v-model="request.content" @blur="inputBlur()" placeholder="请输入内容~"></textarea>
-            <span class="icon-btn">
-              <input title="添加附件" type="file" @change="uploadFile" onclick="this.value = null" />
-            </span>
-            <el-button type="primary" @click="reply()">提交</el-button>
-          </div>
+          <textarea v-model="request.content" @blur="inputBlur()" placeholder="请输入内容~"></textarea>
+          <span class="icon-btn">
+            <input title="添加附件" type="file" @change="uploadFile" onclick="this.value = null" />
+          </span>
+          <el-button type="primary" @click="reply()">提交</el-button>
+        </div>
       </div>
     </transition>
   </div>
@@ -98,7 +112,7 @@
 <script>
 import axios from "axios";
 import { mapGetters } from "vuex";
-import upload from '../../common/upload'
+import upload from "../../common/upload";
 export default {
   name: "workorder-view",
   data() {
@@ -123,7 +137,7 @@ export default {
     prop: Object
   },
   created() {
-    this.comments = []
+    this.comments = [];
   },
   computed: {
     showData() {
@@ -141,53 +155,109 @@ export default {
     },
     getWorkOrder() {
       axios.get("/public/workorder/" + this.prop.id).then(response => {
-        if(response.data.data != null)this.workorder = response.data.data;
+        if (response.data.data != null) this.workorder = response.data.data;
         setTimeout(() => this.$previewRefresh(), 500);
       });
     },
     getComments() {
-      this.isShowGetCommentsLoading = true
-      axios.get("/public/workorder/comments/" + this.prop.id).then(response => {
-        if(response.data.data != null)this.comments = response.data.data;
-        setTimeout(() => this.$previewRefresh(), 500);
-        this.isShowGetCommentsLoading = false
-      }).catch(error => {
+      this.isShowGetCommentsLoading = true;
+      axios
+        .get("/public/workorder/comments/" + this.prop.id)
+        .then(response => {
+          if (response.data.data != null) this.comments = response.data.data;
+          setTimeout(() => this.$previewRefresh(), 500);
+          this.isShowGetCommentsLoading = false;
+        })
+        .catch(error => {
           console.log(error);
-          this.isShowGetCommentsLoading = false
-          this.$message.error('加载失败，请刷新尝试~');
+          this.isShowGetCommentsLoading = false;
+          this.$message.error("加载失败，请刷新尝试~");
         });
+    },
+    closeWorkorder() {
+      this.$prompt("请输入关闭原因！", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        inputPattern: /\S/,
+        inputErrorMessage: "关闭工单原因不能为空~"
+      }).then(({ value }) => {
+        const wid = this.showData.id;
+        let remark = value
+        axios
+          .post("/workorder/close", { wid, remark })
+          .then(response => {
+            this.getWorkOrder()
+            this.$notify({
+              title: "温馨提示！",
+              message: "工单已关闭~",
+              showClose: false,
+              type: "success"
+            });
+          })
+          .catch(error => {
+            this.$message.error("工单关闭失败~");
+          });
+      });
+    },
+    delWorkorder() {
+        this.$confirm('您确定删除该工单吗?', '温馨提示！', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+        const wid = this.showData.id;
+        axios
+          .delete("/public/workorder/" +wid)
+          .then(response => {
+              this.$notify({
+                title: "温馨提示！",
+                message: "工单已删除~",
+                showClose: false,
+                type: "success"
+              });
+              this.close()
+          })
+          .catch(error => {
+            this.$message.error("工单删除失败~");
+          });
+      });
     },
     reply() {
       const content = this.request.content + this.request.source;
       if (content.trim() == "") {
-        this.$message.error('请输入内容~');
+        this.$message.error("请输入内容~");
         return;
       }
       if (this.isSubmit) return;
       this.isSubmit = true;
-      console.log(this.showData)
       const wid = this.showData.id;
       axios
         .post("/public/workorder/reply", { wid, content })
         .then(response => {
-           this.isSubmit = false
+          this.isSubmit = false;
           console.log(response);
           this.getComments();
           this.request = {
             source: "",
             content: ""
           };
-          this.$message.success('回复成功~');
-          setTimeout(()=>{
-            var sBoxHeight = document.querySelector(".content").clientHeight
-            var sHeight = document.querySelector(".scroll").clientHeight
-            document.querySelector(".content").scrollTop = sHeight - sBoxHeight + 20
-          }, 500)
+          this.$notify({
+            title: "温馨提示！",
+            message: "回复成功~",
+            showClose: false,
+            type: "success"
+          });
+          setTimeout(() => {
+            var sBoxHeight = document.querySelector(".content").clientHeight;
+            var sHeight = document.querySelector(".scroll").clientHeight;
+            document.querySelector(".content").scrollTop =
+              sHeight - sBoxHeight + 20;
+          }, 500);
         })
         .catch(error => {
-          this.isSubmit = false
+          this.isSubmit = false;
           console.log(error);
-           this.$message.error('提交失败~');
+          this.$message.error("提交失败~");
         });
     },
     inputBlur() {
@@ -207,17 +277,29 @@ export default {
         progress() {},
         success(src) {
           self.isShowUploadLoading = false;
-          var html
+          var html;
           var fullPath = self.uploadToken.host + "/" + src;
           var fileType = src.substr(src.lastIndexOf(".") + 1);
           if ("jpg,jpeg,png,JPG,JPEG,PNG".indexOf(fileType) != -1) {
-              html = "<br><img style='max-width:45%' preview='1' src='" + fullPath + "' />"
-          }else{
-              html = "<br><img style='width:20px;height:20px;top:3px; right:3px;position: relative;' preview='1' src='http://qiniu.cmp520.com/fj.png' />"
-              html += "<a target='_blank' style='color: #2e9dfc;' href='"+fullPath+"'>下载附件</a>"
+            html =
+              "<br><img style='max-width:45%' preview='1' src='" +
+              fullPath +
+              "' />";
+          } else {
+            html =
+              "<br><img style='width:20px;height:20px;top:3px; right:3px;position: relative;' preview='1' src='http://qiniu.cmp520.com/fj.png' />";
+            html +=
+              "<a target='_blank' style='color: #2e9dfc;' href='" +
+              fullPath +
+              "'>下载附件</a>";
           }
-          self.request.source = html
-          self.$message.success('上传成功~');
+          self.request.source = html;
+          self.$notify({
+            title: "温馨提示！",
+            message: "上传成功~",
+            showClose: false,
+            type: "success"
+          });
         },
         error(e) {
           self.isShowUploadLoading = false;
@@ -227,7 +309,7 @@ export default {
           }
         }
       });
-    },
+    }
   },
   watch: {
     prop() {
@@ -261,7 +343,7 @@ export default {
     font-size: 14px;
   }
 
-  .workorder-close ,.comments-loading{
+  .workorder-close, .comments-loading {
     text-align: center;
     color: #666;
     font-size: 14px;
@@ -317,6 +399,7 @@ export default {
       }
     }
   }
+
   .content-box {
     width: 600px;
     height: 100%;
@@ -329,19 +412,24 @@ export default {
     overflow: hidden;
     border-radius: 5px 5px 0 0;
     padding-top: 40px;
-    padding-bottom 135px
+    padding-bottom: 135px;
     box-sizing: border-box;
-    .content{
+    &.padding-bottom30{
+      padding-bottom: 30px;
+    }
+
+    .content {
       box-sizing: border-box;
-      width 100%
+      width: 100%;
       padding: 0 10px;
       height: 100%;
       overflow: hidden;
       overflow-y: auto;
       padding-top: 10px;
-      position relative
-      padding-bottom 20px
+      position: relative;
+      padding-bottom: 20px;
     }
+
     .file-view {
       position: absolute;
       bottom: 135px;
@@ -351,6 +439,7 @@ export default {
       margin: 0 auto;
       font-size: 13px;
       color: #8bc34a;
+
       span {
         display: flex;
         align-content: center;
@@ -367,6 +456,7 @@ export default {
         }
       }
     }
+
     .input-form {
       position: absolute;
       bottom: 35px;
@@ -410,6 +500,7 @@ export default {
         }
       }
     }
+
     .title {
       width: 100%;
       height: 40px;
@@ -420,6 +511,12 @@ export default {
       background-color: #fff;
       padding: 10px 0 0 10px;
       box-sizing: border-box;
+    }
+
+    .buttons {
+      position: absolute;
+      top: 5px;
+      right: 50px;
     }
 
     .close {

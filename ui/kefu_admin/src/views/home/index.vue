@@ -48,7 +48,7 @@
       </el-col>
     </el-row>
     <div>
-      <div class="mini-im-home-title" style="padding-bottom: 10px;">各渠道<span style="color: #f44336;">当天独立用户</span>访问量</div>
+      <div class="mini-im-home-title" style="padding-bottom: 10px; text-align: left;">各渠道<span style="color: #f44336">{{optionsDate[selectDateValue].label}}独立用户</span>访问量</div>
       <el-table
         :data="todayStatisticalTableData"
         style="width: 100%">
@@ -66,7 +66,7 @@
           prop="count"
           align="center"
           width="180"
-          label="当天访问人次">
+          label="访问人次">
         </el-table-column>
         <el-table-column
           label="">
@@ -129,7 +129,7 @@ export default {
   created(){
     this.selectDate = this.getDate(2)
     this.getStatistical()
-    this.getTodayStatistical()
+    this.getFlowStatistical()
     this.getOnlines()
   },
   computed:{
@@ -186,11 +186,11 @@ export default {
         this.$message.error(error.response.data.message)
       });
     },
-    // 获取今天访问数据
-    getTodayStatistical(){
-      axios.post('/home/today_statistical', {
-        "date_start": moment(new Date()).format("YYYY-MM-DD"),
-        "date_end": moment(new Date()).format("YYYY-MM-DD")
+    // 获取访问数据
+    getFlowStatistical(){
+      axios.post('/home/flow_statistical', {
+        "date_start": moment(this.selectDate[0]).format("YYYY-MM-DD"),
+        "date_end": moment(this.selectDate[1]).format("YYYY-MM-DD")
       })
       .then(response => {
         this.todayStatisticalTableData = response.data.data
@@ -239,6 +239,7 @@ export default {
     // 时间变更
     changeDate(){
       this.getStatistical()
+      this.getFlowStatistical()
     },
     // 获取在线用户数
     getOnlines(){

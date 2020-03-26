@@ -80,7 +80,7 @@ func (r *WorkOrderRepository) GetWorkOrders(request models.WorkOrderPaginationDt
 	}
 	tidSQL := ""
 	if request.Tid != 0 {
-		tidSQL = " ADN `t_i_d` = " + strconv.FormatInt(request.Tid, 10) + " "
+		tidSQL = " AND `t_i_d` = " + strconv.FormatInt(request.Tid, 10) + " "
 	}
 	if request.PageSize == 0 {
 		request.PageSize = 10

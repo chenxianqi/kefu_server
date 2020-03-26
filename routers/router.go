@@ -61,7 +61,7 @@ func routers(prefix string) *beego.Namespace {
 		beego.NSNamespace("/home",
 			beego.NSBefore(filters.FilterToken),
 			beego.NSRouter("/statistical", &controllers.HomeController{}, "post:Statistical"),
-			beego.NSRouter("/today_statistical", &controllers.HomeController{}, "post:TodayActionStatistical"),
+			beego.NSRouter("/flow_statistical", &controllers.HomeController{}, "post:GetFlowStatistical"),
 		),
 
 		// message
