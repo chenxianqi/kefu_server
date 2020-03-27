@@ -130,7 +130,7 @@ export default {
           var fullPath = self.uploadToken.host + "/" + src;
           var fileType = src.substr(src.lastIndexOf(".") + 1);
           if ("jpg,jpeg,png,JPG,JPEG,PNG".indexOf(fileType) != -1) {
-              html = "<br><img style='max-width:45%' preview='1' src='" + fullPath + "' />"
+              html = "<br><img style='max-width:45%;margin-top:5px;' preview='1' src='" + fullPath + "' />"
           }else{
               html = "<br><img style='width:20px;height:20px;top:3px; right:3px;position: relative;' preview='1' src='http://qiniu.cmp520.com/fj.png' />"
               html += "<a target='_blank' style='color: #2e9dfc;' href='"+fullPath+"'>下载附件</a>"

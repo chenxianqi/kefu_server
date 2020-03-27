@@ -60,9 +60,5 @@ func (c *BaseController) GetUserInfo() *models.User {
 		return nil
 	}
 	var userRepository = services.GetUserRepositoryInstance()
-	user := userRepository.GetUserWithToken(token)
-	if user == nil {
-		logs.Warn("GetUserInfo get current user info error------------用户效验失败！")
-	}
-	return user
+	return userRepository.GetUserWithToken(token)
 }

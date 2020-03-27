@@ -18,10 +18,14 @@ axios.defaults.baseURL = '/api'
 
 // axios添加请求拦截器
 axios.interceptors.request.use(function (config) {
+  if(config.url.indexOf("https://restapi.amap.com/v3/ip") != -1){
+    return config;
+  }
   const token = localStorage.getItem('Token') || ""
   config.headers = Object.assign({}, {
     'Token': token,
   }, config.headers)
+
   return config;
 }, function (error) {
   // eslint-disable-next-line no-console

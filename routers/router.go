@@ -32,9 +32,10 @@ func routers(prefix string) *beego.Namespace {
 			beego.NSRouter("/secret", &controllers.PublicController{}, "get:UploadSecret"),
 			beego.NSRouter("/activity", &controllers.PublicController{}, "get:LastActivity"),
 
-			// compatible
+			// compatible v1
 			beego.NSRouter("/activity/?:id", &controllers.PublicController{}, "get:LastActivity"),
 			beego.NSRouter("/clean_read/?:id", &controllers.PublicController{}, "get:CleanRead"),
+			beego.NSRouter("/read/?:id", &controllers.PublicController{}, "get:Read"),
 
 			beego.NSRouter("/company", &controllers.PublicController{}, "get:GetCompanyInfo"),
 			beego.NSRouter("/robot_info/:id", &controllers.PublicController{}, "get:RobotInfo"),

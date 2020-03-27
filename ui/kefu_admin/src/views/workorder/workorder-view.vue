@@ -1,6 +1,6 @@
 
 <template>
-  <div class="workorder-view" :class="{'is-show-aside': !isShowAside}" v-show="value">
+  <div class="workorder-view" v-show="value">
     <div class="mask" @dblclick="close"></div>
     <transition name="el-zoom-in-bottom">
       <div class="content-box" :class="{'padding-bottom30': showData.status == 3}" v-show="value">
@@ -50,9 +50,9 @@
             <div class="form-line">
               <span class="lable">状态：</span>
               <div class="con">
-                <span style="color:#e6a23c;" v-if="showData.status == 0">等待客服处理</span>
-                <span style="color:#e6a23c;" v-if="showData.status == 2">等待客服回复</span>
-                <span style="color:#67c23a;" v-if="showData.status == 1">已有客服回复</span>
+                <span style="color:#f56c6b" v-if="showData.status == 0">待客服处理</span>
+                <span style="color:#e6a23c;" v-if="showData.status == 2">待客服回复</span>
+                <span style="color:#67c23a;" v-if="showData.status == 1">客服已回复</span>
                 <span style="color:#909399;" v-if="showData.status == 3">工单已结束</span>
               </div>
             </div>
@@ -295,7 +295,7 @@ export default {
           var fileType = src.substr(src.lastIndexOf(".") + 1);
           if ("jpg,jpeg,png,JPG,JPEG,PNG".indexOf(fileType) != -1) {
             html =
-              "<br><img style='max-width:45%' preview='1' src='" +
+              "<br><img style='max-width:45%;margin-top:5px;' preview='1' src='" +
               fullPath +
               "' />";
           } else {
@@ -559,14 +559,6 @@ export default {
       img {
         width: 30%;
       }
-    }
-  }
-
-  &.is-show-aside {
-    left: 0;
-
-    .content {
-      left: 0px;
     }
   }
 }

@@ -103,11 +103,6 @@ func (c *PublicController) Register() {
 		/// old user
 		if user != nil {
 
-			// The last login address is inconsistent with this time and the token is not empty
-			// if user.Token != "" && user.RemoteAddr != "" && currentRemoteAddr != user.RemoteAddr {
-			// 	c.JSON(configs.ResponseFail, "注册失败，请稍等重试!", "")
-			// }
-
 			// fetchResult
 			fetchResult, fetchError = utils.CreateMiMcToken(strconv.FormatInt(user.ID, 10))
 			if err := json.Unmarshal([]byte(fetchResult), &imTokenDto); err != nil {
@@ -211,6 +206,7 @@ func (c *PublicController) Read() {
 	if err == nil {
 		readCount = 0
 	}
+
 	c.JSON(configs.ResponseSucess, "查询成功!", readCount)
 
 }
@@ -369,6 +365,7 @@ func (c *PublicController) LastActivity() {
 
 	// get user
 	user := c.GetUserInfo()
+
 	// user
 	if user != nil {
 		_, err := c.UserRepository.Update(user.ID, orm.Params{
@@ -390,6 +387,7 @@ func (c *PublicController) LastActivity() {
 	}
 
 	c.JSON(configs.ResponseSucess, "上报成功!", nil)
+
 }
 
 // GetCompanyInfo get Company info

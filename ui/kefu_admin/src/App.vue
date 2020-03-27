@@ -24,12 +24,14 @@ export default {
       this.$store.dispatch('ON_GET_UPLOADS_CONFIG')
       this.$store.dispatch('ON_GET_ROBOTS')
       this.$store.dispatch('ON_GET_CONTACTS')
+      this.$store.dispatch('ON_GET_WORKORDER_COUNTS')
+      setInterval(()=>this.$store.dispatch('ON_GET_WORKORDER_COUNTS'), 30000)
 
       // 一分钟上报一次我的活动时间
       this.upLastActivity()
 
       // 获取会话表
-      setInterval(()=>this.getContacts(), 2000)
+      this.getContacts()
 
       // Mimc 初始化
       this.initMimc()

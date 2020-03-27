@@ -75,4 +75,8 @@ export default {
     workbenchBgColor(state){
         return state.workbenchBgColor
     },
+    // 工单统计
+    workOrderCounts(state){
+        return state.workOrderCounts
+    }
 }

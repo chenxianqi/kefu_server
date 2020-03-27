@@ -75,5 +75,9 @@ export default {
     // 是否是登陆状态
     onIsLogin(state, isLogin){
         state.isLogin = isLogin
-    }
+    },
+    // 工单统计
+    onChangeWorkOrderCounts(state, counts){
+        state.workOrderCounts = counts
+    },
 }

@@ -76,5 +76,12 @@ export default {
       .catch(() => {
         this.loading = false
       });
+    },
+    // 获取工单系统counts
+    ON_GET_WORKORDER_COUNTS(context){
+      axios.get('/workorder/counts')
+      .then(response => {
+          context.commit('onChangeWorkOrderCounts', response.data.data)
+      })
     }
 }

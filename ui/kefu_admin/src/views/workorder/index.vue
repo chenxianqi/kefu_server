@@ -5,17 +5,21 @@
       <span>
         <i class="el-icon-tickets"></i>
         <span slot="title">工单管理</span>
-        <span style="font-size:15px;margin-left: 30px;color:#e7a646">当前有
-           <strong style="color: #f56c6c">5</strong>
-            条待处理, 和<strong style="color: #f56c6c"> 8</strong>
-             条待回复工单</span>
+        <span style="font-size:15px;margin-left: 30px;color:#e7a646">
+          <template v-if="workOrderCounts.status0 > 0">
+              当前有<strong style="color: #f56c6c">{{workOrderCounts.status0}}</strong>条待处理,
+          </template>
+          <template v-if="workOrderCounts.status2 > 0">
+             <strong style="color: #f56c6c"> {{workOrderCounts.status2}}</strong>条待回复工单
+          </template>
+        </span>
       </span>
       <div>
-        <el-button size="mini">分类设置</el-button>
+        <el-button size="mini" @click="isShowTypesView = true">分类设置</el-button>
       </div>
     </div>
     <el-divider />
-    <div class="container-box">
+    <el-row class="container-box" type="flex" justify="space-between">
       <div class="menu">
         <el-tabs @tab-click="tabsChange" tab-position="left" style="width:200px;height: 80vh;">
           <template size="small" v-for="item in workorderTypes" border>
@@ -29,14 +33,19 @@
         <el-table-column prop="title" label="工单标题"></el-table-column>
         <el-table-column prop="status" label="当前状态">
           <template slot-scope="scope">
-            <el-tag type="warning" v-if="scope.row.status == 0">等待客服处理</el-tag>
-            <el-tag type="warning" v-if="scope.row.status == 2">等待客服回复</el-tag>
-            <el-tag type="success" v-if="scope.row.status == 1">已有客服回复</el-tag>
-            <el-tag type="info" v-if="scope.row.status == 3"> 工单已结束 </el-tag>
+            <template v-if="workorderTypes.length-1 == tabIndex">
+            <span style="color:#f56c6b">已删除</span>
+           </template>
+            <template v-else>
+              <el-tag type="danger" v-if="scope.row.status == 0">待客服处理</el-tag>
+              <el-tag type="warning" v-if="scope.row.status == 2">待客服回复</el-tag>
+              <el-tag type="success" v-if="scope.row.status == 1">客服已回复</el-tag>
+              <el-tag type="info" v-if="scope.row.status == 3"> 工单已结束 </el-tag>
+             </template>
           </template>
         </el-table-column>
-        <el-table-column prop="u_nickname" label="用户（发布者）"></el-table-column>
-        <el-table-column prop="a_nickname" label="最后回复者（客服）">
+        <el-table-column prop="u_nickname" label="用户"></el-table-column>
+        <el-table-column prop="a_nickname" label="最近处理（客服）">
           <template slot-scope="scope">
             {{scope.row.a_nickname || '-----'}}
           </template>
@@ -63,22 +72,27 @@
         ></el-pagination>
       </el-row>
       </div>
-    </div>
+    </el-row>
      <WorkOrderView :workorderTypes="workorderTypes" :prop="showWorkOrder" v-model="isShowWorkOrderView" />
+     <WorkOrderTypesView :workorderTypes="workorderTypes" v-model="isShowTypesView" />
   </div>
 </template>
 <script>
 import axios from "axios";
 import WorkOrderView from "./workorder-view"
+import WorkOrderTypesView from "./workorder-types-view"
+import { mapGetters } from 'vuex'
 export default {
   name: "workorder-index",
   components: {
-    WorkOrderView
+    WorkOrderView,
+    WorkOrderTypesView
   },
   data() {
     return {
       loading: true,
       isShowWorkOrderView: false,
+      isShowTypesView: false,
       showWorkOrder: {},
       tableData: {
         list: [],
@@ -105,8 +119,14 @@ export default {
       if(this.tabIndex == this.workorderTypes.length-1 && this.workorderTypes.length > 1){
         return '0,1,2,3'
       }
+      if(this.tabIndex == this.workorderTypes.length-2 && this.workorderTypes.length > 1){
+        return '3'
+      }
       return "0,1,2"
-    }
+    },
+    ...mapGetters([
+      "workOrderCounts",
+    ])
   },
   created() {
     this.getWorkorderList();
@@ -161,12 +181,12 @@ export default {
            }
            this.workorderTypes.push({
             "id": -1,
-            "count": 0,
+            "count": this.workOrderCounts.status3,
             "title": "已结单"
           })
           this.workorderTypes.push({
             "id": -2,
-            "count": 0,
+            "count": this.workOrderCounts.delete_count,
             "title": "回收站"
           })
         })
@@ -208,12 +228,12 @@ export default {
   }
 }
 .container-box{
-  display flex
   .menu{
     flex-shrink: 0;
     width 180px;
   }
   .table-content{
+    width 500px;
     flex-grow 1
   }
 }

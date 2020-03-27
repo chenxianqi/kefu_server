@@ -576,7 +576,7 @@ export default {
       console.log(message)
       var nowTime = parseInt((new Date().getTime() +"").substr(0, 10))
       message.timestamp = parseInt((message.timestamp +"").substr(0, 10))
-       if(message.from_account == this.adminInfo.id && message.biz_type == "pong") return;
+      if(message.from_account == this.adminInfo.id && message.biz_type == "pong") return;
       if(message.biz_type == "into") return;
       if(message.from_account == this.adminInfo.id && this.seviceCurrentUser.from_account == message.to_account){
         this.messageRecord.list.push(message)
@@ -632,7 +632,7 @@ export default {
         });
       }
       // 是否是否当前会话消息
-      if(message.from_account != this.seviceCurrentUser.from_account) return
+      if(message.from_account != this.seviceCurrentUser.from_account && message.biz_type != "timeout") return
       if(message.biz_type == 'end'){
         var seviceCurrentUser = this.seviceCurrentUser
         seviceCurrentUser.is_session_end = 1

@@ -74,7 +74,6 @@
               <em>{{$formatFromNowDate(item.timestamp)}}</em>
               <span v-if="item.to_account != adminInfo.id">你结束了会话</span>
               <span v-else>对方结束了会话</span>
-              <em>{{$formatFromNowDate(item.timestamp)}}</em>
             </div>
           </template>
 

@@ -19,7 +19,8 @@ import (
 func initLog() {
 
 	if isDev := beego.AppConfig.String("runmode"); isDev == "prod" {
-		_ = logs.SetLogger(logs.AdapterFile, `{"filename":"project.log","level":7,"maxlines":0,"maxsize":0,"daily":true,"maxdays":10,"color":true}`)
+		_ = logs.SetLogger(logs.AdapterFile, `{"filename":"project.log","level":3,"maxlines":0,"maxsize":0,"daily":true,"maxdays":10,"color":true}`)
+		beego.SetLevel(beego.LevelError)
 		fmt.Print("当前环境为生产环境")
 		_ = beego.BeeLogger.DelLogger("console")
 	} else {

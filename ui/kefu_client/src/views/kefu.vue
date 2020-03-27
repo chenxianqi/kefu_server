@@ -193,14 +193,14 @@
       <span class="expression-btn" @click="showEmoji = !showEmoji">
         <img src="../assets/expression.png" alt />
       </span>
-      <!-- <span
+      <span
         class="workorder-btn"
         :class="{'show-header': !isShowHeader && isMobile}"
         @click="$router.push('/workorder')"
       >
         <img src="../assets/workorder.png" />
         <i>工单</i>
-      </span> -->
+      </span>
       <span
         v-show="isMobile && !isShowHeader"
         @click="headRightBtn"
@@ -340,6 +340,9 @@ export default {
         return
       }
 
+      // 关闭loading
+      this.$store.commit("updateState", {isShowPageLoading: false})
+
       // handelEvent
       this.handelEvent();
 
@@ -354,9 +357,6 @@ export default {
 
 
       this.scrollIntoBottom();
-
-      // 关闭loading
-      setTimeout(()=>this.$store.commit("updateState", {isShowPageLoading: false}), 500)
 
       // 计算客服最后回复时间
       this.onServciceLastMessageTimeNotCallBack();
@@ -593,7 +593,6 @@ export default {
     // 接收消息
     receiveP2PMsg(message) {
       console.log(message);
-      if(message.biz_type == "contacts") return
       // 是否是转接客服消息
       if (message.biz_type == "transfer") {
         this.$store.commit("updateState", {
