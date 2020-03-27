@@ -208,6 +208,7 @@ export default {
       const self = this;
       this.$uploadFile({
         file,
+        secret: self.uploadToken.secret,
         mode: this.uploadToken.mode,
         // 七牛才会执行
         percent() {},

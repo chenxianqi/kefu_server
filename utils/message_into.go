@@ -26,29 +26,30 @@ func MessageInto(message models.Message) {
 	// content内容转base64
 	message.Payload = base64.StdEncoding.EncodeToString([]byte(message.Payload))
 
-	// UserRepository instance
-	userRepository := services.GetUserRepositoryInstance()
-	user := userRepository.GetUser(message.ToAccount)
+	// 接收者是客服
+	admin := services.GetAdminRepositoryInstance().GetAdmin(message.ToAccount)
 
-	// 接收者是用户
-	if user != nil {
+	// 接收者是客服
+	if admin != nil {
 
 		// 默认已读消息
 		message.Read = 0
-		user := userRepository.GetUser(message.ToAccount)
-		if user != nil && (user.Online == 0 || user.IsWindow == 0) {
+		if admin.Online == 0 || admin.CurrentConUser != message.FromAccount {
 			message.Read = 1
 		}
 
-		// 处理是否已回复
-		services.GetStatisticalRepositoryInstance().CheckIsReplyAndSetReply(user.ID, message.FromAccount, user.Platform)
-
 	} else {
 
-		// 接收者是客服
-		admin := services.GetAdminRepositoryInstance().GetAdmin(message.ToAccount)
-		if admin != nil && admin.CurrentConUser != message.FromAccount {
-			message.Read = 1
+		// UserRepository instance
+		userRepository := services.GetUserRepositoryInstance()
+		user := userRepository.GetUser(message.ToAccount)
+		if user != nil {
+			message.Read = 0
+			if user.IsWindow == 0 {
+				message.Read = 1
+			}
+			// 处理是否已回复
+			services.GetStatisticalRepositoryInstance().CheckIsReplyAndSetReply(user.ID, message.FromAccount, user.Platform)
 		}
 
 	}
@@ -97,9 +98,8 @@ func MessageInto(message models.Message) {
 		})
 	}
 
-	if user != nil {
-		PushNewContacts(message.FromAccount)
-	} else {
+	// 接收者是客服就推送
+	if admin != nil {
 		PushNewContacts(message.ToAccount)
 	}
 

@@ -29,7 +29,7 @@ export default {
       this.upLastActivity()
 
       // 获取会话表
-      this.getContacts()
+      setInterval(()=>this.getContacts(), 2000)
 
       // Mimc 初始化
       this.initMimc()

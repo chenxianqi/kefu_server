@@ -193,14 +193,14 @@
       <span class="expression-btn" @click="showEmoji = !showEmoji">
         <img src="../assets/expression.png" alt />
       </span>
-      <span
+      <!-- <span
         class="workorder-btn"
         :class="{'show-header': !isShowHeader && isMobile}"
         @click="$router.push('/workorder')"
       >
         <img src="../assets/workorder.png" />
         <i>工单</i>
-      </span>
+      </span> -->
       <span
         v-show="isMobile && !isShowHeader"
         @click="headRightBtn"
@@ -291,6 +291,7 @@ export default {
       "userInfo",
       "isSafari",
       "isIOS",
+      "uploadToken",
       "isJudgeBigScreen"
     ])
   },
@@ -547,10 +548,10 @@ export default {
         cacheMsg.payload = self.uploadToken.host + "/" + fileName;
         self.$previewRefresh();
         self.scrollIntoBottom();
-
         // 上传
         self.qiniuObservable = self.$uploadFile({
           file,
+          secret: self.uploadToken.secret,
           mode: self.uploadToken.mode,
           // 七牛才会执行
           percent(res) {
@@ -592,6 +593,7 @@ export default {
     // 接收消息
     receiveP2PMsg(message) {
       console.log(message);
+      if(message.biz_type == "contacts") return
       // 是否是转接客服消息
       if (message.biz_type == "transfer") {
         this.$store.commit("updateState", {

@@ -104,9 +104,9 @@ func (c *PublicController) Register() {
 		if user != nil {
 
 			// The last login address is inconsistent with this time and the token is not empty
-			if user.Token != "" && user.RemoteAddr != "" && currentRemoteAddr != user.RemoteAddr {
-				c.JSON(configs.ResponseFail, "注册失败，请稍等重试!", "")
-			}
+			// if user.Token != "" && user.RemoteAddr != "" && currentRemoteAddr != user.RemoteAddr {
+			// 	c.JSON(configs.ResponseFail, "注册失败，请稍等重试!", "")
+			// }
 
 			// fetchResult
 			fetchResult, fetchError = utils.CreateMiMcToken(strconv.FormatInt(user.ID, 10))

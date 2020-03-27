@@ -13,7 +13,7 @@ type User struct {
 	Platform     int64  `orm:"type(bigint);column(platform)" json:"platform"`           // 用户所在渠道（平台）
 	Online       int    `orm:"default(0);column(online)" json:"online"`                 // 用户是否在线
 	RemoteAddr   string `orm:"type(char);null;column(remote_addr)" json:"remote_addr"`  // 用户当次登录地址
-	IsWindow     int    `orm:"default(0);column(is_window)" json:"is_window"`           // 是否在聊天窗口
+	IsWindow     int    `orm:"default(0);column(is_window)" json:"is_window"`           // 是否在聊天窗口,0 不在， 1在
 	UpdateAt     int64  `orm:"type(bigint);column(update_at)" json:"update_at"`         // 用户资料被更新时间
 	Remarks      string `orm:"type(char);null;column(remarks)" json:"remarks"`          // 备注
 	LastActivity int64  `orm:"type(bigint);column(last_activity)" json:"last_activity"` // 最后活动时间

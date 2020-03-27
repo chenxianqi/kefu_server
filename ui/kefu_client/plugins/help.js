@@ -34,7 +34,7 @@ Helps.install = function (Vue, options) {
     }
 
     // 上传文件
-    Vue.prototype.$uploadFile = function ({ mode, file, percent, success, fail }) {
+    Vue.prototype.$uploadFile = function ({ mode,secret, file, percent, success, fail }) {
         var qiniuObservable = null;
         const fileName = parseInt(Math.random() * 10000 * new Date().getTime()) + file.name.substr(file.name.lastIndexOf("."));
         // 系统内置
@@ -62,7 +62,7 @@ Helps.install = function (Vue, options) {
                 const observable = qiniu.upload(
                     data.dist,
                     fileName,
-                    self.uploadToken.secret,
+                    secret,
                     {},
                     {
                         mimeType: null
@@ -78,7 +78,7 @@ Helps.install = function (Vue, options) {
                         formData.append("fileType", "image");
                         formData.append("fileName", "file");
                         formData.append("key", fileName);
-                        formData.append("token", self.uploadToken.secret);
+                        formData.append("token", secret);
                         formData.append("file", file);
                         axios
                             .post("https://upload.qiniup.com", formData)

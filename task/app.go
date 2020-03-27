@@ -14,7 +14,7 @@ import (
 func appTask() {
 
 	// Task scheduling (will be executed once every 5 minute)
-	checkOnLineTk := toolbox.NewTask("checkOnLine", "0 */1 * * * *", func() error {
+	checkOnLineTk := toolbox.NewTask("checkOnLine", "0 */5 * * * *", func() error {
 
 		// timers
 		userOffLineUnixTimer := time.Now().Unix() - (60 * 10)  // User's last activity time T out online status rule
