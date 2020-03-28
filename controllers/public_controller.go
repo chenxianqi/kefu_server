@@ -308,15 +308,8 @@ func (c *PublicController) RobotInfo() {
 
 }
 
-// UploadSecretMode struct
-type UploadSecretMode struct {
-	Mode   int         `json:"mode"`
-	Secret interface{} `json:"secret"`
-	Host   string      `json:"host"`
-}
-
-// UploadSecret update Secret
-func (c *PublicController) UploadSecret() {
+// Configs update Secret
+func (c *PublicController) Configs() {
 
 	// get user
 	user := c.GetUserInfo()
@@ -333,10 +326,11 @@ func (c *PublicController) UploadSecret() {
 
 	// System built-in storage
 	if system.UploadMode == 1 {
-		c.JSON(configs.ResponseSucess, "success", &UploadSecretMode{
-			Mode:   system.UploadMode,
-			Secret: "",
-			Host:   beego.AppConfig.String("static_host"),
+		c.JSON(configs.ResponseSucess, "success", &models.ConfigsDto{
+			UploadMode:    system.UploadMode,
+			UploadSecret:  "",
+			UploadHost:    beego.AppConfig.String("static_host"),
+			OpenWorkorder: system.OpenWorkorder,
 		})
 	}
 
@@ -352,7 +346,7 @@ func (c *PublicController) UploadSecret() {
 		putPolicy.Expires = 7200 * 12
 		mac := qbox.NewMac(qiniuSetting.AccessKey, qiniuSetting.SecretKey)
 		upToken := putPolicy.UploadToken(mac)
-		secretModeData := UploadSecretMode{Mode: system.UploadMode, Secret: upToken, Host: qiniuSetting.Host}
+		secretModeData := &models.ConfigsDto{UploadMode: system.UploadMode, UploadSecret: upToken, UploadHost: qiniuSetting.Host, OpenWorkorder: system.OpenWorkorder}
 		c.JSON(configs.ResponseSucess, "success", &secretModeData)
 
 	}
@@ -617,6 +611,7 @@ func (c *PublicController) CreateWorkOrder() {
 	if err != nil {
 		c.JSON(configs.ResponseFail, "fail", err.Error())
 	}
+	services.GetUserRepositoryInstance().Update(user.ID, orm.Params{"is_workorder": 1})
 	c.JSON(configs.ResponseSucess, "工单创建成功!", wid)
 
 }

@@ -20,11 +20,11 @@ export default {
             }
         });
     },
-    // 获取上传配置
-    ON_GET_UPLOAD_TOKEN(context){
-        axios.get('/public/secret')
+    // 获取配置信息
+    ON_GET_CONFIGS(context){
+        axios.get('/public/configs')
         .then(response => {
-            context.commit('onChangeUploadToken', response.data.data)
+            context.commit('onChangeConfigs', response.data.data)
         })
     },
     // 获取平台配置数据

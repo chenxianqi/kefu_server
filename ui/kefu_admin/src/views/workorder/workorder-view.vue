@@ -159,7 +159,7 @@ export default {
         return ""
       }
     },
-    ...mapGetters(["adminInfo", "uploadToken"])
+    ...mapGetters(["adminInfo", "configs"])
   },
   methods: {
     // 按钮操作
@@ -188,7 +188,7 @@ export default {
         });
     },
     closeWorkorder() {
-      this.$prompt("请输入关闭原因！", "提示", {
+      this.$prompt("请输入关闭原因！", "温馨提示！", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         inputPattern: /\S/,
@@ -286,12 +286,12 @@ export default {
       const self = this;
       upload({
         file,
-        mode: this.uploadToken.mode,
+        mode: this.configs.upload_mode,
         progress() {},
         success(src) {
           self.isShowUploadLoading = false;
           var html;
-          var fullPath = self.uploadToken.host + "/" + src;
+          var fullPath = self.configs.upload_host + "/" + src;
           var fileType = src.substr(src.lastIndexOf(".") + 1);
           if ("jpg,jpeg,png,JPG,JPEG,PNG".indexOf(fileType) != -1) {
             html =

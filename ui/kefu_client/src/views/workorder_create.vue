@@ -79,7 +79,7 @@ export default {
       "workorders",
       "userInfo",
       "workorderTypes",
-      "uploadToken",
+      "configs",
       "workorderTypes"
     ]),
     types() {
@@ -120,14 +120,14 @@ export default {
       const self = this;
       this.$uploadFile({
         file,
-        mode: this.uploadToken.mode,
+        mode: this.configs.upload_mode,
         // 七牛才会执行
         percent() {},
         success(src) {
 
           self.isShowUploadLoading = false;
           var html
-          var fullPath = self.uploadToken.host + "/" + src;
+          var fullPath = self.configs.upload_host + "/" + src;
           var fileType = src.substr(src.lastIndexOf(".") + 1);
           if ("jpg,jpeg,png,JPG,JPEG,PNG".indexOf(fileType) != -1) {
               html = "<br><img style='max-width:45%;margin-top:5px;' preview='1' src='" + fullPath + "' />"

@@ -13,13 +13,13 @@ import (
 // Timed task
 func appTask() {
 
-	// Task scheduling (will be executed once every 5 minute)
-	checkOnLineTk := toolbox.NewTask("checkOnLine", "0/30 * * * * *", func() error {
+	// Task scheduling (will be executed once every 6 minute)
+	checkOnLineTk := toolbox.NewTask("checkOnLine", "0 */6 * * * *", func() error {
 
 		// timers
 		userOffLineUnixTimer := time.Now().Unix() - (60 * 10)  // User's last activity time T out online status rule
 		adminOffLineUnixTimer := time.Now().Unix() - (60 * 30) // Final reply time
-		lastMessageUnixTimer := time.Now().Unix() - (30 * 1)   // Determine if the user will not use it for a certain period of time and force them to go offline
+		lastMessageUnixTimer := time.Now().Unix() - (30 * 8)   // Determine if the user will not use it for a certain period of time and force them to go offline
 
 		// user
 		userOfflineCount := services.GetUserRepositoryInstance().CheckUsersLoginTimeOutAndSetOffline(userOffLineUnixTimer)

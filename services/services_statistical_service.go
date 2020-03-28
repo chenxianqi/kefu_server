@@ -165,10 +165,8 @@ func (r *StatisticalRepository) GetFlowStatistical(startDate string, endDate str
 
 // CheckIsReplyAndSetReply cehck is reply and set reply
 func (r *StatisticalRepository) CheckIsReplyAndSetReply(userAccount int64, serviceAccount int64, userPlatform int64) {
-	logs.Info(userAccount, serviceAccount, userPlatform)
 	var servicesStatistical models.ServicesStatistical
 	maxTime := time.Now().Unix() - 60*10
-	logs.Info(maxTime)
 	err := r.q.Filter("user_account", userAccount).Filter("service_account", serviceAccount).Filter("is_reception", 0).Filter("platform", userPlatform).Filter("create_at__gte", maxTime).One(&servicesStatistical)
 	if err != nil {
 		logs.Warn("CheckIsReplyAndSetReply cehck is reply and set reply Filter------------", err)

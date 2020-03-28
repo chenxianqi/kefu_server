@@ -39,6 +39,35 @@ func (c *SystemController) Get() {
 
 }
 
+// PutOpenWorkorder update system
+func (c *SystemController) PutOpenWorkorder() {
+
+	system := models.System{}
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &system); err != nil {
+		c.JSON(configs.ResponseFail, "参数有误，请检查!", nil)
+	}
+
+	// GetAdminAuthInfo
+	auth := c.GetAdminAuthInfo()
+	admin := services.GetAdminRepositoryInstance().GetAdmin(auth.UID)
+	// is root ?
+	if admin.Root != 1 {
+		c.JSON(configs.ResponseFail, "您没有权限修改系统设置!", nil)
+	}
+	if system.OpenWorkorder != 0 && system.OpenWorkorder != 1 {
+		c.JSON(configs.ResponseFail, "参数有误，更新失败!", nil)
+	}
+
+	// update
+	_, err := c.SystemRepository.Update(orm.Params{
+		"OpenWorkorder": system.OpenWorkorder,
+	})
+	if err != nil {
+		c.JSON(configs.ResponseFail, "更新失败!", err.Error())
+	}
+	c.JSON(configs.ResponseSucess, "更新成功!", nil)
+}
+
 // Put update system
 func (c *SystemController) Put() {
 

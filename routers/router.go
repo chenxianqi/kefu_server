@@ -29,13 +29,14 @@ func routers(prefix string) *beego.Namespace {
 			beego.NSRouter("/register", &controllers.PublicController{}, "post:Register"),
 			beego.NSRouter("/robot/:platform", &controllers.PublicController{}, "get:Robot"),
 			beego.NSRouter("/read", &controllers.PublicController{}, "get:Read"),
-			beego.NSRouter("/secret", &controllers.PublicController{}, "get:UploadSecret"),
+			beego.NSRouter("/configs", &controllers.PublicController{}, "get:Configs"),
 			beego.NSRouter("/activity", &controllers.PublicController{}, "get:LastActivity"),
 
 			// compatible v1
 			beego.NSRouter("/activity/?:id", &controllers.PublicController{}, "get:LastActivity"),
 			beego.NSRouter("/clean_read/?:id", &controllers.PublicController{}, "get:CleanRead"),
 			beego.NSRouter("/read/?:id", &controllers.PublicController{}, "get:Read"),
+			beego.NSRouter("/secret", &controllers.PublicController{}, "get:Configs"),
 
 			beego.NSRouter("/company", &controllers.PublicController{}, "get:GetCompanyInfo"),
 			beego.NSRouter("/robot_info/:id", &controllers.PublicController{}, "get:RobotInfo"),
@@ -121,6 +122,7 @@ func routers(prefix string) *beego.Namespace {
 		beego.NSNamespace("/system",
 			beego.NSBefore(filters.FilterToken),
 			beego.NSRouter("/", &controllers.SystemController{}),
+			beego.NSRouter("/workorder", &controllers.SystemController{}, "put:PutOpenWorkorder"),
 		),
 
 		// uploads config

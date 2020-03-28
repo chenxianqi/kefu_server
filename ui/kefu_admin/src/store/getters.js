@@ -17,7 +17,7 @@ export default {
     },
     // 获取上传mode
     uploadMod(state){
-        return state.uploadToken.mode || -1
+        return state.configs.upload_mode || -1
     },  
     // 获取昵称
     nickname(state){
@@ -27,9 +27,9 @@ export default {
             return '未设置昵称'
         }
     },
-    // 获取上传配置文件
-    uploadToken(state){
-        return state.uploadToken
+    // 获取配置信息
+    configs(state){
+        return state.configs
     },
     // 获取平台配置数据
     platformConfig(state){

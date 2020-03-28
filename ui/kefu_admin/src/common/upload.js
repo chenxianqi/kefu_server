@@ -4,11 +4,11 @@ import axios from 'axios'
 var subscription;
 export default function({file, progress, success, error}){
     if(!file) return
-    const uploadToken = store.getters.uploadToken || {}
+    const configs = store.getters.configs || {}
     const fileName = parseInt(Math.random() * 10000 * new Date().getTime()) + file.name.substr(file.name.lastIndexOf('.'))
 
     // 系统内置
-    if(uploadToken.mode == 1){
+    if(configs.upload_mode == 1){
         var CancelToken = axios.CancelToken;
         subscription = CancelToken.source();
         let fd = new FormData();
@@ -21,14 +21,14 @@ export default function({file, progress, success, error}){
         .catch((err) => error(err.message))
         progress(100)
     // 七牛云
-    }else if(uploadToken.mode == 2){
+    }else if(configs.upload_mode == 2){
 
         var observer = {
         next: res => progress(Math.ceil(res.total.percent)),
         error: err => error(err.message),
         complete: res => success(res.key)
         };
-        const observable = qiniu.upload(file, fileName, uploadToken.secret, {}, {})
+        const observable = qiniu.upload(file, fileName, configs.upload_secret, {}, {})
         subscription = observable.subscribe(observer)
 
     }else{

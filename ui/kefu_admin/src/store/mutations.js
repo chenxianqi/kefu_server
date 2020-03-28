@@ -23,9 +23,9 @@ export default {
     onChangeAdminInfo(state, adminInfo){
         state.adminInfo = adminInfo
     },
-    // 更新上传token
-    onChangeUploadToken(state, uploadToken){
-        state.uploadToken = uploadToken
+    // 更新配置信息
+    onChangeConfigs(state, configs){
+        state.configs = configs
     },
     // 更新systemInfo
     onChangeSystemInfo(state, systemInfo){

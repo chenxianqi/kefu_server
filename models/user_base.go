@@ -15,6 +15,8 @@ type User struct {
 	RemoteAddr   string `orm:"type(char);null;column(remote_addr)" json:"remote_addr"`  // 用户当次登录地址
 	IsWindow     int    `orm:"default(0);column(is_window)" json:"is_window"`           // 是否在聊天窗口,0 不在， 1在
 	UpdateAt     int64  `orm:"type(bigint);column(update_at)" json:"update_at"`         // 用户资料被更新时间
+	IsService    int    `orm:"default(0);column(is_service)" json:"is_service"`         // 是否接入过客服
+	IsWorkorder  int    `orm:"default(0);column(is_workorder)" json:"is_workorder"`     // 是否发过工单
 	Remarks      string `orm:"type(char);null;column(remarks)" json:"remarks"`          // 备注
 	LastActivity int64  `orm:"type(bigint);column(last_activity)" json:"last_activity"` // 最后活动时间
 	CreateAt     int64  `orm:"type(bigint);column(create_at)" json:"create_at"`         // 创建时间

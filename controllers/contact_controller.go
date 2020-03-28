@@ -155,12 +155,9 @@ func (c *ContactController) Transfer() {
 	// send to user
 	message.FromAccount = 1
 	message.ToAccount = transferDto.UserAccount
-	message.Delete = 1
 	message.Payload = string(toAdminJSON)
 	messageString = utils.InterfaceToString(message)
 	utils.PushMessage(user.ID, messageString)
-
-	utils.MessageInto(message)
 
 	// Transfer to the library for counting service times
 	servicesStatistical := models.ServicesStatistical{UserAccount: transferDto.UserAccount, ServiceAccount: transferDto.ToAccount, TransferAccount: admin.ID, Platform: user.Platform, CreateAt: time.Now().Unix()}
@@ -169,10 +166,8 @@ func (c *ContactController) Transfer() {
 	_, _ = statisticalRepository.Add(&servicesStatistical)
 
 	// End the repeater's and user's current session
-	tk := time.NewTimer(1 * time.Second)
-	select {
-	case <-tk.C:
-
+	go func() {
+		time.Sleep(time.Second * 1)
 		// ContactRepository instance
 		contactRepository := services.GetContactRepositoryInstance()
 		_, err := contactRepository.UpdateIsSessionEnd(transferDto.UserAccount)
@@ -180,7 +175,6 @@ func (c *ContactController) Transfer() {
 		if err != nil {
 			logs.Info(err)
 		}
-	}
-
+	}()
 	c.JSON(configs.ResponseSucess, "转接成功!", nil)
 }

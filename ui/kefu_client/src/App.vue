@@ -69,8 +69,8 @@ export default {
           // 获取公司信息
           this.$store.dispatch("onGetCompanyInfo");
 
-          // 获取上传配置信息
-          this.$store.dispatch("onGetUploadSecret");
+          // 获取配置信息
+          this.$store.dispatch("onGetConfigs");
 
           // 获取工单类型
           this.$store.dispatch("onGetWorkorderTypes");
@@ -98,13 +98,10 @@ export default {
             robotInfo: robot
           });
 
-          // 登录mimc
-          this.$mimcInstance.login();
-
           // 发送一条握手消息给机器人
           var sentHandshake =() =>{
             if (this.$mimcInstance.user == null || !this.$mimcInstance.user.isLogin()) {
-                setTimeout(() => sentHandshake(), 200);
+                setTimeout(() => sentHandshake(), 1000);
                 return
             }
             if (!this.artificialAccount) {

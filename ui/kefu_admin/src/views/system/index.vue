@@ -208,7 +208,7 @@ export default {
             this.isUploadingSysLogo = false;
             this.uploadysLogoPercent = "";
             this.$message.success("上传成功");
-            var imgUrl = this.$store.getters.uploadToken.host + "/" + url;
+            var imgUrl = this.$store.getters.configs.upload_host + "/" + url;
             this.systemInfo.logo = imgUrl;
          },
          error: (err)=>{
@@ -254,7 +254,7 @@ export default {
             this.isUploadingCompany = false;
           this.uploadCompanyPercent = "";
           this.$message.success("上传成功");
-          var imgUrl = this.$store.getters.uploadToken.host + "/" + url;
+          var imgUrl = this.$store.getters.configs.upload_host + "/" + url;
           this.companyInfo.logo = imgUrl;
          },
          error: (err)=>{

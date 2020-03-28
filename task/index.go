@@ -6,4 +6,7 @@ func Run() {
 	// appTask
 	appTask()
 
+	// ClearUser
+	clearUser()
+
 }

@@ -195,6 +195,7 @@
       </span>
       <span
         class="workorder-btn"
+        v-if="configs.open_workorder == 1"
         :class="{'show-header': !isShowHeader && isMobile}"
         @click="$router.push('/workorder')"
       >
@@ -232,6 +233,7 @@
 import { Toast, MessageBox } from "mint-ui";
 var emojiService = require("../../resource/emoji");
 import BScroll from "better-scroll";
+import axios from "axios";
 import { mapGetters } from "vuex";
 export default {
   name: "app",
@@ -291,7 +293,7 @@ export default {
       "userInfo",
       "isSafari",
       "isIOS",
-      "uploadToken",
+      "configs",
       "isJudgeBigScreen"
     ])
   },
@@ -362,6 +364,26 @@ export default {
       this.onServciceLastMessageTimeNotCallBack();
 
     },
+    // userLogin
+    userLogin(){
+      this.$mimcInstance.init(
+        {
+          type: 0, // 默认0
+          address: this.userLocal,
+          uid: this.uid || 0, // 预留字段扩展自己平台业务
+          platform: this.platform, // 渠道（平台）
+          account_id: this.userAccount || 0 // 用户ID
+          // 初始化完成这里返回一个user
+        },
+        user => {
+          if(!user){
+            setTimeout(()=>this.userLogin(), 1000)
+            return
+          }
+      })
+      console.log("重新登录中...");
+      console.log(this.$mimcInstance.user.isLogin())
+    },
     // handelEvent
     handelEvent() {
 
@@ -372,7 +394,9 @@ export default {
       this.$mimcInstance.addEventListener("disconnect", () => {
         /* eslint-disable */
         console.log("链接断开！");
+        this.$mimcInstance.user.logout()
         this.isShowTopLoading = true;
+        this.userLogin()
       });
 
       // 状态发生变化
@@ -381,6 +405,8 @@ export default {
         (bindResult, errType, errReason, errDesc) => {
           if (bindResult) {
             this.isShowTopLoading = false;
+          }else{
+            this.userLogin()
           }
           console.log("状态发生变化", bindResult, errType, errReason, errDesc);
         }
@@ -528,7 +554,7 @@ export default {
         let uploadSuccess = function(url) {
           self.qiniuObservable = null;
           localMessage.percent = 100;
-          var imgUrl = self.uploadToken.host + "/" + url;
+          var imgUrl = self.configs.upload_host + "/" + url;
           self.$mimcInstance.sendMessage("photo", self.account, imgUrl);
         };
 
@@ -545,14 +571,14 @@ export default {
         }, 10000);
         self.messages.push(self.handlerMessage(localMessage));
         var cacheMsg = Object.assign({}, localMessage);
-        cacheMsg.payload = self.uploadToken.host + "/" + fileName;
+        cacheMsg.payload = self.configs.upload_host + "/" + fileName;
         self.$previewRefresh();
         self.scrollIntoBottom();
         // 上传
         self.qiniuObservable = self.$uploadFile({
           file,
-          secret: self.uploadToken.secret,
-          mode: self.uploadToken.mode,
+          secret: self.configs.upload_secret,
+          mode: self.configs.upload_mode,
           // 七牛才会执行
           percent(res) {
             localMessage.percent = Math.ceil(res.total.percent);
@@ -702,6 +728,7 @@ export default {
         this.account,
         key
       );
+      axios.post("/public/message/cancel", {to_account: this.account, from_account: this.userInfo.id, key})
       this.messagesPushMemory(message);
       this.removeMessage(this.userInfo.id, key);
       if (this.qiniuObservable) this.qiniuObservable.unsubscribe();

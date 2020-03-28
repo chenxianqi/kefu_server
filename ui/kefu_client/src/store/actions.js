@@ -68,10 +68,10 @@ export default {
         console.error(error);
       });
   },
-  // 获取上传配置
-  onGetUploadSecret(context){
-    axios.get("/public/secret").then(response => {
-      context.commit('updateState', { uploadToken: response.data.data })
+  // 获取配置信息
+  onGetConfigs(context){
+    axios.get("/public/configs").then(response => {
+      context.commit('updateState', { configs: response.data.data })
     });
   },
   // 获取工单类型
@@ -85,5 +85,5 @@ export default {
     axios.get("/public/workorders").then(response => {
       context.commit('updateState', { workorders: response.data.data })
     });
-  }
+  },
 }

@@ -44,8 +44,8 @@ export default {
     companyInfo(state) {
         return state.companyInfo
     },
-    uploadToken(state) {
-        return state.uploadToken
+    configs(state) {
+        return state.configs
     },
     isIOS() {
         return !!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);

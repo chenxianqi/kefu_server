@@ -6,17 +6,31 @@
         <i class="el-icon-tickets"></i>
         <span slot="title">工单管理</span>
         <span style="font-size:15px;margin-left: 30px;color:#e7a646">
+           当前有： 
           <template v-if="workOrderCounts.status0 > 0">
-              当前有<strong style="color: #f56c6c">{{workOrderCounts.status0}}</strong>条待处理,
+              <strong style="color: #f56c6c">{{workOrderCounts.status0}}</strong>条待处理 ，
           </template>
           <template v-if="workOrderCounts.status2 > 0">
-             <strong style="color: #f56c6c"> {{workOrderCounts.status2}}</strong>条待回复工单
+             <strong style="color: #f56c6c"> {{workOrderCounts.status2}}</strong>条待回复工单 
           </template>
         </span>
       </span>
-      <div>
-        <el-button size="mini" @click="isShowTypesView = true">分类设置</el-button>
-      </div>
+      <el-row style="width:300px;" type="flex" align="middle" justify="space-between" v-if="adminInfo.root == 1">
+       <div class="switch">
+          <el-switch
+          @change="changeSwitch"
+          v-model="isOpenWorkorder"
+          inactive-color="#cccccc"
+          active-color="#8bc34a"
+          :active-text="isOpenWorkorder ? '工单功能启用中' : '工单功能关闭中'"
+        >
+        </el-switch>
+        <div>工单关闭后客户端无法发起工单~</div>
+       </div>
+        <div>
+          <el-button size="mini" @click="isShowTypesView = true">分类设置</el-button>
+        </div>
+      </el-row>
     </div>
     <el-divider />
     <el-row class="container-box" type="flex" justify="space-between">
@@ -31,7 +45,7 @@
         <el-table :data="tableData.list" style="width: 100%" v-loading="loading">
         <el-table-column type="index" :index="indexMethod" width="60" label="#序号"></el-table-column>
         <el-table-column prop="title" label="工单标题"></el-table-column>
-        <el-table-column prop="status" label="当前状态">
+        <el-table-column prop="status" label="状态">
           <template slot-scope="scope">
             <template v-if="workorderTypes.length-1 == tabIndex">
             <span style="color:#f56c6b">已删除</span>
@@ -105,13 +119,8 @@ export default {
       },
       tabIndex: 0,
       del: 0,
-      workorderTypes:[
-        {
-          "id": 0,
-          "count": 0,
-          "title": "全部工单"
-        }
-      ],
+      isOpenWorkorder: false,
+      workorderTypes:[],
     };
   },
   computed: {
@@ -126,11 +135,16 @@ export default {
     },
     ...mapGetters([
       "workOrderCounts",
+      "adminInfo",
+      "systemInfo",
+      "configs",
     ])
   },
   created() {
     this.getWorkorderList();
     this.getWorkorderTypes()
+    this.isOpenWorkorder = this.configs.open_workorder == 1
+    this.$store.dispatch('ON_GET_WORKORDER_COUNTS')
   },
   methods: {
     onShow(item){
@@ -142,6 +156,30 @@ export default {
       this.del = 0
       if(this.tabIndex == this.workorderTypes.length-1) this.del = 1
       this.changeType(this.workorderTypes[this.tabIndex].id)
+    },
+    changeSwitch(open){
+      var title = "您确定打开工单功能吗？"
+      var open_workorder = 1
+      if(!open){
+        title = "您确定关闭工单功能吗？"
+        open_workorder = 0
+      }
+      this.$confirm(title, "温馨提示！", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+        axios
+          .put("/system/workorder/", {open_workorder})
+          .then(() => {
+            this.$store.dispatch('ON_GET_CONFIGS')
+          })
+          .catch(error => {
+            this.$message.error(error.response.data.message);
+          });
+      }).catch(() => {
+        this.isOpenWorkorder = !this.isOpenWorkorder       
+      });
     },
     // 行号
     indexMethod(index) {
@@ -175,6 +213,11 @@ export default {
       axios
         .get("/workorder/types")
         .then(response => {
+          this.workorderTypes = [{
+            "id": 0,
+            "count": 0,
+            "title": "全部工单"
+          }];
           this.workorderTypes = this.workorderTypes.concat(response.data.data);
            for(var i=0; i<response.data.data.length; i++){
              this.workorderTypes[0].count += response.data.data[i].count
@@ -206,10 +249,20 @@ export default {
     }
   },
   watch: {
+    isShowTypesView(show){
+      if(!show){
+        this.workorderTypes = []
+        this.getWorkorderTypes();
+      }
+    },
     isShowWorkOrderView(show){
       if(!show){
+        this.$store.dispatch('ON_GET_WORKORDER_COUNTS')
         this.getWorkorderList();
       }
+    },
+    systemInfo(){
+      this.isOpenWorkorder = this.systemInfo.open_workorder == 1
     }
   }
 };
@@ -222,7 +275,16 @@ export default {
   font-size: 20px;
   justify-content: space-between;
   color: #666;
-
+  .switch{
+    div{
+      font-size 13px
+      padding-top 5px
+      color #ccc
+      span.el-switch__label{
+        color #ff5722!important
+      }
+    }
+  }
   i {
     margin-right: 5px;
   }
@@ -235,6 +297,18 @@ export default {
   .table-content{
     width 500px;
     flex-grow 1
+  }
+}
+</style>
+<style lang="stylus">
+.switch{
+  div{
+    span.el-switch__label{
+      color #ff5722!important
+    }
+    span.el-switch__label.is-active{
+      color #8bc34a!important
+    }
   }
 }
 </style>

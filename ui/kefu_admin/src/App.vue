@@ -17,7 +17,7 @@ export default {
         setTimeout(()=> this.appInit(), 50)
         return
       }
-      this.$store.dispatch('ON_GET_UPLOAD_TOKEN')
+      this.$store.dispatch('ON_GET_CONFIGS')
       this.$store.dispatch('ON_GET_PLATFORM_CONFIG')
       this.$store.dispatch('ON_GET_SYSTEM')
       this.$store.dispatch('ON_GET_COMPANY')

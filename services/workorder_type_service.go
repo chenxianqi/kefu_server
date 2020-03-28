@@ -17,6 +17,7 @@ type WorkOrderTypeRepositoryInterface interface {
 	Update(id int64, params orm.Params) (int64, error)
 	Delete(id int64) (int64, error)
 	Add(data models.WorkOrderType) (bool, int64, error)
+	Counts() int64
 }
 
 // WorkOrderTypeRepository struct
@@ -39,6 +40,17 @@ func (r *WorkOrderTypeRepository) Add(data models.WorkOrderType) (bool, int64, e
 		logs.Warn("Add add a WorkOrderType------------", err)
 	}
 	return isNew, id, err
+}
+
+// Counts get WorkOrderType counts number
+func (r *WorkOrderTypeRepository) Counts() int64 {
+	// 增加工单分类检查是否有内容
+	rows, err := r.q.Count()
+	if err != nil {
+		logs.Warn("Delete del a WorkOrderType------------", err)
+		return 0
+	}
+	return rows
 }
 
 // Delete del a WorkOrderType

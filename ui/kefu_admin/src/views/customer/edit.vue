@@ -85,7 +85,7 @@ export default {
           this.isUploading = false;
           this.uploadPercent = "";
           this.$message.success("上传成功");
-          var imgUrl = this.$store.getters.uploadToken.host + "/" + url
+          var imgUrl = this.$store.getters.configs.upload_host + "/" + url
           this.form.avatar = imgUrl;
          },
          error: (err)=>{

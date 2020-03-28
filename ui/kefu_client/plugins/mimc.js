@@ -39,6 +39,7 @@ MimcPlugin.install = function (Vue, options) {
                 this.getRobot(()=>{
                     if(callback) callback(response.data.data.user)
                 })
+                this.login();
             })
             .catch((error)=>{
                 if(callback) callback(null)
@@ -75,7 +76,6 @@ MimcPlugin.install = function (Vue, options) {
         // 登录
         login(callback){
             try{
-                if(this.user) return
                 var fetchMIMCTokenResult = this.fetchMIMCTokenResult
                 // eslint-disable-next-line no-undef
                 this.user = new MIMCUser(fetchMIMCTokenResult.data.appId, fetchMIMCTokenResult.data.appAccount, "666");

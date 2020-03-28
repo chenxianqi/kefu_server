@@ -18,6 +18,7 @@ type UserRepositoryInterface interface {
 	Update(id int64, params *orm.Params) (int64, error)
 	Delete(id int64) (int64, error)
 	GetOnlineCount() (int64, error)
+	ClearWhiteUser() orm.ParamsList
 	CheckUsersLoginTimeOutAndSetOffline(lastMessageUnixTimer int64) int64
 }
 
@@ -45,6 +46,17 @@ func (r *UserRepository) CheckUsersLoginTimeOutAndSetOffline(userOffLineUnixTime
 		logs.Warn("CheckUsersLoginTimeOutAndSetOffline  Check if user login timeout------------", err)
 	}
 	return count
+}
+
+// ClearWhiteUser clear white user
+func (r *UserRepository) ClearWhiteUser() orm.ParamsList {
+	var lists orm.ParamsList
+	_, _ = r.o.Raw("SELECT id FROM `user` WHERE `is_service` = 0 AND `is_workorder` = 0").ValuesFlat(&lists)
+	_, err := r.q.Filter("is_service", 0).Filter("is_workorder", 0).Delete()
+	if err != nil {
+		logs.Warn("ClearWhiteUser clear white user------------", err)
+	}
+	return lists
 }
 
 // Add create a user

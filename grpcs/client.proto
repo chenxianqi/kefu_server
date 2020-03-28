@@ -11,16 +11,9 @@ service Kefu {
   rpc InsertStatistical (Request) returns (Respones) {}
   rpc PushNewContacts (Request) returns (Respones) {}
   rpc GetKnowledgeBaseWithTitleAndPlatform (Request) returns (Respones) {}
+  rpc UpdateUser (Request) returns (Respones) {}
 
 }
-
-message StreamRes {
-  string data = 1;
-}
-message  StreamReq {
-  string data = 1;
-}
-
 
 message Respones {
   string data = 1;

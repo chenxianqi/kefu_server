@@ -29,5 +29,4 @@ type Message struct {
 	Platform        int64  `orm:"type(bigint);column(platform)" json:"platform"`                 // 此消息来自哪个平台（即渠道）
 	Payload         string `orm:"null;type(text);column(payload)" json:"payload"`                // 消息内容
 	Read            int    `orm:"default(0);column(read)" json:"read"`                           // 是否已读消息0已读1未读
-	Delete          int    `orm:"default(0);column(delete)" json:"delete"`                       // 是否已删除消息0 ro 1 1已删除
 }

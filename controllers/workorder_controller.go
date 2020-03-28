@@ -110,11 +110,16 @@ func (c *WorkOrderController) DeleteWorkType() {
 	if admin != nil && admin.Root != 1 {
 		c.JSON(configs.ResponseFail, "没有权限!", nil)
 	}
+	// tid
+	tid, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
 
-	// id
-	id, _ := strconv.ParseInt(c.Ctx.Input.Param(":id"), 10, 64)
-
-	row, _ := c.WorkOrderTypeRepository.Delete(id)
+	if counts := c.WorkOrderRepository.GetWorkOrderCountsWithType(tid); counts > 0 {
+		c.JSON(configs.ResponseFail, "不能删除该分类，该分类下还有工单存在!", nil)
+	}
+	if counts := c.WorkOrderTypeRepository.Counts(); counts <= 1 {
+		c.JSON(configs.ResponseFail, "不能再删除了，必须保留一个分类!", nil)
+	}
+	row, _ := c.WorkOrderTypeRepository.Delete(tid)
 	if row == 0 {
 		c.JSON(configs.ResponseFail, "删除失败!", nil)
 	}

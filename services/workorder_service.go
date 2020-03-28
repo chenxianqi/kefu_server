@@ -14,6 +14,7 @@ import (
 type WorkOrderRepositoryInterface interface {
 	GetWorkOrders(request models.WorkOrderPaginationDto) (models.WorkOrderPaginationDto, error)
 	GetWorkOrder(id int64) (models.WorkOrderDto, error)
+	GetWorkOrderCountsWithType(tid int64) int64
 	GetUserWorkOrders(uid int64) ([]models.WorkOrder, error)
 	Update(id int64, params *orm.Params) (int64, error)
 	Add(workOrder models.WorkOrder) (int64, error)
@@ -52,6 +53,16 @@ func (r *WorkOrderRepository) Close(id int64, cid int64, remark string) (int64, 
 		logs.Warn("Close close WorkOrder-----------", err)
 	}
 	return row, err
+}
+
+// GetWorkOrderCountsWithType get counts with type id
+func (r *WorkOrderRepository) GetWorkOrderCountsWithType(tid int64) int64 {
+	counts, err := r.q.Filter("tid", tid).Count()
+	if err != nil {
+		logs.Warn("GetUserWorkOrders get user WorkOrders------------", err)
+		return 0
+	}
+	return counts
 }
 
 // GetUserWorkOrders get user WorkOrders

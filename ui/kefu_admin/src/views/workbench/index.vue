@@ -495,6 +495,7 @@ export default {
     onCancelMessage(key){
       const message = this.$mimcInstance.sendMessage("cancel", this.seviceCurrentUser.from_account, key)
       this.messageRecord.list.push(message)
+      axios.post("/public/message/cancel", {to_account: this.seviceCurrentUser.from_account, from_account: this.adminInfo.id, key})
       this.removeMessage(this.adminInfo.id, key)
       if(this.qiniuObservable) this.qiniuObservable.unsubscribe()
     },
@@ -713,7 +714,7 @@ export default {
          },
          success: (url) => {
             localMessage.percent = 100
-            var imgUrl = self.$store.getters.uploadToken.host + "/" + url;
+            var imgUrl = self.$store.getters.configs.upload_host + "/" + url;
             self.$mimcInstance.sendMessage("photo", self.seviceCurrentUser.from_account, imgUrl)
          },
          error: (err)=>{

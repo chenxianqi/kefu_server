@@ -12,6 +12,7 @@ import (
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
+	"github.com/astaxie/beego/orm"
 	grpc "google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -35,6 +36,17 @@ func (s *kefuServer) InsertMessage(ctx context.Context, in *Request) (*Respones,
 	return &Respones{Data: "push success"}, nil
 }
 
+// UpdateUser
+func (s *kefuServer) UpdateUser(ctx context.Context, in *Request) (*Respones, error) {
+	var user models.User
+	utils.StringToInterface(in.Data, &user)
+	_, err := services.GetUserRepositoryInstance().Update(user.ID, orm.Params{"IsService": user.IsService})
+	if err != nil {
+		logs.Info("grpc UpdateUser err == ", err.Error())
+	}
+	return &Respones{Data: "update success"}, nil
+}
+
 // CancelMessage
 func (s *kefuServer) CancelMessage(ctx context.Context, in *Request) (*Respones, error) {
 	var request models.RemoveMessageRequestDto
@@ -43,7 +55,7 @@ func (s *kefuServer) CancelMessage(ctx context.Context, in *Request) (*Respones,
 	messageRepository := services.GetMessageRepositoryInstance()
 	_, err := messageRepository.Delete(request)
 	if err != nil {
-		logs.Info("grpc CancelMessage err == ", err)
+		logs.Info("grpc CancelMessage err == ", err.Error())
 	}
 	return &Respones{Data: "cancel message success"}, nil
 }
