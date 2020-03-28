@@ -17,7 +17,7 @@ func Run() {
 	imDataSource = beego.AppConfig.String("kf_mysql_user") + ":"
 	imDataSource += beego.AppConfig.String("kf_mysql_pwd")
 	imDataSource += "@tcp(" + beego.AppConfig.String("kf_mysql_host")
-	imDataSource +=  ":" + beego.AppConfig.String("kf_mysql_port") + ")/"
+	imDataSource += ":" + beego.AppConfig.String("kf_mysql_port") + ")/"
 	imDataSource += beego.AppConfig.String("kf_mysql_db") + "?charset=utf8"
 	_ = orm.RegisterDataBase(imAliasName, imDriverName, imDataSource, 30)
 
@@ -28,6 +28,7 @@ func Run() {
 	orm.RegisterModel(new(models.KnowledgeBase))
 	orm.RegisterModel(new(models.Robot))
 	orm.RegisterModel(new(models.Message))
+	orm.RegisterModel(new(models.MessageHistory))
 	orm.RegisterModel(new(models.System))
 	orm.RegisterModel(new(models.Shortcut))
 	orm.RegisterModel(new(models.Contact))

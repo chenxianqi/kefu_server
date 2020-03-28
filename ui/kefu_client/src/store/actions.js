@@ -14,6 +14,9 @@ export default {
       .then(response => {
         let newMessage = [];
         let messages = response.data.data.list || [];
+        for(var i=0; i<messages.length; i++){
+          messages[i].payload = window.Base64.decode(messages[i].payload)
+        }
         if (messages.length < pageSize || messages.length == 0) {
           context.commit('updateState', { isLoadMorEnd: true })
         }

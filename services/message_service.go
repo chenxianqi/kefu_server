@@ -1,9 +1,9 @@
 package services
 
 import (
-	"encoding/base64"
 	"kefu_server/models"
 	"strconv"
+	"time"
 
 	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
@@ -18,6 +18,7 @@ type MessageRepositoryInterface interface {
 	GetReadCount(uid int64) (int64, error)
 	ClearRead(uid int64) (int64, error)
 	DeleteWhiteMessage(uids []int) int
+	MoveMessageToHistory() int64
 	Cancel(fromAccount int64, toAccount int64, key int64) error
 }
 
@@ -55,6 +56,15 @@ func (r *MessageRepository) Add(message *models.Message) (int64, error) {
 	return row, err
 }
 
+// GetReadCount message read count
+func (r *MessageRepository) GetReadCount(uid int64) (int64, error) {
+	count, err := r.q.Filter("to_account", uid).Filter("read", 1).Count()
+	if err != nil {
+		logs.Warn("Add add a message------------", err)
+	}
+	return count, err
+}
+
 // ClearRead Clear message read
 func (r *MessageRepository) ClearRead(uid int64) (int64, error) {
 	index, err := r.q.Filter("to_account", uid).Update(orm.Params{
@@ -66,19 +76,32 @@ func (r *MessageRepository) ClearRead(uid int64) (int64, error) {
 	return index, err
 }
 
-// GetReadCount message read count
-func (r *MessageRepository) GetReadCount(uid int64) (int64, error) {
-	count, err := r.q.Filter("to_account", uid).Filter("read", 1).Count()
+// MoveMessageToHistory move message history table
+func (r *MessageRepository) MoveMessageToHistory() int64 {
+	fields := "`from_account`,`to_account`,`biz_type`,`version`,`timestamp`,`sequence`,`key`,`transfer_account`,`platform`,`payload`,`read`"
+	timestampMax := time.Now().Unix() - int64(60*60*24*1) // 30 day
+	res, err := r.o.Raw("INSERT INTO message_history("+fields+") SELECT "+fields+" FROM message WHERE timestamp < ?", timestampMax).Exec()
 	if err != nil {
-		logs.Warn("Add add a message------------", err)
+		logs.Warn("MoveMessageToHistory move message history table1------------", err)
 	}
-	return count, err
+	rows, _ := res.RowsAffected()
+	if rows > 0 {
+		r.q.Filter("timestamp__lt", timestampMax).Delete()
+	}
+	if err != nil {
+		logs.Warn("MoveMessageToHistory move message history table2------------", err)
+	}
+	return rows
 }
 
 // Delete delete a message
 func (r *MessageRepository) Delete(removeRequestDto models.RemoveMessageRequestDto) (int64, error) {
+
 	res, err := r.o.Raw("DELETE FROM `message` WHERE from_account = ? AND to_account = ? AND `key` = ?", removeRequestDto.FromAccount, removeRequestDto.ToAccount, removeRequestDto.Key).Exec()
 	row, _ := res.RowsAffected()
+	if row == 0 {
+		r.o.Raw("DELETE FROM `message_history` WHERE from_account = ? AND to_account = ? AND `key` = ?", removeRequestDto.FromAccount, removeRequestDto.ToAccount, removeRequestDto.Key).Exec()
+	}
 	if err != nil {
 		logs.Warn("Delete delete a message------------", err)
 		return 0, err
@@ -110,7 +133,7 @@ func (r *MessageRepository) GetUserMessages(messagePaginationDto models.MessageP
 		start = 0
 	}
 	if messageCount.Count > 0 {
-		_, err := r.o.Raw("SELECT * FROM `message` WHERE (`to_account` = ? OR `from_account` = ?) AND `timestamp` < ? ORDER BY `timestamp` ASC	LIMIT ?,?", uid, uid, timestamp, start, end).QueryRows(&messages)
+		_, err := r.o.Raw("SELECT * FROM `message` WHERE (`to_account` = ? OR `from_account` = ?) AND `timestamp` < ? ORDER BY `sequence` ASC	LIMIT ?,?", uid, uid, timestamp, start, end).QueryRows(&messages)
 		if err != nil {
 			logs.Warn("GetUserMessages get user messages1------------", err)
 			return nil, err
@@ -126,10 +149,6 @@ func (r *MessageRepository) GetUserMessages(messagePaginationDto models.MessageP
 	} else {
 		messagePaginationDto.List = []models.Message{}
 		messagePaginationDto.Total = 0
-	}
-	for index, msg := range messages {
-		payload, _ := base64.StdEncoding.DecodeString(msg.Payload)
-		messages[index].Payload = string(payload)
 	}
 	return &messagePaginationDto, nil
 }
@@ -169,7 +188,7 @@ func (r *MessageRepository) GetAdminMessages(messagePaginationDto models.Message
 	}
 
 	if msgCount > 0 {
-		_, err = r.o.Raw("SELECT * FROM `message` WHERE to_account IN ("+inExp+") AND from_account IN ("+inExp+") AND `timestamp` < ? ORDER BY `timestamp` ASC LIMIT ?,?", accounts, accounts, messagePaginationDto.Timestamp, start, end).QueryRows(&messages)
+		_, err = r.o.Raw("SELECT * FROM `message` WHERE to_account IN ("+inExp+") AND from_account IN ("+inExp+") AND `timestamp` < ? ORDER BY `sequence` ASC LIMIT ?,?", accounts, accounts, messagePaginationDto.Timestamp, start, end).QueryRows(&messages)
 		if err != nil {
 			logs.Warn("GetMessages get one service message list2------------", err)
 			return nil, err
@@ -185,10 +204,6 @@ func (r *MessageRepository) GetAdminMessages(messagePaginationDto models.Message
 	} else {
 		messagePaginationDto.List = []models.Message{}
 		messagePaginationDto.Total = 0
-	}
-	for index, msg := range messages {
-		payload, _ := base64.StdEncoding.DecodeString(msg.Payload)
-		messages[index].Payload = string(payload)
 	}
 	return &messagePaginationDto, nil
 }

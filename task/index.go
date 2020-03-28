@@ -9,4 +9,7 @@ func Run() {
 	// ClearUser
 	clearUser()
 
+	// moveMessage
+	moveMessage()
+
 }

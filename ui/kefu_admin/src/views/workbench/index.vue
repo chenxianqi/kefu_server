@@ -328,6 +328,7 @@ export default {
         if(!status){
           this.$store.dispatch('ON_GET_ME').then(()=>{
             if(this.adminInfo.online != 0){
+              this.onLongTraining()
               this.init();
             }
           })
@@ -340,15 +341,27 @@ export default {
       // 监听连接断开
       this.$mimcInstance.addEventListener("disconnect", () => {
         console.log("链接断开！")
+        this.isLogin = false;
+         this.onLongTraining()
         var adminInfo = this.adminInfo
         if(adminInfo.online != 0){
-          this.adminInfo = null;
+          this.$store.commit("onChangeAdminInfo", null)
           this.init();
         }else{
           adminInfo.online = 0
           this.$store.commit("onChangeAdminInfo", adminInfo)
         }
       })
+    },
+    // onLongTraining
+    onLongTraining(){
+      if(this.$mimcInstance.user.isLogin()) return
+      console.log("长轮训获取新消息..")
+      // 获取聊天记录
+      this.$store.dispatch('ON_GET_CONTACTS')
+      this.getMessageRecord()
+      this.scrollIntoBottom()
+      setTimeout(()=> this.onLongTraining(), 2000)
     },
     // 刷新鼠标动态 mousemove
     onMousemoveEvent(){
@@ -756,15 +769,19 @@ export default {
         "account": account
       })
       .then(response => {
+        let messages = response.data.data.list
+        for(var i=0; i<messages.length; i++){
+          messages[i].payload = window.Base64.decode(messages[i].payload)
+        }
         this.getMessageRecordLoading = false
-        if(response.data.data.list.length < this.getMessageRecordPageSize){
+        if(messages.length < this.getMessageRecordPageSize){
           this.isMessageEnd = true
         }
         if(this.messageRecord.list.length == 0 || timestamp == 0){
           this.$store.commit("onChangeMessageRecord", response.data.data)
           this.scrollIntoBottom()
         }else{
-          response.data.data.list = response.data.data.list.concat(this.messageRecord.list)
+          response.data.data.list = messages.concat(this.messageRecord.list)
           this.$store.commit("onChangeMessageRecord", response.data.data)
         }
         setTimeout(()=>this.$previewRefresh(), 1000)

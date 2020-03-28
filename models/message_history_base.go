@@ -1,6 +1,6 @@
 package models
 
-// Message struct
+// MessageHistory struct
 // BizType  消息类型  先以字符串形式声明吧
 // 1 video 				视频
 // 2 text  				文本
@@ -17,7 +17,7 @@ package models
 // 13 system			系统消息
 // 14 search_knowledge	检索关键词知识库消息
 // 15 key				消息key
-type Message struct {
+type MessageHistory struct {
 	ID              int64  `orm:"auto;pk;column(id)" json:"id"`                                  // 消息ID
 	FromAccount     int64  `orm:"type(bigint);column(from_account)" json:"from_account"`         // 发送人账号
 	ToAccount       int64  `orm:"type(bigint);column(to_account)" json:"to_account"`             // 接收人账号

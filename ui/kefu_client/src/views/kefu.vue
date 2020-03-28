@@ -382,7 +382,18 @@ export default {
           }
       })
       console.log("重新登录中...");
-      console.log(this.$mimcInstance.user.isLogin())
+    },
+    // onLongTraining
+    onLongTraining(){
+      if(!this.isShowTopLoading) return
+      // 长轮训获取新消息
+      console.log("长轮训获取新消息..")
+      this.$store.dispatch("onGetMessages", {
+        timestamp: 0,
+        oldMsg: [],
+        callback: () => this.scrollIntoBottom()
+      });
+      setTimeout(()=> this.onLongTraining(), 2000)
     },
     // handelEvent
     handelEvent() {
@@ -397,6 +408,7 @@ export default {
         this.$mimcInstance.user.logout()
         this.isShowTopLoading = true;
         this.userLogin()
+        this.onLongTraining()
       });
 
       // 状态发生变化
@@ -407,6 +419,7 @@ export default {
             this.isShowTopLoading = false;
           }else{
             this.userLogin()
+            this.onLongTraining()
           }
           console.log("状态发生变化", bindResult, errType, errReason, errDesc);
         }
@@ -567,7 +580,7 @@ export default {
         localMessage["percent"] = 0;
         localMessage.isShowCancel = true;
         setTimeout(() => {
-          localMessage.isShowCancel = false;
+          this.updateMessageHideCancel(localMessage)
         }, 10000);
         self.messages.push(self.handlerMessage(localMessage));
         var cacheMsg = Object.assign({}, localMessage);
@@ -699,6 +712,17 @@ export default {
       this.sendTextMessage();
       this.$refs.textarea.focus();
     },
+    // 更新消息
+    updateMessageHideCancel(message){
+      let messages = this.$store.getters.messages
+        for(var i =0; i<messages.length; i++){
+          if(message.key == messages[i].key){
+            messages[i].isShowCancel = false
+            break
+          } 
+        }
+      this.$store.commit("updateState", { messages });
+    },
     // 发送文本消息
     sendTextMessage() {
       // 当前用户是否上线
@@ -716,7 +740,9 @@ export default {
         chatValue
       );
       message.isShowCancel = true;
-      setTimeout(() => (message.isShowCancel = false), 10000);
+      setTimeout(() =>{
+        this.updateMessageHideCancel(message)
+      }, 10000);
       this.messagesPushMemory(message);
       this.chatValue = "";
       this.handshakeKeywordList = [];

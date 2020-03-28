@@ -22,6 +22,7 @@ func MessageInto(message models.Message) {
 
 	// message create time
 	message.Timestamp = time.Now().Unix()
+	message.Sequence = time.Now().UnixNano()
 
 	// content内容转base64
 	message.Payload = base64.StdEncoding.EncodeToString([]byte(message.Payload))

@@ -115,10 +115,10 @@ export default {
             self.$store.commit("onChangeMimcUser", self.$mimcInstance.user)
           })
         }else if(self.$store.getters.adminInfo.online != 0){
-          setTimeout(() => self.watchLogin(), 1000)
+          setTimeout(() => self.watchLogin(), 2000)
         }
       }catch(err){
-        setTimeout(() => this.watchLogin(), 1000)
+        setTimeout(() => this.watchLogin(), 2000)
       }
     },
   },
