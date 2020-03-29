@@ -187,7 +187,7 @@ func (c *WorkOrderController) CloseWorkOrder() {
 			kefuClientURL := beego.AppConfig.String("kefu_client_url")
 			emailName := beego.AppConfig.String("email_name")
 			subject := "您的工单：" + workOrder.Title + "已关闭"
-			body := "工单标题：" + workOrder.Title + "<br>您的工单已被关闭，如此问题还未得到解决，您可以重新进入<a target='_blank' href='" + kefuClientURL + "'>在线客服</a>以得到更多的帮助。<br>" + emailName
+			body := "工单标题：" + workOrder.Title + "<br>您的工单已被关闭，如此问题还未得到解决，您可以重新进入<a target='_blank' href='" + kefuClientURL + "?u=" + strconv.FormatInt(workOrder.UID, 10) + "'>在线客服</a>以得到更多的帮助。<br>" + emailName
 			utils.SendMail(mailTo, subject, body)
 		}()
 	}

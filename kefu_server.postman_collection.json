@@ -1,0 +1,3336 @@
+{
+	"info": {
+		"_postman_id": "607c7224-0f8b-4e2e-82ce-9b507e16bfca",
+		"name": "kefu_server",
+		"description": "the is a mimc product",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/api/auth/login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"auth_type\": 2,\n\t\"username\": \"keith\",\n\t\"password\": \"123456\"\n}\t",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/auth/login",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				},
+				"description": "用户登录"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/auth/logout",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/auth/logout",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"logout"
+					]
+				},
+				"description": "退出登录"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/admin/me",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/api/admin/me",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"me"
+					]
+				},
+				"description": "获取当前登录用户信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/admin",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/api/admin/100",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"100"
+					]
+				},
+				"description": "获取用户信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/admin",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\n\t\"id\": 100,\n\t\"avatar\": \"http://qiniu.cmp520.com/3971858868282022.jpg\",\n\t\"auto_reply\": \"您好，我是在线客服Keith,工号100，有什么可以帮到您呢？\",\n\t\"nickname\": \"Keith\",\n\t\"phone\": \"13800138001\"\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/admin",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"admin"
+					]
+				},
+				"description": "更新用户信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/admin",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\": \"keith00103\",\n\t\"password\": \"a123456\"\n\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/admin",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"admin"
+					]
+				},
+				"description": "添加用户"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/admin/:id",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/api/admin/112",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"112"
+					]
+				},
+				"description": "删除用户"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/admin/list",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"page_on\": 1,\n  \"page_size\": 1000,\n  \"online\": 3,\n  \"keyword\": \"\"\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/admin/list",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"list"
+					]
+				},
+				"description": "获取后台客服管理员列表"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/admin/current/user/:uid",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/api/admin/current/user/0",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"current",
+						"user",
+						"0"
+					]
+				},
+				"description": "上报当前聊天对象"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/admin/online/:status",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/api/admin/online/0",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"online",
+						"0"
+					]
+				},
+				"description": "更新用户状态"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/admin/password",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"old_password\": \"a123456\",\n  \"new_password\": \"123456\",\n  \"enter_password\": \"123456\"\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/admin/password",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"password"
+					]
+				},
+				"description": "获取后台客服管理员列表"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/knowledge",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"uid\": 1000,\n\t\"title\": \"为什么显示\",\n\t\"sub_title\": \"不可办理|不能办理|不能下单|下单不了|支付不了\",\n\t\"content\": \"您好，显示不可办理的违章可以咨询人工客服！\",\n\t\"platform\": 1\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/knowledge",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"knowledge"
+					]
+				},
+				"description": "添加知识库"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/knowledge/:id",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/api/knowledge/8",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"knowledge",
+						"8"
+					]
+				},
+				"description": "获取单个问答知识"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/knowledge",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 8,\n    \"uid\": 100,\n    \"title\": \"如何新建一个应用\",\n    \"sub_title\": \"开始使用|创建应用|获取AppId|获取AppKey|获取AppSecret\",\n    \"content\": \"APP开发者访问小米开放平台（dev.mi.com）申请appId/appKey/appSecret。\\n步骤：登录小米开放平台网页 -> ”管理控制台” -> ”小米应用商店” -> ”创建应用” -> 填入应用名和包名 -> ”创建” -> 记下看到的AppId/AppKey/AppSecret 。\",\n    \"platform\": 1,\n    \"update_at\": 0,\n    \"create_at\": 1576856366\n  }",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/knowledge",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"knowledge"
+					]
+				},
+				"description": "更新问答"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/knowledge/:id",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/api/knowledge/45",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"knowledge",
+						"45"
+					]
+				},
+				"description": "删除问答"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/knowledge/list",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"page_on\": 1,\n  \"page_size\": 10\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/knowledge/list",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"knowledge",
+						"list"
+					]
+				},
+				"description": "获取问答列表"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/knowledge/total",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"page_on\": 1,\n  \"page_size\": 10\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/knowledge/total",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"knowledge",
+						"total"
+					]
+				},
+				"description": "平台知识库统计"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/robot",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"nickname\": \"keith\",\n\t\"avatar\": \"123456\",\n\t\"welcome\": \"欢迎语\",\n\t\"understand\": \"不明白语句\",\n\t\"artificial\": \"关键词转人工\",\n\t\"platform\": 3,\n\t\"keyword\": \"12\",\n\t\"switch\": 1\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/robot",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"robot"
+					]
+				},
+				"description": "添加机器人"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/robot/:id",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/api/robot/1",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"robot",
+						"1"
+					]
+				},
+				"description": "获取单个机器人信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/robot/online/all",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/api/robot/online/all",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"robot",
+						"online",
+						"all"
+					]
+				},
+				"description": "获取所有在线机器人"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/robot/list",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/api/robot/list",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"robot",
+						"list"
+					]
+				},
+				"description": "获取机器人列表"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/robot",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": 1000000004,\n\t\"nickname\": \"keith\",\n\t\"avatar\": \"123456\",\n\t\"welcome\": \"欢迎语\",\n\t\"understand\": \"不明白语句,1|2|3|4\",\n\t\"artificial\": \"关键词转人工|@|3\",\n\t\"platform\": 3,\n\t\"keyword\": \"12\",\n\t\"switch\": 1\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/robot",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"robot"
+					]
+				},
+				"description": "更新机器人"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/robot/:id",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/robot/1000000004",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"robot",
+						"1000000004"
+					]
+				},
+				"description": "添加机器人"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/company",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 1,\n    \"title\": \"keith\",\n    \"logo\": \"http://kf.aissz.com:666/static/uploads/images/15655775732227256.jpg\",\n    \"service\": \"周一至周五 9:00-18:00\",\n    \"email\": \"361554012@qq.com\",\n    \"tel\": \"400-000-001\",\n    \"address\": \"广州\"\n  }",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/company",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"company"
+					]
+				},
+				"description": "修改公司信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/company",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/company",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"company"
+					]
+				},
+				"description": "获取公司信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/user",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/api/user/100000",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"100000"
+					]
+				},
+				"description": "获取用户信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/user",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 100000,\n    \"uid\": 0,\n    \"address\": \"广州\",\n    \"nickname\": \"keith\",\n    \"phone\": \"13800138001\",\n    \"remarks\": \"Remarks\"\n  }",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/user",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"user"
+					]
+				},
+				"description": "修改用户信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/user/:id",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/user/10014",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"10014"
+					]
+				},
+				"description": "删除用户"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/user/list",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"page_on\": 1,\n  \"page_size\": 10,\n  \"keyword\": \"爱人与海\",\n  \"platform\": 1,\n  \"date_start\": \"\",\n  \"date_end\": \"\"\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/user/list",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"list"
+					]
+				},
+				"description": "获取用户列表"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/user/onlines",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/user/onlines",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"onlines"
+					]
+				},
+				"description": "查询多少人在线"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/public/company",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Token",
+						"value": "{{USER_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/public/company",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"public",
+						"company"
+					]
+				},
+				"description": "获取公司信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/public/activity",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Token",
+						"type": "text",
+						"value": "{{USER_TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/public/activity",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"public",
+						"activity"
+					]
+				},
+				"description": "上报最后一次活动时间\n用户以及客服都是用此接口"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/public/register",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"type\": 0,\n\t\"uid\": 0,\n\t\"address\": \"广州\",\n\n\t\"account_id\": 10000119\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/public/register",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"public",
+						"register"
+					]
+				},
+				"description": "用户注册授权登录\ntype = 1   客服登录，必须带token\ntype = 0   用户注册，游客\nuid        用户对应业务平的唯一id\nplatform   用户所在平台\naccount_id 用户的唯一 ID"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/public/message/push",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"msgType\": \"NORMAL_MSG\",\n\t\"payload\": \"ImV5Sm1jbTl0WDJGalkyOTFiblFpT2pFd01EQXdNREF4TENKMGIxOWhZMk52ZFc1MElqb3hMQ0ppYVhwZmRIbHdaU0k2SW5SbGVIUWlMQ0oyWlhKemFXOXVJam9pTUNJc0luUnBiV1Z6ZEdGdGNDSTZNVFU0TXprek5qYzFOU3dpYTJWNUlqb3hOVGd6T1RNMk56VTFORE15TENKeVpXRmtJam93TENKd2JHRjBabTl5YlNJNk5Td2lkSEpoYm5ObVpYSmZZV05qYjNWdWRDSTZNQ3dpY0dGNWJHOWhaQ0k2SWpFeE1URWlmUT09Ig==\"\n}\n",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/public/message/push",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"public",
+						"message",
+						"push"
+					]
+				},
+				"description": "推送消息"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/public/message/cancel",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Token",
+						"value": "{{USER_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"from_account\": 10000001,\n\t\"to_account\": 1,\n\t\"key\": 1583940082404\n}\n",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/public/message/cancel",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"public",
+						"message",
+						"cancel"
+					]
+				},
+				"description": "撤回一条消息"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/public/robot/:pid",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Token",
+						"type": "text",
+						"value": "{{USER_TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/public/robot/1",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"public",
+						"robot",
+						"1"
+					]
+				},
+				"description": "更加平台获取一个在线的机器人\n如该平台下没有在线机器人则返回系统默认全局机器人"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/public/read",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Token",
+						"type": "text",
+						"value": "{{USER_TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/public/read/",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"public",
+						"read",
+						""
+					]
+				},
+				"description": "获取用户新消息统计"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/public/configs",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Token",
+						"value": "{{USER_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"platform\": 0\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/public/configs",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"public",
+						"configs"
+					]
+				},
+				"description": "获取上传配置信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/public/robot_info/:id",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Token",
+						"value": "{{USER_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/public/robot_info/1",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"public",
+						"robot_info",
+						"1"
+					]
+				},
+				"description": "获取单个机器人信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/public/window",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Token",
+						"type": "text",
+						"value": "{{USER_TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"window\": 1\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/public/window/",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"public",
+						"window",
+						""
+					]
+				},
+				"description": "设置用户是否在窗口页面"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/public/clean_read",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Token",
+						"type": "text",
+						"value": "{{USER_TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/public/clean_read/",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"public",
+						"clean_read",
+						""
+					]
+				},
+				"description": "清除未读消息"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/public/upload",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					},
+					{
+						"key": "Token",
+						"value": "{{USER_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/Users/chenxianqi/Downloads/x-active.png"
+						},
+						{
+							"key": "file_name",
+							"value": "sdfsdfs1df.jpg",
+							"type": "text"
+						}
+					],
+					"options": {
+						"formdata": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/public/upload",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"public",
+						"upload"
+					]
+				},
+				"description": "文件上传"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/public/messages",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Token",
+						"value": "{{USER_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"timestamp\": 0,\n  \"page_size\": 50\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/public/messages",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"public",
+						"messages"
+					]
+				},
+				"description": "获取聊天记录"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/public/workorder/create",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Token",
+						"value": "{{USER_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"tid\": 7,\n\t\"title\": \"你好，如何接入mimc呢\",\n\t\"content\": \"我不太很明白这个怎么接入的\",\n\t\"phone\": \"13800138000\",\n\t\"email\": \"361554012@qq.com\"\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/public/workorder/create",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"public",
+						"workorder",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/public/workorder/reply",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Token",
+						"type": "text",
+						"value": "{{USER_TOKEN}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"wid\": 4,\n\t\"content\": \"好的。\"\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/public/workorder/reply",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"public",
+						"workorder",
+						"reply"
+					]
+				},
+				"description": "回复工单"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/public/workorders",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Token",
+						"type": "text",
+						"value": "{{USER_TOKEN}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/public/workorders",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"public",
+						"workorders"
+					]
+				},
+				"description": "获取用户所发布的工单列表"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/public/workorder/types",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Token",
+						"type": "text",
+						"value": "{{USER_TOKEN}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/public/workorder/types",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"public",
+						"workorder",
+						"types"
+					]
+				},
+				"description": "获取所有工单类型"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/public/workorder/comments/:wid",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Token",
+						"type": "text",
+						"value": "{{USER_TOKEN}}",
+						"disabled": true
+					},
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/public/workorder/comments/7",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"public",
+						"workorder",
+						"comments",
+						"7"
+					]
+				},
+				"description": "获取工单的所有回复"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/public/workorder/:wid",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Token",
+						"type": "text",
+						"value": "{{USER_TOKEN}}",
+						"disabled": true
+					},
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/public/workorder/7",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"public",
+						"workorder",
+						"7"
+					]
+				},
+				"description": "获取单个工单"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/public/workorder/:wid",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Token",
+						"type": "text",
+						"value": "{{USER_TOKEN}}"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/public/workorder/3",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"public",
+						"workorder",
+						"3"
+					]
+				},
+				"description": "删除单个工单"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/public/workorder/close/:wid",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Token",
+						"type": "text",
+						"value": "{{USER_TOKEN}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/public/workorder/close/13",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"public",
+						"workorder",
+						"close",
+						"13"
+					]
+				},
+				"description": "关闭单个工单"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/shortcut",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\":\"1111111\",\n  \"content\":\"222222\"\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/shortcut",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"shortcut"
+					]
+				},
+				"description": "添加快捷语"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/shortcut",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"id\": 19,\n  \"uid\": 100,\n  \"title\": \"您好(⊙o⊙)哇\",\n  \"content\": \"您好(⊙o⊙)哇，喜欢本系统的给我个star噢，谢谢~\"\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/shortcut",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"shortcut"
+					]
+				},
+				"description": "更新快捷语"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/shortcut",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/shortcut/19",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"shortcut",
+						"19"
+					]
+				},
+				"description": "获取单个快捷语"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/shortcut/:id",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/shortcut/20",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"shortcut",
+						"20"
+					]
+				},
+				"description": "添加快捷语"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/shortcut/list",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/shortcut/list",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"shortcut",
+						"list"
+					]
+				},
+				"description": "添加快捷语"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/contact/list",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/contact/list",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"contact",
+						"list"
+					]
+				},
+				"description": "客服获取会话列表"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/contact/:id",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/contact/15892",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"contact",
+						"15892"
+					]
+				},
+				"description": "删除单个会话记录"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/contact/transfer",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"to_account\": 100,\n  \"user_account\": 10441\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/contact/transfer",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"contact",
+						"transfer"
+					]
+				},
+				"description": "客服端获取聊天记录"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/system",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/system",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"system"
+					]
+				},
+				"description": "获取系统信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/system",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"客服系统-工作台\",\n    \"logo\": \"http://kf.aissz.com:666/static/uploads/images/1580880580547289_scaled_13-28-01-1895426542557186.png\",\n    \"copy_right\": \"©2019-2029 Macromedia, Inc. All rights reserved.\",\n    \"upload_mode\": 1\n\n  }",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/system",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"system"
+					]
+				},
+				"description": "修改系统信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/syste/workorder",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"open_workorder\": 1\n  }",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/system/workorder/",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"system",
+						"workorder",
+						""
+					]
+				},
+				"description": "修改系统信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/qiniu",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/qiniu/",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"qiniu",
+						""
+					]
+				},
+				"description": "获取七牛配置信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/qiniu",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 1,\n    \"bucket\": \"bucket\",\n    \"host\": \"https://upload.qiniup.com\",\n    \"access_key\": \"access_key\",\n    \"secret_key\": \"secret_key\"\n  }",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/qiniu",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"qiniu"
+					]
+				},
+				"description": "修改七牛配置信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/message/list",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"timestamp\": 1585466583,\n  \"page_size\": 20,\n  \"account\": 10025818,\n  \"service\": 1000\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/message/list",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"message",
+						"list"
+					]
+				},
+				"description": "客服端获取聊天记录"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/message/history",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"timestamp\": 1585466583,\n  \"page_size\": 20,\n  \"account\": 10025818,\n  \"service\": 1000\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/message/history",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"message",
+						"history"
+					]
+				},
+				"description": "客服端获取历史聊天记录"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/message/remove",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"to_account\": 10315,\n  \"from_account\": 100,\n  \"key\": 1578839120500\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/message/remove",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"message",
+						"remove"
+					]
+				},
+				"description": "移除单条消息"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/home/statistical",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"date_start\": \"2019-08-21\",\n  \"date_end\": \"2019-08-20\"\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/home/statistical",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"home",
+						"statistical"
+					]
+				},
+				"description": "首页统计"
+			},
+			"response": []
+		},
+		{
+			"name": "/home/flow_statistical",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"date_start\": \"2020-03-05\",\n  \"date_end\": \"2020-03-06\"\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/home/flow_statistical",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"home",
+						"flow_statistical"
+					]
+				},
+				"description": "真是访问量统计"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/platform/:id",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/platform/1",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"platform",
+						"1"
+					]
+				},
+				"description": "获取单个平台数据"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/platform",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"id\": 10,\n  \"title\": \"百度小程序\",\n  \"alias\": \"baidu\",\n  \"system\": 0\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/platform",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"platform"
+					]
+				},
+				"description": "修改平台数据"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/platform",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"百度小程序1\",\n    \"alias\": \"baidu\"\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/platform",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"platform"
+					]
+				},
+				"description": "添加平台数据"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/platform/:id",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/platform/14",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"platform",
+						"14"
+					]
+				},
+				"description": "删除单个平台数据"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/platform/list",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/platform/list",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"platform",
+						"list"
+					]
+				},
+				"description": "获取所有平台数据"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/uploads/config",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/uploads/config",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"uploads",
+						"config"
+					]
+				},
+				"description": "获取上传配置"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/contact/clear",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/contact/clear",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"contact",
+						"clear"
+					]
+				},
+				"description": "清空聊天列表"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/services_statistical/list",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"page_on\": 1,\n  \"page_size\": 10,\n  \"is_de_weighting\": true,\n  \"cid\": 100,\n  \"date\": \"2020-03-06\"\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/services_statistical/list",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"services_statistical",
+						"list"
+					]
+				},
+				"description": "获取服务列表"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/workorder/type",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"技术支持\"\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/workorder/type/",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"workorder",
+						"type",
+						""
+					]
+				},
+				"description": "添加工单分类"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/workorder/type/:id",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/workorder/type/3",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"workorder",
+						"type",
+						"3"
+					]
+				},
+				"description": "删除工单分类"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/workorder/type",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"id\":1,\n  \"title\": \"mimc22\"\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/workorder/type",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"workorder",
+						"type"
+					]
+				},
+				"description": "修改工单分类"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/workorder/type/:id",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/workorder/type/1",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"workorder",
+						"type",
+						"1"
+					]
+				},
+				"description": "获取单个分类信息"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/workorder/types",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/workorder/types",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"workorder",
+						"types"
+					]
+				},
+				"description": "获取所有分类"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/workorder/close",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"wid\":7,\n\t\"remark\": \"已处理完成\"\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/workorder/close",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"workorder",
+						"close"
+					]
+				},
+				"description": "关闭工单"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/workorder/list",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\t\n\t\"status\": \"0,1,2,3\",\n\t\"page_on\": 1,\n\t\"del\": 0,\n\t\"page_size\": 10\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/workorder/list",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"workorder",
+						"list"
+					]
+				},
+				"description": "查询工单列表\ntid    根据 类型查询默认不带\nstatus -1,表示获取全部状态，可根据状态获取"
+			},
+			"response": []
+		},
+		{
+			"name": "/api/workorder/counts",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/workorder/counts",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"workorder",
+						"counts"
+					]
+				},
+				"description": "获取零散统计"
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

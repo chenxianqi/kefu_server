@@ -684,7 +684,7 @@ func (c *PublicController) ReplyWorkOrder() {
 				}
 				subject := "您的工单：" + workOrder.Title + "已被回复"
 				kefuClientURL := beego.AppConfig.String("kefu_client_url")
-				body := "工单标题：" + workOrder.Title + "<br>回复：" + workOrderComment.Content + "<br>您可以点<a target='_blank' href='" + kefuClientURL + "'>此链接</a>去查看完整内容"
+				body := "工单标题：" + workOrder.Title + "<br>回复：" + workOrderComment.Content + "<br>您可以点<a target='_blank' href='" + kefuClientURL + "?u=" + strconv.FormatInt(workOrder.UID, 10) + "'>此链接</a>去查看完整内容"
 				utils.SendMail(mailTo, subject, body)
 			}()
 		}
