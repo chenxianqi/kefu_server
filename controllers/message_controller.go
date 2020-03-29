@@ -30,6 +30,16 @@ func (c *MessageController) Finish() {}
 
 // List get messages
 func (c *MessageController) List() {
+	messageList(c, false)
+}
+
+// HistoryList get History messages
+func (c *MessageController) HistoryList() {
+	messageList(c, true)
+}
+
+// messageList get messages
+func messageList(c *MessageController, isHistory bool) {
 
 	messagePaginationDto := models.MessagePaginationDto{}
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &messagePaginationDto); err != nil {
@@ -57,7 +67,13 @@ func (c *MessageController) List() {
 	}
 
 	// query messages
-	returnMessagePaginationDto, err := c.MessageRepository.GetAdminMessages(messagePaginationDto)
+	var returnMessagePaginationDto *models.MessagePaginationDto
+	var err error
+	if !isHistory {
+		returnMessagePaginationDto, err = c.MessageRepository.GetAdminMessages(messagePaginationDto)
+	} else {
+		returnMessagePaginationDto, err = c.MessageRepository.GetAdminHistoryMessages(messagePaginationDto)
+	}
 	if err != nil {
 		c.JSON(configs.ResponseFail, "fail", err.Error())
 	}

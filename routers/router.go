@@ -75,6 +75,7 @@ func routers(prefix string) *beego.Namespace {
 		beego.NSNamespace("/message",
 			beego.NSBefore(filters.FilterToken),
 			beego.NSRouter("/list", &controllers.MessageController{}, "post:List"),
+			beego.NSRouter("/history", &controllers.MessageController{}, "post:HistoryList"),
 			beego.NSRouter("/remove", &controllers.MessageController{}, "post:Remove"),
 		),
 

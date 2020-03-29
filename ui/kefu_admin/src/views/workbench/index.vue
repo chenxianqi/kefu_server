@@ -241,7 +241,8 @@ export default {
       inputPongIngString: "对方正在输入...",
       isPush: false, // 是否可以推送消息
       isMessageEnd: false,
-      mousemoveTimerout: null
+      mousemoveTimerout: null,
+      isFirstRequestMessageEnd: false,
     }
   },
   computed: {
@@ -745,6 +746,7 @@ export default {
       href = href.substr(0, index != -1 ? index : href.length)
       history.replaceState(null, null, href + '#/workbench?uid=' + user.from_account)
       this.isMessageEnd = false
+      this.isFirstRequestMessageEnd = false
       if(this.seviceCurrentUser.from_account != user.from_account){
         this.messageRecord.list = []
         this.$store.commit("onChangeSeviceCurrentUser", user)
@@ -775,7 +777,7 @@ export default {
         }
         this.getMessageRecordLoading = false
         if(messages.length < this.getMessageRecordPageSize){
-          this.isMessageEnd = true
+          this.isFirstRequestMessageEnd = true
         }
         if(this.messageRecord.list.length == 0 || timestamp == 0){
           this.$store.commit("onChangeMessageRecord", response.data.data)
@@ -791,19 +793,50 @@ export default {
         this.getMessageRecordLoading = false
       });
     },
+    // 获取聊天记录
+    getHistoryMessageRecord(timestamp){
+      this.getMessageRecordLoading = true
+      if(timestamp == undefined || timestamp == 0){
+        this.isMessageEnd = true
+       return
+      }
+      var account = parseInt(this.seviceCurrentUser.from_account)
+      if(!account) return
+      axios.post('/message/history', {
+        "timestamp": timestamp,
+        "page_size": this.getMessageRecordPageSize,
+        "account": account
+      })
+      .then(response => {
+        let messages = response.data.data.list
+        for(var i=0; i<messages.length; i++){
+          messages[i].payload = window.Base64.decode(messages[i].payload)
+        }
+        this.getMessageRecordLoading = false
+        if(messages.length < this.getMessageRecordPageSize){
+          this.isMessageEnd = true
+        }
+        response.data.data.list = messages.concat(this.messageRecord.list)
+        this.$store.commit("onChangeMessageRecord", response.data.data)
+        setTimeout(()=>this.$previewRefresh(), 1000)
+        this.$store.dispatch('ON_GET_CONTACTS')
+      })
+      .catch(() => {
+        this.getMessageRecordLoading = false
+      });
+    },
     //获取更多消息
     onLoadMorMessage(){
       if(this.getMessageRecordLoading) return
-      if(this.messageRecord.list.length >= this.messageRecord.total || this.messageRecord.total <= this.getMessageRecordPageSize){
-        this.isMessageEnd = true
-        return
+      if(this.isFirstRequestMessageEnd){
+        this.getHistoryMessageRecord(this.messageRecord.list[0].timestamp)
+      }else{
+        this.getMessageRecord(this.messageRecord.list[0].timestamp)
       }
-      this.getMessageRecord(this.messageRecord.list[0].timestamp)
       setTimeout(()=>{
         var chatBody = document.getElementById("chatBody")
         chatBody.scrollTop = 500
       }, 50)
-
     },
     // 显示正在输入
     inputPongIng(){

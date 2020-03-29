@@ -6,7 +6,9 @@
         <i class="el-icon-tickets"></i>
         <span slot="title">工单管理</span>
         <span style="font-size:15px;margin-left: 30px;color:#e7a646">
-           当前有： 
+          <template v-if="workOrderCounts.status0 > 0 || workOrderCounts.status2">
+             当前有： 
+          </template>
           <template v-if="workOrderCounts.status0 > 0">
               <strong style="color: #f56c6c">{{workOrderCounts.status0}}</strong>条待处理 ，
           </template>

@@ -87,7 +87,7 @@ func (r *WorkOrderTypeRepository) GetWorkOrderTypes() []models.WorkOrderType {
 // GetWorkOrderTypesAndCountWorkorder get all
 func (r *WorkOrderTypeRepository) GetWorkOrderTypesAndCountWorkorder() []models.WorkOrderTypeDto {
 	var workOrderTypes []models.WorkOrderTypeDto
-	_, err := r.o.Raw("SELECT t.*,IFNULL(w.count,0) as `count` FROM work_order_type t LEFT JOIN (SELECT t_i_d,COUNT(*) AS `count` FROM `work_order` WHERE `delete` = 0 AND status != 3 GROUP BY `t_i_d`) w ON t.id = w.t_i_d").QueryRows(&workOrderTypes)
+	_, err := r.o.Raw("SELECT t.*,IFNULL(w.count,0) as `count` FROM work_order_type t LEFT JOIN (SELECT tid,COUNT(*) AS `count` FROM `work_order` WHERE `delete` = 0 AND status != 3 GROUP BY `tid`) w ON t.id = w.tid").QueryRows(&workOrderTypes)
 	if err != nil {
 		logs.Warn("GetWorkOrderTypes get all------------", err)
 		return []models.WorkOrderTypeDto{}

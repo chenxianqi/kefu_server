@@ -187,7 +187,8 @@ export default {
       dialogFormVisible: false,
       messageRecord: {
         list: []
-      }
+      },
+       isFirstRequestMessageEnd: false,
 
 
     };
@@ -275,6 +276,7 @@ export default {
     openModal(scope){
       this.selectUser = scope.row
       this.isMessageEnd = false
+      this.isFirstRequestMessageEnd = false
       this.dialogFormVisible = true
       this.messageRecord = {
         list: []
@@ -295,14 +297,18 @@ export default {
       })
       .then(response => {
         this.getMessageRecordLoading = false
-        if(response.data.data.list.length < this.getMessageRecordPageSize){
-          this.isMessageEnd = true
+        let messages = response.data.data.list
+        for(var i=0; i<messages.length; i++){
+          messages[i].payload = window.Base64.decode(messages[i].payload)
         }
-        if(this.messageRecord.list.length == 0 || timestamp == 0){
+        if(messages.length < this.getMessageRecordPageSize){
+          this.isFirstRequestMessageEnd = true
+        }
+        if(messages.length == 0 || timestamp == 0){
           this.messageRecord = response.data.data
           this.scrollIntoBottom()
         }else{
-          response.data.data.list = response.data.data.list.concat(this.messageRecord.list)
+          response.data.data.list = messages.concat(this.messageRecord.list)
           this.messageRecord = response.data.data
         }
         setTimeout(()=>this.$previewRefresh(), 500)
@@ -312,14 +318,44 @@ export default {
         this.getMessageRecordLoading = false
       });
     },
+     // 获取聊天记录
+    getHistoryMessageRecord(timestamp){
+      this.getMessageRecordLoading = true
+      if(timestamp == undefined || timestamp == 0){
+        this.isMessageEnd = true
+       return
+      }
+      axios.post('/message/history', {
+        "timestamp": timestamp,
+        "page_size": this.getMessageRecordPageSize,
+        "service": parseInt(this.selectCustomerId),
+        "account": parseInt(this.selectUser.user_account)
+      })
+      .then(response => {
+        let messages = response.data.data.list
+        for(var i=0; i<messages.length; i++){
+          messages[i].payload = window.Base64.decode(messages[i].payload)
+        }
+        this.getMessageRecordLoading = false
+        if(messages.length < this.getMessageRecordPageSize){
+          this.isMessageEnd = true
+        }
+        response.data.data.list = messages.concat(this.messageRecord.list)
+        this.messageRecord = response.data.data
+        setTimeout(()=>this.$previewRefresh(), 1000)
+      })
+      .catch(() => {
+        this.getMessageRecordLoading = false
+      });
+    },
     // 加载更多数据
     onLoadMor(){
       if(this.getMessageRecordLoading) return
-      if(this.messageRecord.list.length >= this.messageRecord.total || this.messageRecord.total <= this.getMessageRecordPageSize){
-        this.isMessageEnd = true
-        return
+      if(this.isFirstRequestMessageEnd){
+        this.getHistoryMessageRecord(this.messageRecord.list[0].timestamp)
+      }else{
+        this.getMessageRecord(this.messageRecord.list[0].timestamp)
       }
-      this.getMessageRecord(this.messageRecord.list[0].timestamp)
       setTimeout(()=>{
         var chatBody = document.getElementById("chatBody")
         chatBody.scrollTop = 500
