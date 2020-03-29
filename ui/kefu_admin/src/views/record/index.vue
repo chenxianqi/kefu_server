@@ -340,7 +340,8 @@ export default {
         if(messages.length < this.getMessageRecordPageSize){
           this.isMessageEnd = true
         }
-        response.data.data.list = messages.concat(this.messageRecord.list)
+
+response.data.data.list = messages.concat(this.messageRecord.list)
         this.messageRecord = response.data.data
         setTimeout(()=>this.$previewRefresh(), 1000)
       })

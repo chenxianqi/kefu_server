@@ -134,6 +134,16 @@
                   </div>
                 </template>
 
+                 <!-- 工单提醒-->
+                <template v-if="item.biz_type == 'workorder'">
+                  <div class="text">
+                    <div class="content">
+                      <span v-html="item.payload"></span>
+                      <div style="color: #28a1fe" @click="$router.push('/workorder/create')">发起工单</div>
+                    </div>
+                  </div>
+                </template>
+
                 <!-- 撤回消息 -->
                 <template v-if="item.biz_type == 'cancel'">
                   <div class="system">
@@ -631,7 +641,10 @@ export default {
     },
     // 接收消息
     receiveP2PMsg(message) {
-      console.log(message);
+      
+      // 是否显示工单提醒
+      if(this.configs.open_workorder == 0 && message.biz_type == "workorder") return
+
       // 是否是转接客服消息
       if (message.biz_type == "transfer") {
         this.$store.commit("updateState", {

@@ -68,7 +68,7 @@ func (r *WorkOrderRepository) GetWorkOrderCountsWithType(tid int64) int64 {
 // GetUserWorkOrders get user WorkOrders
 func (r *WorkOrderRepository) GetUserWorkOrders(uid int64) ([]models.WorkOrder, error) {
 	var workOrders []models.WorkOrder
-	_, err := r.q.Filter("uid", uid).Filter("delete", 0).OrderBy("-id").OrderBy("status").OrderBy("-create_at").All(&workOrders)
+	_, err := r.q.Filter("uid", uid).OrderBy("-id").OrderBy("status").OrderBy("-create_at").All(&workOrders)
 	if err != nil {
 		logs.Warn("GetUserWorkOrders get user WorkOrders------------", err)
 	}

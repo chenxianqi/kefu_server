@@ -12,7 +12,7 @@
     <div class="list" :class="{'hide-header': !isShowHeader}">
       <div class="no-data" v-if="workorders.length <= 0">
         <img src="../assets/workorder.png" alt="">
-        <div>您没有发布相关过工单~</div>
+        <div>没有相关记录~</div>
       </div>
       <ul v-else>
         <template v-for="(item,index) in workorders">

@@ -7,9 +7,9 @@
       <mt-button @click="close()" v-if="workorder.status != 3" slot="right">
         <span>关闭工单</span>
       </mt-button>
-      <mt-button @click="del()" v-else slot="right">
+      <!-- <mt-button @click="del()" v-else slot="right">
         <span>删除</span>
-      </mt-button>
+      </mt-button> -->
     </mt-header>
     <div class="content" :class="{'hide-header': !isShowHeader}">
       <div class="head">
