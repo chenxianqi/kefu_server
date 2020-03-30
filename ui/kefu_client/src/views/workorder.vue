@@ -124,7 +124,6 @@ export default {
     }
   }
 }
-
 .floting{
   width 30px;
   height 30px;
@@ -135,7 +134,6 @@ export default {
   bottom 30px
   right 10px
 }
-
 
 </style>
 

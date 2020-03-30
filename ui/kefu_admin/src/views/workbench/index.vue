@@ -588,7 +588,6 @@ export default {
     },
     // 接收消息
     receiveP2PMsg(message){
-      console.log(message)
       var nowTime = parseInt((new Date().getTime() +"").substr(0, 10))
       message.timestamp = parseInt((message.timestamp +"").substr(0, 10))
       if(message.from_account == this.adminInfo.id && message.biz_type == "pong") return;

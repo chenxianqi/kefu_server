@@ -116,14 +116,15 @@ func (c *PublicController) Register() {
 			_md5Token := hex.EncodeToString(m5.Sum(nil))
 
 			// update userinfo
-			c.UserRepository.Update(user.ID, orm.Params{
+			userInfo := orm.Params{
 				"Online":       1,
 				"RemoteAddr":   currentRemoteAddr,
 				"Address":      sessionRequestDto.Address,
 				"Platform":     sessionRequestDto.Platform,
 				"LastActivity": time.Now().Unix(),
 				"Token":        _md5Token,
-			})
+			}
+			c.UserRepository.Update(user.ID, userInfo)
 			user.Token = _md5Token
 
 		} else {

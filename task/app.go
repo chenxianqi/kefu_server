@@ -23,11 +23,11 @@ func appTask() {
 
 		// user
 		userOfflineCount := services.GetUserRepositoryInstance().CheckUsersLoginTimeOutAndSetOffline(userOffLineUnixTimer)
-		logs.Info("清理登录超时user", userOfflineCount, "个被强制下线")
+		logs.Error("清理登录超时user", userOfflineCount, "个被强制下线")
 
 		// admin
 		adminOfflineCount := services.GetAdminRepositoryInstance().CheckAdminsLoginTimeOutAndSetOffline(adminOffLineUnixTimer)
-		logs.Info("清理登录超时admin", adminOfflineCount, "个被强制下线")
+		logs.Error("清理登录超时admin", adminOfflineCount, "个被强制下线")
 
 		// get offline all robots
 		robots, _ := services.GetRobotRepositoryInstance().GetRobotOnlineAll()
@@ -36,7 +36,7 @@ func appTask() {
 		}
 
 		contacts := services.GetContactRepositoryInstance().GetTimeOutList(lastMessageUnixTimer)
-		logs.Info("清理会话超时用户,有", len(contacts), "个被结束对话")
+		logs.Error("清理会话超时用户,有", len(contacts), "个被结束对话")
 		for _, contact := range contacts {
 
 			// set end is session end

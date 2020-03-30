@@ -2,6 +2,16 @@
 
 # 欢迎使用本客服系统 v2.0.0
 
+## 以下是v2.0.0版本的重要更新
+- 对前面版本进行重构，分离业务逻辑与机器人的混搭运行弊端
+- 做了大量优化，在很大程度上提升了性能，并代码松耦合，
+- 业务系统支持负载均衡了，这是对v1.0的重大里程碑更新, 对接海量客户不再愁了
+- 增加工单系统能力，无在线客服接待？不用怕，工单来给您解决一切问题
+- 代码可读性大大提高，初学者都能看懂的代码，还有什么理由不学习一下呢
+- 定时清理无接入人工记录的用户，避免数据沉淀
+- H5客户端增加了重连机制
+- 客户端只保留30天聊天记录，消息记录已分表处理
+
 ![客服系统](http://qiniu.cmp520.com/kefuxitonh.jpg)
 
 **客服系统** 是基于小米消息云实现的一款简单实用的面向多终端的客服系统，支持H5，PC，桌面，小程序，APP，flutter, 所有源码开源，长期维护，快速接入，易扩展，易整合现有的业务，开箱即用，无缝对接。
@@ -9,6 +19,7 @@
 **[小米消息云][7]（MIMC）** 是小米自研的一种安全、可靠、易用的分布式IM云服务。为广大开发者提供免费快捷的即时通讯接入服务
 
 ## 当前客服系统支持功能
+- 内置工单系统
 - 支持多客服坐席
 - 支持客服多终端同时在线
 - 支持实时预览用户的输入内容
@@ -27,7 +38,6 @@
 
 ## 接下来开发的功能
 - 服务评分，本次服务评分，统计客服整体评分
-- 工单系统，非客服值班时间，可提供客户提交工单留言
 
 
 ## 本项目关联GIT项目资源连接
@@ -77,92 +87,35 @@
 
 
 
-## 如何使用本系统
+## 安装
 ##### 1.GO环境变量配置
 GO 》》》》》 [移步去GO官网][8]
-##### 2.clone 本项目到 $GOPATH/src 目录下
-    cd $GOPATH/src && git clone https://github.com/chenxianqi/kefu_server
-##### 3.安装依赖库
-安装 beego框架 [移步去beego官网][9]
+- clone 本项目到 $GOPATH/src 目录下
+- cd $GOPATH/src && git clone https://github.com/chenxianqi/kefu_server
 
-    * go get github.com/astaxie/beego
-    * go get github.com/beego/bee
-
-安装 MIMC GO sdk [移步去MIMC官网][7]
-
-    * go get github.com/Xiaomi-mimc/mimc-go-sdk
-    * cd $GOPATH/src/github.com/Xiaomi-mimc/mimc-go-sdk
-    * go build
-    * go install 
-
-安装 protobuf
-
-    * go get github.com/golang/protobuf/proto
-    * cd $GOPATH/src/github.com/golang/protobuf/proto
-    * go build
-    * go install
-
-安装 其他依赖库
-
-    * go get github.com/astaxie/beego/cache
-    * go get -u github.com/qiniu/api.v7
-
-##### 4.去小米开发平台申请APPID 
+## 去小米开放平台申请小米APPID信息
 GO 》》》》》 [小米开放平台][6]
 
-##### 5.配置文件产考 kefu_server/conf/app.conf
-``` go
-    appname = kefu_server
-    runmode = "dev"
-    httpport = 8080
-    copyrequestbody = true
-    viewspath = "public"
-
-    # 使用本地存储时使用的地址
-    static_host = "http://localhost:8080/static/uploads/images"
-
-    # 小米mimc open api URL
-    mimc_HttpUrl = "https://mimc.chat.xiaomi.net/api/account/token"
-
-    [dev]
-    httpaddr = "localhost"
-    # 小米mimc配置信息(小米开放平台创建)
-    mimc_appId = 
-    mimc_appKey = ""
-    mimc_appSecret = ""
-    # IM数据库信息
-    kf_alias_name = "default"
-    kf_driver_name= "mysql"
-    kf_mysql_host = "localhost"
-    kf_mysql_user = "root"
-    kf_mysql_db   = "kefu_server"
-    kf_mysql_pwd  = "keith"
-
-```
+## 配置文件产考 kefu_server/conf/app.conf
 > **Note:** 根据beego的配置文件配置，填写从小米开放平台获得的appId，appKey, appSecret， 以及您的数据库连接，账号，密码
 
 
-##### 7.创建一个数据库,导入初始数据
+## 创建一个数据库,导入初始数据
     登录上面配置的数据库，创建一个名为kefu_server的数据库，将[kefu_server/kefu_server.sql]初始数据，导入即可
 
-##### 8.运行项目
+## 运行项目
     bee run
 
-
-##### 9.打包发布
-    bee pack -be GOOS=linux
+##### 9.打包发布 linux (其它运行环境编译请自行search baidu)
+    bee pack -be GOOS=linux  OR   CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build main.go
 
 > **静态资源目录:** 
-    本项目默认配置已打开静态资源目录，PC工作台与H5可直接打包放进相应的目录使用，也可以独立开设站点使用
-    本项目demo直接使用内置静态资源目录、
+    本项目默认配置已打开静态资源目录，也可以独立开设站点运行
     public/admin  工作台
     public/client 客户端
 
 
-
-
 ## LICENSE
-
 
 Copyright 2019 keith
 

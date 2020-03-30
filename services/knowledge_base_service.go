@@ -120,7 +120,7 @@ func (r *KnowledgeBaseRepository) GetKnowledgeBases(request *models.KnowledgePag
 	if k != "" {
 		like = ("sub_title LIKE '%" + k + "%' OR title LIKE '%" + k + "%' OR content LIKE '%" + k + "%' AND")
 	}
-	total, err := r.o.Raw("SELECT * FROM knowledge_base WHERE "+like+" `platform` = ? ORDER BY create_at DESC LIMIT ? OFFSET ?", request.Platform, request.PageSize, (request.PageOn-1)*request.PageSize).QueryRows(&lists)
+	_, err := r.o.Raw("SELECT * FROM knowledge_base WHERE "+like+" `platform` = ? ORDER BY create_at DESC LIMIT ? OFFSET ?", request.Platform, request.PageSize, (request.PageOn-1)*request.PageSize).QueryRows(&lists)
 	if err != nil {
 		logs.Warn("GetKnowledgeBases get one KnowledgeBases------------", err)
 		return nil, err
@@ -136,7 +136,13 @@ func (r *KnowledgeBaseRepository) GetKnowledgeBases(request *models.KnowledgePag
 	for index := range lists {
 		lists[index].SubTitle = strings.Trim(lists[index].SubTitle, "|")
 	}
-	request.Total = total
+	type KnowledgeBaseCount struct {
+		Count int64
+	}
+	var knowledgeBaseCount KnowledgeBaseCount
+	r.o.Raw("SELECT COUNT(*) AS `count` FROM knowledge_base WHERE "+like+" `platform` = ?", request.Platform).QueryRow(&knowledgeBaseCount)
+
+	request.Total = knowledgeBaseCount.Count
 	request.List = &lists
 
 	return request, nil

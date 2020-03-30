@@ -12,7 +12,7 @@ export default {
     messages: [],               // 消息列表
     isLoadMorEnd: false,        // 是否已经到末尾
     userLocal: "",              // 用户地理位置
-    AmapAPPKey: "",             // 高德地图web appkey （请自行去高德地图申请）
+    AmapAPPKey: "73ef1dc5c5ea086e7330b95aede42953", // 高德地图web appkey
     isLoadMorLoading: false,    // 是否在加装更多消息loading
     userInfo: {},               // 用户信息
     companyInfo: null,          // 公司信息

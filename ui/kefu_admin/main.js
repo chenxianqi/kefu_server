@@ -4,7 +4,7 @@ const dialog = electron.dialog;
 const BrowserWindow = electron.BrowserWindow
 const Menu = electron.Menu
 const path = require('path')
-if (process.mas) app.setName('客服系统')
+if (process.mas) app.setName('玩车客服系统')
 
 let mainWindow
 function createWindow () {
@@ -123,12 +123,7 @@ let template = [
   {
         label: '关于',
         role: 'help',
-        submenu: [{
-            label: '客服',
-            click: function () {
-                electron.shell.openExternal('http://kf.aissz.com:666')
-            }
-        }]
+        submenu: []
     }
 ]
 
