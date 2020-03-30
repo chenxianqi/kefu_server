@@ -15,7 +15,7 @@
           >{{item.title}} ( {{item.count}} )</el-button>
         </template>
       </el-button-group>
-      <el-col :span="5">
+      <el-col :span="3">
         <el-input
           @change="onRefresh"
           placeholder="请输入关键词"

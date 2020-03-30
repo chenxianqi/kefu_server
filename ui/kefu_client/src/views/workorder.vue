@@ -30,7 +30,7 @@
         </template>
       </ul>        
     </div>
-
+    <div v-if="!isShowHeader" class="floting" @click="$router.push('/workorder/create')"></div>
   </div>
 </template>
 <script>
@@ -124,6 +124,18 @@ export default {
     }
   }
 }
+
+.floting{
+  width 30px;
+  height 30px;
+  border-radius 100%;
+  background #26a2ff url("../assets/send.png") center center no-repeat
+  background-size 15px
+  position fixed
+  bottom 30px
+  right 10px
+}
+
 
 </style>
 
