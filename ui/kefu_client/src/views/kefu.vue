@@ -585,12 +585,12 @@ export default {
         localMessage = self.$mimcInstance.createLocalMessage(
           "photo",
           self.account,
-          this.result
+          self.result
         );
         localMessage["percent"] = 0;
         localMessage.isShowCancel = true;
         setTimeout(() => {
-          this.updateMessageHideCancel(localMessage)
+          self.updateMessageHideCancel(localMessage)
         }, 10000);
         self.messages.push(self.handlerMessage(localMessage));
         var cacheMsg = Object.assign({}, localMessage);

@@ -28,7 +28,7 @@ func GetWorkOrderCommentRepositoryInstance() *WorkOrderCommentRepository {
 // GetWorkOrderComments get WorkOrderComments
 func (r *WorkOrderCommentRepository) GetWorkOrderComments(wid int64) ([]models.WorkOrderCommentDto, error) {
 	var workOrderComments []models.WorkOrderCommentDto
-	_, err := r.o.Raw("SELECT * FROM (SELECT w.*,w.id AS i_d,u.nickname AS u_nickname,a.nickname AS a_nickname,a.avatar AS a_avatar,u.avatar AS u_avatar FROM work_order_comment w LEFT JOIN (SELECT * FROM admin) a ON w.aid = a.id LEFT JOIN (SELECT * FROM `user`) u ON w.uid = u.id AND w.wid = ? ORDER BY w.id ASC) b WHERE wid = ?", wid, wid).QueryRows(&workOrderComments)
+	_, err := r.o.Raw("SELECT * FROM (SELECT w.*,w.id AS i_d,w.uid AS u_i_d,w.aid AS a_i_d,w.wid AS w_i_d,u.nickname AS u_nickname,a.nickname AS a_nickname,a.avatar AS a_avatar,u.avatar AS u_avatar FROM work_order_comment w LEFT JOIN (SELECT * FROM admin) a ON w.aid = a.id LEFT JOIN (SELECT * FROM `user`) u ON w.uid = u.id AND w.wid = ? ORDER BY w.id ASC) b WHERE wid = ?", wid, wid).QueryRows(&workOrderComments)
 	if err != nil {
 		logs.Warn("GetWorkOrderComments get WorkOrderComments-----------", err)
 	}

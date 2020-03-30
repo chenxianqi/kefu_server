@@ -90,7 +90,9 @@ func (c *PublicController) Register() {
 			// Read users based on business platform
 			user = c.UserRepository.GetUserWithUID(sessionRequestDto.UID)
 
-		} else {
+		}
+
+		if user == nil {
 
 			// Read users using AccountID
 			user = c.UserRepository.GetUser(sessionRequestDto.AccountID)
