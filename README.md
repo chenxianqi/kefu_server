@@ -129,6 +129,8 @@ bee run
 - bee pack -be GOOS=linux 命令会把所有的资源的打包成一个tar.gz文件，建议第一次安装使用该命令，打包后你需要删除一些没必要的目录文件，后续更新按需更新即可
 - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build main.go 仅仅编译项目可执行文件
 
+- 打包好后即可上传到服务器，执行 cd $current->project && nohub ./processguard_server.sh &
+
 > **静态资源目录:** 
     本项目默认配置已打开静态资源目录，也可以独立开设站点运行
     public/admin  工作台
