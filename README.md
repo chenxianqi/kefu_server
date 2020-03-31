@@ -1,6 +1,7 @@
 客服系统开发者QQ交流群： 623661658
 
-# 欢迎使用本客服系统 v2.0.0
+# 开源客服系统 v2.0.0
+该项目的机器人仓库地址： [<<<机器人仓库地址>>>][18]
 
 ## 以下是v2.0.0版本的重要更新
 - 对前面版本进行重构，分离业务逻辑与机器人的混搭运行弊端
@@ -10,15 +11,31 @@
 - 代码可读性大大提高，初学者都能看懂的代码，还有什么理由不学习一下呢
 - 定时清理无接入人工记录的用户，避免数据沉淀
 - H5客户端增加了重连机制
-- 客户端只保留30天聊天记录，消息记录已分表处理
+- 客户端只保留30天聊天记录，已分表处理
 
-![客服系统](http://qiniu.cmp520.com/kefuxitonh.jpg)
+本项目目前是基于[小米消息云][7]实现的一款简单实用的面向多终端的客服系统，支持H5，PC，桌面，小程序，APP，flutter, 所有源码开源，长期维护，快速接入，易扩展，易整合现有的业务，开箱即用，无缝对接。
 
-**客服系统** 是基于小米消息云实现的一款简单实用的面向多终端的客服系统，支持H5，PC，桌面，小程序，APP，flutter, 所有源码开源，长期维护，快速接入，易扩展，易整合现有的业务，开箱即用，无缝对接。
+## 目录文件结构说明
+|       |     |
+| :-------- | :-------- |
+| - conf  | 项目配置文件 |
+| - configs  | 项目静态信息配置 |
+| - controllers  | 控制器集合 |
+| - db  | 数据库配置 |
+| - filters | 过滤器 |
+| - grpcs | RPC 用于与机器人客户端交互 |
+| - models | 数据模型 |
+| - public | 项目静态资源，客户端，服务端 H5 |
+| - routers | 路由配置 |
+| - services | 数据服务提供者 |
+| - static | 静态资源，用于上传存储 |
+| - task | 任务调度器 |
+| - ui | 包含客服系统的所有UI项目 |
+| - kefu_server.postman_collection.json | Postman 文档 |
+| - kefu_server.sql | 初始化安装数据 |
+| - processguard_server.sh | Linux 进程守护shell脚本 |
 
-**[小米消息云][7]（MIMC）** 是小米自研的一种安全、可靠、易用的分布式IM云服务。为广大开发者提供免费快捷的即时通讯接入服务
-
-## 当前客服系统支持功能
+## 支持功能
 - 内置工单系统
 - 支持多客服坐席
 - 支持客服多终端同时在线
@@ -36,45 +53,41 @@
 - 支持用户管理
 - 支持客服管理
 
-## 接下来开发的功能
-- 服务评分，本次服务评分，统计客服整体评分
-
-
-## 本项目关联GIT项目资源连接
+## 关联资源地址
 - **[客服端-工作台][10]**         客服端工作台，支持WEB，或使用Electron打包成二进制安装包
 - **[客服端-APP工作台][16]**      客服端APP工作台flutter源码
 - **[客户端-移动端H5][11]**       万能的H5支持嵌入任何webview使用
 - **[客户端-Flutter版][12]**     Flutter版客户端，可打包提供给原生应用使用
 - **[插件-Flutter-Mimc][13]**   本插件是对小米消息云Android和IOS的一个flutter版移植
 
-## 未来将考虑实现
-- 客服端工作台APP的实现（已完成）
-- 微信内置客服对接   （待定）
-- 微信小程序版客户端 （待定）
+## 未来将考虑实现更多的功能
+- 服务评分           （落实）
+- 微信内置客服对接    （待定）
+- 微信小程序版客户端  （待定）
 - 支付宝小程序版客户端（待定）
 
 ## 体验客服系统
-客服端-工作台网页版：[马上体验][1]
 
-客服端-MAC版下载：[马上体验][3]
+| 客服端      |    下载 |
+| :-------- | --------: |
+| 网页版  | [马上体验][1] |
+| MAC版  | [下载体验][3] |
+| Linux64  | [下载体验][14] |
+| Windows  | [下载体验][4] |
+| Android | [下载体验][17] |
+| IOS | 请自行编译 |
 
-客服端-Linux64版下载：[马上体验][14]
 
-客服端-Windows版下载：[马上体验][4]
+| 客户端      |    下载 |
+| :-------- | --------: |
+| Example  | [马上体验][15] |
+| H5  | [下载体验][2] |
+| Android  | [下载体验][15] |
+| Windows  | [下载体验][4] |
+| Android | [下载体验][17] |
+| IOS | 请自行编译 |
 
-客服端-Android版下载 APP：：[下载APP体验][17]
-
-客服端-Ios版下载 APP：由于IOS需要购买开发者账号才能获得证书，请自行clone代码build体验 [go clone][16]
-
-客户端-H5网页版：[马上体验][2]
-
-客户端-Example PC网页版：[马上体验][5]
-
-客户端-Android APP：[下载APP体验][15]
-
-客户端-IOS APP：    由于IOS需要购买开发者账号才能获得证书，请自行clone代码build体验 [go clone][12]
-
-### 客服测试账号
+#### 客服测试账号
 | 账号      |    密码 |
 | :-------- | --------: |
 | test1  | qwe123456 |
@@ -83,36 +96,46 @@
 | test4  | qwe123456 |
 | test5  | qwe123456 |
 
-> **Note:** 目前仅提供5组客服账号供喜欢本系统的小伙伴测试，如需深度测试与管理员权限，建议亲自搭建测试，每个测试账号的登录周期30分钟，每30分钟系统会统一清退测试账号
+> **Note:** 目前仅提供5组客服账号供喜欢本系统的小伙伴测试，如需深度测试与管理员权限，建议亲自搭建测试
 
 
 
 ## 安装
-##### 1.GO环境变量配置
-GO 》》》》》 [移步去GO官网][8]
-- clone 本项目到 $GOPATH/src 目录下
+##### 1.GO环境变量配置  [Golan官网][8]
 - cd $GOPATH/src && git clone https://github.com/chenxianqi/kefu_server
+- cd kefu_server && go get
 
-## 去小米开放平台申请小米APPID信息
-GO 》》》》》 [小米开放平台][6]
+##### 2.安装 protobuf （可选，不修改rpc源码的话暂时不用安装）
+- cd protoc-3.6.1-osx-x86_64
+- cp -r include/ /usr/local/include/
+- cp -r bin/ /usr/local/bin/
 
-## 配置文件产考 kefu_server/conf/app.conf
-> **Note:** 根据beego的配置文件配置，填写从小米开放平台获得的appId，appKey, appSecret， 以及您的数据库连接，账号，密码
+##### 3.修改配置文件 kefu_server/conf/app.conf
+- 去小米开放平台申请小米APPID信息(appId，appKey, appSecret) [小米开放平台][6]
+- 将申请的小米配置到app.conf
+- 配置数据库配置信息
+- RPC 端口 如：8013
+- 配置其它信息（具体查看app.conf）
+
+##### 4.导入初始化数据
+- 在项目根目录找到 kefu_server.sql，导入刚刚配置的数据库
+
+##### 5.启动项目
+bee run
 
 
-## 创建一个数据库,导入初始数据
-    登录上面配置的数据库，创建一个名为kefu_server的数据库，将[kefu_server/kefu_server.sql]初始数据，导入即可
-
-## 运行项目
-    bee run
-
-##### 9.打包发布 linux (其它运行环境编译请自行search baidu)
+## 打包发布 linux (其它运行环境编译请自行search baidu)
     bee pack -be GOOS=linux  OR   CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build main.go
+- bee pack -be GOOS=linux 命令会把所有的资源的打包成一个tar.gz文件，建议第一次安装使用该命令，打包后你需要删除一些没必要的目录文件，后续更新按需更新即可
+- CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build main.go 仅仅编译项目可执行文件
 
 > **静态资源目录:** 
     本项目默认配置已打开静态资源目录，也可以独立开设站点运行
     public/admin  工作台
     public/client 客户端
+	
+## 截图预览
+![客服系统](http://qiniu.cmp520.com/kefuxitonh.jpg)
 
 
 ## LICENSE
@@ -153,5 +176,6 @@ the License.
   [15]: http://kf.aissz.com:666/static/app/app-release.apk
   [16]: https://github.com/chenxianqi/kefu_workbench
   [17]: http://kf.aissz.com:666/static/app/kefu_workbench.apk
+  [18]: https://github.com/chenxianqi/kefu_go_robot
 
 
