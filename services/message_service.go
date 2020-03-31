@@ -80,7 +80,7 @@ func (r *MessageRepository) ClearRead(uid int64) (int64, error) {
 // MoveMessageToHistory move message history table
 func (r *MessageRepository) MoveMessageToHistory() int64 {
 	fields := "`from_account`,`to_account`,`biz_type`,`version`,`timestamp`,`sequence`,`key`,`transfer_account`,`platform`,`payload`,`read`"
-	timestampMax := time.Now().Unix() - int64(60*60*24*1) // 30 day
+	timestampMax := time.Now().Unix() - int64(60*60*24*30) // 30 day
 	res, err := r.o.Raw("INSERT INTO message_history("+fields+") SELECT "+fields+" FROM message WHERE timestamp < ?", timestampMax).Exec()
 	if err != nil {
 		logs.Warn("MoveMessageToHistory move message history table1------------", err)

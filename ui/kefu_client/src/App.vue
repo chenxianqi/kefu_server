@@ -138,7 +138,7 @@ export default {
         artificialAccount,
         robotAccount,
         platform;
-      var query = this.$route.query;
+      var query = this.queryToJson(location.href.substr(location.href.lastIndexOf("?")).replace('#/index', ""))
       if (query && query.c) localStorage.clear();
       // 获取本地缓存
       var urlQuery = this.queryToJson(localStorage.getItem("urlQuery"));

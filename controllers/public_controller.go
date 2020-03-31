@@ -135,6 +135,7 @@ func (c *PublicController) Register() {
 			user.ID = 0
 			user.Online = 1
 			user.RemoteAddr = currentRemoteAddr
+			user.Platform = sessionRequestDto.Platform
 			user.LastActivity = time.Now().Unix()
 			user.Address = sessionRequestDto.Address
 
