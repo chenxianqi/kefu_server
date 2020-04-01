@@ -32,9 +32,9 @@ function createWindow () {
         message: "您确定关闭应用程序吗？",
         buttons: ['我点错了', '窗口最小化', '确定关闭']
     }
-    dialog.showMessageBox(options, function (index) {
-        if(index == 2) app.exit();
-        if(index == 1) mainWindow.minimize()
+    dialog.showMessageBox(options).then(function (res) {
+      if(res.response == 2) app.exit();
+      if(res.response == 1) mainWindow.minimize()
     })
     e.preventDefault()
   })    

@@ -101,7 +101,10 @@ func MessageInto(message models.Message) {
 
 	// 接收者是客服就推送
 	if admin != nil {
-		PushNewContacts(message.ToAccount)
+		go func() {
+			time.Sleep(1 * time.Second)
+			PushNewContacts(message.ToAccount)
+		}()
 	}
 
 }
