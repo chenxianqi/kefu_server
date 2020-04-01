@@ -14,7 +14,7 @@ type ContactRepositoryInterface interface {
 	GetContacts(uid int64) ([]models.ContactDto, error)
 	UpdateIsSessionEnd(uid int64) (int64, error)
 	Update(id int64, params *orm.Params) (int64, error)
-	Delete(id int64, uid int64) (int64, error)
+	Delete(id int64, uid int64) int64
 	DeleteAll(uid int64) (int64, error)
 	Add(contact *models.Contact) (int64, error)
 	GetContactWithIds(ids ...int64) (*models.Contact, error)
@@ -112,13 +112,14 @@ func (r *ContactRepository) GetContacts(uid int64) ([]models.ContactDto, error) 
 }
 
 // Delete delete a Contact
-func (r *ContactRepository) Delete(id int64, uid int64) (int64, error) {
+func (r *ContactRepository) Delete(id int64, uid int64) int64 {
 	res, err := r.o.Raw("UPDATE `contact` SET `delete` = 1 WHERE id = ? AND to_account = ?", id, uid).Exec()
-	rows, _ := res.RowsAffected()
 	if err != nil {
 		logs.Warn("GetContacts get Contacts err------------", err)
+		return 0
 	}
-	return rows, err
+	rows, _ := res.RowsAffected()
+	return rows
 
 }
 

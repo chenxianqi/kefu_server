@@ -61,10 +61,10 @@ func (c *ContactController) Delete() {
 	auth := c.GetAdminAuthInfo()
 
 	// delete
-	rows, err := c.ContactRepository.Delete(id, auth.UID)
+	rows := c.ContactRepository.Delete(id, auth.UID)
 
-	if err != nil || rows == 0 {
-		c.JSON(configs.ResponseFail, "删除失败!", err.Error())
+	if rows == 0 {
+		c.JSON(configs.ResponseFail, "删除失败!", nil)
 	}
 
 	c.JSON(configs.ResponseSucess, "删除成功!", rows)
