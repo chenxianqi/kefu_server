@@ -278,8 +278,8 @@ export default {
      // 粘贴事件
     document.addEventListener("paste", this.inputPaste, false)
 
-    // 3秒请求一次会话列表(避免后台推送不到不能及时更新)
-    setTimeout(()=> this.$store.dispatch('ON_GET_CONTACTS'), 3000)
+    // 5秒请求一次会话列表(避免后台推送不到不能及时更新)
+    setInterval(()=> this.$store.dispatch('ON_GET_CONTACTS'), 5000)
 
   },
   beforeDestroy(){
