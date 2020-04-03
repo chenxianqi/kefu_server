@@ -54,10 +54,6 @@
 - 支持客服管理
 
 ## 关联资源地址
-- **[客服端-工作台][10]**         客服端工作台，支持WEB，或使用Electron打包成二进制安装包
-- **[客服端-APP工作台][16]**      客服端APP工作台flutter源码
-- **[客户端-移动端H5][11]**       万能的H5支持嵌入任何webview使用
-- **[客户端-Flutter版][12]**     Flutter版客户端，可打包提供给原生应用使用
 - **[插件-Flutter-Mimc][13]**   本插件是对小米消息云Android和IOS的一个flutter版移植
 
 ## 未来将考虑实现更多的功能
@@ -119,6 +115,7 @@
 
 ##### 4.导入初始化数据
 - 在项目根目录找到 kefu_server.sql，导入刚刚配置的数据库
+- 默认管理员账号密码：keith,123456
 
 ##### 5.启动项目
 bee run
@@ -170,13 +167,8 @@ the License.
   [7]: https://admin.mimc.chat.xiaomi.net/docs/
   [8]: https://golang.org/
   [9]: https://beego.me/
-  [10]: https://github.com/chenxianqi/kefu_admin
-  [11]: https://github.com/chenxianqi/kefu_client
-  [12]: https://github.com/chenxianqi/kefu_flutter
-  [13]: https://github.com/chenxianqi/flutter_mimc
   [14]: http://kf.aissz.com:666/static/app/linux-0.0.1.AppImage
   [15]: http://kf.aissz.com:666/static/app/app-release.apk
-  [16]: https://github.com/chenxianqi/kefu_workbench
   [17]: http://kf.aissz.com:666/static/app/kefu_workbench.apk
   [18]: https://github.com/chenxianqi/kefu_go_robot
 
