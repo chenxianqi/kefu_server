@@ -342,11 +342,11 @@ export default {
       }
     }
   }
-  .tips{
-    font-size 12px
-    color red
-    padding 10px 0
-  }
+}
+.tips{
+  font-size 12px
+  color red
+  padding 10px 0
 }
 </style>
 
