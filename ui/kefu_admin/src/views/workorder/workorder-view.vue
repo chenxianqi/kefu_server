@@ -326,6 +326,7 @@ export default {
   },
   watch: {
     prop() {
+      this.comments = []
       this.getWorkOrder();
       setTimeout(() => {
         this.$previewRefresh();

@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 
 class ImUtils {
   /// 日期格式化
-  static String formatDate(int millisecondsSinceEpoch) {
+  static String formatDate(int millisecondsSinceEpoch,
+      {bool isformatFull = false}) {
     if (millisecondsSinceEpoch.toString().length <= 10) {
       millisecondsSinceEpoch =
           int.parse(millisecondsSinceEpoch.toString() + '000');
@@ -18,7 +19,7 @@ class ImUtils {
     var dayC = diffValue / day ~/ 1;
     String result;
     DateTime date = DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch);
-    if (dayC >= 1) {
+    if (dayC >= 1 || isformatFull) {
       result =
           "${date.year}-${date.month < 10 ? "0" + date.month.toString() : date.month}-${date.day < 10 ? "0" + date.day.toString() : date.day} ${date.hour}:${date.minute < 10 ? "0" + date.minute.toString() : date.minute}";
     } else {
@@ -52,6 +53,7 @@ class ImUtils {
     String cancelText = '取消',
     String confirmText = '确定',
     bool isConfirmPop = true,
+    bool isShowCancel = true,
     VoidCallback onCancel,
     VoidCallback onConfirm,
   }) {
@@ -60,6 +62,28 @@ class ImUtils {
         barrierDismissible: false,
         builder: (BuildContext context) {
           ThemeData themeData = Theme.of(context);
+          List<Widget> actions = [];
+          if (isShowCancel) {
+            actions.add(CupertinoDialogAction(
+              child: Text(cancelText),
+              isDestructiveAction: true,
+              onPressed: () {
+                Navigator.pop(context);
+                if (onCancel != null) onCancel();
+              },
+            ));
+          }
+          actions.add(CupertinoDialogAction(
+            child: Text(
+              confirmText,
+              style: TextStyle(color: themeData.primaryColor),
+            ),
+            isDefaultAction: true,
+            onPressed: () {
+              if (isConfirmPop) Navigator.pop(context);
+              if (onConfirm != null) onConfirm();
+            },
+          ));
           return CupertinoAlertDialog(
             title: title.isEmpty
                 ? null
@@ -70,27 +94,7 @@ class ImUtils {
                             themeData.textTheme.title.copyWith(fontSize: 16.0)),
                   ),
             content: content is Widget ? content : Text('$content'),
-            actions: <Widget>[
-              CupertinoDialogAction(
-                child: Text(cancelText),
-                isDestructiveAction: true,
-                onPressed: () {
-                  Navigator.pop(context);
-                  if (onCancel != null) onCancel();
-                },
-              ),
-              CupertinoDialogAction(
-                child: Text(
-                  confirmText,
-                  style: TextStyle(color: themeData.primaryColor),
-                ),
-                isDefaultAction: true,
-                onPressed: () {
-                  if (isConfirmPop) Navigator.pop(context);
-                  if (onConfirm != null) onConfirm();
-                },
-              ),
-            ],
+            actions: actions,
           );
         });
   }

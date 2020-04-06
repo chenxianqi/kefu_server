@@ -585,7 +585,7 @@ export default {
         localMessage = self.$mimcInstance.createLocalMessage(
           "photo",
           self.account,
-          self.result
+          this.result
         );
         localMessage["percent"] = 0;
         localMessage.isShowCancel = true;

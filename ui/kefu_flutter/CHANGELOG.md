@@ -1,4 +1,9 @@
 
+## [2.0.0] - 2020-04-06.
+
+* Adapt v2 server
+* Add work order function
+
 ## [1.0.1+4] - TODO: Add release date.
 
 * TODO: Fix upload image no avatar

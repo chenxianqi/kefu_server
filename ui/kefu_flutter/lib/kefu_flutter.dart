@@ -19,6 +19,7 @@ import 'models/im_user.dart';
 import 'models/knowledge_model.dart';
 import 'models/robot.dart';
 import 'models/service_user.dart';
+import 'models/work_order_type.dart';
 import 'utils/im_utils.dart';
 import 'widgets/cached_network_image.dart';
 import 'widgets/emoji_panel.dart';
@@ -26,6 +27,7 @@ import 'widgets/knowledge_message.dart';
 import 'widgets/photo_message.dart';
 import 'widgets/system_message.dart';
 import 'widgets/text_message.dart';
+import 'widgets/workorder_message.dart';
 import 'workorder/index.dart';
 
 /// 创建消息辅助对象
@@ -46,7 +48,7 @@ class MessageHandle {
 /// KeFuStore
 class KeFuStore with ChangeNotifier {
   /// KeFuStore实例
-  static KeFuStore instance;
+  static KeFuStore _instance;
 
   /// http
   Dio http;
@@ -159,6 +161,9 @@ class KeFuStore with ChangeNotifier {
   int get toAccount =>
       isService && serviceUser != null ? serviceUser.id : robot.id;
 
+  // 工单类型集合
+  List<WorkOrderTypeModel> workOrderTypes = [];
+
   // 单列 获取对象
   /// 配置信息
   /// mImcTokenData 不为空，即优先使用 mImcTokenData
@@ -169,8 +174,8 @@ class KeFuStore with ChangeNotifier {
   /// [mImcTokenData] mimc TokenData
   /// [userId]  业务平台ID(扩展使用)
   /// [autoLogin] 是否自动登录
-  /// [delayTime] 延迟登录，默认1500毫秒，以免未实例化完成就调用登录
-  static KeFuStore getInstance(
+  /// [delayTime] 延迟登录，默认300毫秒，以免未实例化完成就调用登录
+  static KeFuStore init(
       {String host,
       String appID,
       String appKey,
@@ -178,7 +183,7 @@ class KeFuStore with ChangeNotifier {
       String mimcToken,
       int userId = 0,
       bool autoLogin = true,
-      int delayTime = 1500,
+      int delayTime = 300,
       bool debug = false}) {
     assert(host != null);
     apiHost = host;
@@ -190,10 +195,10 @@ class KeFuStore with ChangeNotifier {
     platformUserId = userId;
     isAutoLogin = autoLogin;
     delayLoginTime = delayTime < 1000 ? 1000 : delayTime;
-    if (instance == null) {
-      instance = KeFuStore();
+    if (_instance == null) {
+      _instance = KeFuStore();
     }
-    return instance;
+    return _instance;
   }
 
   /// 构造器
@@ -202,6 +207,9 @@ class KeFuStore with ChangeNotifier {
     debugPrint("KeFuController实例化了");
     _init();
   }
+
+  // 获取实例
+  static get getInstance => _instance;
 
   /// 初始化
   Future<void> _init() async {
@@ -218,6 +226,7 @@ class KeFuStore with ChangeNotifier {
     _onServciceLastMessageTimeNotCallBack();
     getMessageRecord();
     _currentIsService();
+    getWorkOrderTypes();
     if (isAutoLogin) loginIm();
   }
 
@@ -234,6 +243,16 @@ class KeFuStore with ChangeNotifier {
         flutterMImc?.login();
       }
       notifyListeners();
+    }
+  }
+
+  // GET workorder types
+  Future<void> getWorkOrderTypes() async {
+    Response res = await http.get('/public/workorder/types');
+    if (res.data['code'] == 200) {
+      workOrderTypes = (res.data['data'] as List)
+          .map((i) => WorkOrderTypeModel.fromJson(i))
+          .toList();
     }
   }
 
@@ -364,7 +383,7 @@ class KeFuStore with ChangeNotifier {
         List<ImMessage> _msgs = (response.data['data']['list'] as List)
             .map((i) => _handlerMessage(ImMessage.fromJson(i)))
             .toList();
-        for(var i=0; i<_msgs.length; i++){
+        for (var i = 0; i < _msgs.length; i++) {
           _msgs[i].payload = utf8.decode(base64Decode(_msgs[i].payload));
         }
         if (_msgs.length < pageSize) {
@@ -669,15 +688,51 @@ class KeFuStore with ChangeNotifier {
 
   /// 上传发送图片
   void sendPhoto(File file) async {
-    debugPrint("${imConfigs.toJson()}");
+    if (file == null) return;
     MessageHandle msgHandle;
-    try {
-      if (file == null) return;
-      msgHandle = createMessage(
-          toAccount: toAccount, msgType: "photo", content: file.path);
-      messagesRecord.add(_handlerMessage(msgHandle.localMessage));
-      notifyListeners();
+    msgHandle = createMessage(
+        toAccount: toAccount, msgType: "photo", content: file.path);
+    messagesRecord.add(_handlerMessage(msgHandle.localMessage));
+    notifyListeners();
 
+    void uploadSuccess(url) async {
+      msgHandle.localMessage.isShowCancel = true;
+      msgHandle.localMessage.payload = url;
+      notifyListeners();
+      ImMessage sendMsg = ImMessage.fromJson(json
+          .decode(utf8.decode(base64Decode(msgHandle.sendMessage.payload))));
+      sendMsg.payload = url;
+      msgHandle.sendMessage.payload =
+          base64Encode(utf8.encode(json.encode(sendMsg.toJson())));
+      sendMessage(msgHandle.clone()..localMessage.payload = url);
+      await Future.delayed(Duration(milliseconds: 10000));
+      msgHandle.localMessage.isShowCancel = false;
+      notifyListeners();
+    }
+
+    // uploadFile
+    uploadFile(file, success: uploadSuccess,
+        onSendProgress: (int sent, int total) {
+      msgHandle.localMessage.uploadProgress = (sent / total * 100).ceil();
+      notifyListeners();
+    }, fail: () {
+      deleteMessage(msgHandle.localMessage);
+      MessageHandle systemMsgHandle = createMessage(
+          toAccount: toAccount, msgType: "system", content: "图片上传失败！");
+      messagesRecord.add(_handlerMessage(systemMsgHandle.localMessage));
+    });
+  }
+
+  // uploadFile
+  Future<void> uploadFile(File file,
+      {Function(String) success,
+      String fileType = "image",
+      String fileName = "file",
+      VoidCallback fail,
+      Function(int, int) onSendProgress}) async {
+    if (file == null) return "";
+    try {
+      if (file == null) return "";
       String filePath = file.path;
       String fileName = "${DateTime.now().microsecondsSinceEpoch}_" +
           (filePath.lastIndexOf('/') > -1
@@ -685,29 +740,13 @@ class KeFuStore with ChangeNotifier {
               : filePath);
 
       FormData formData = new FormData.fromMap({
-        "fileType": "image",
-        "fileName": "file",
+        "fileType": fileType,
+        "fileName": fileName,
         "file_name": fileName,
         "key": fileName,
         "token": imConfigs.uploadSecret ?? "",
         "file": MultipartFile.fromFileSync(file.path, filename: fileName)
       });
-
-      void uploadSuccess(url) async {
-        String img = imConfigs.uploadHost + "/" + url;
-        msgHandle.localMessage.isShowCancel = true;
-        msgHandle.localMessage.payload = img;
-        notifyListeners();
-        ImMessage sendMsg = ImMessage.fromJson(json
-            .decode(utf8.decode(base64Decode(msgHandle.sendMessage.payload))));
-        sendMsg.payload = img;
-        msgHandle.sendMessage.payload =
-            base64Encode(utf8.encode(json.encode(sendMsg.toJson())));
-        sendMessage(msgHandle.clone()..localMessage.payload = img);
-        await Future.delayed(Duration(milliseconds: 10000));
-        msgHandle.localMessage.isShowCancel = false;
-        notifyListeners();
-      }
 
       String uploadUrl;
 
@@ -723,33 +762,22 @@ class KeFuStore with ChangeNotifier {
         /// 其他
       } else {}
 
-      Response response = await http.post(uploadUrl, data: formData,
-          onSendProgress: (int sent, int total) {
-        msgHandle.localMessage.uploadProgress = (sent / total * 100).ceil();
-        notifyListeners();
-      });
-      debugPrint("${response.data}");
+      Response response = await http.post(uploadUrl,
+          data: formData, onSendProgress: onSendProgress);
       if (response.statusCode == 200) {
         switch (imConfigs.uploadMode) {
           case 1:
-            uploadSuccess(response.data["data"]);
+            success(imConfigs.uploadHost + "/" + response.data["data"]);
             break;
           case 2:
-            uploadSuccess(response.data["key"]);
+            success(imConfigs.uploadHost + "/" + response.data["key"]);
             break;
         }
       } else {
-        deleteMessage(msgHandle.localMessage);
-        MessageHandle systemMsgHandle = createMessage(
-            toAccount: toAccount, msgType: "system", content: "图片上传失败！");
-        messagesRecord.add(_handlerMessage(systemMsgHandle.localMessage));
+        if (fail != null) fail();
       }
-    } catch (e) {
-      deleteMessage(msgHandle.localMessage);
-      MessageHandle systemMsgHandle = createMessage(
-          toAccount: toAccount, msgType: "system", content: "图片上传失败~");
-      messagesRecord.add(_handlerMessage(systemMsgHandle.localMessage));
-      debugPrint("图片上传失败！ =======$e");
+    } catch (_) {
+      if (fail != null) fail();
     }
   }
 
@@ -859,7 +887,7 @@ class _KeFu extends StatefulWidget {
 /// im screen state
 class _KeFuState extends State<_KeFu> {
   /// 客服store
-  KeFuStore _keFuStore = KeFuStore.instance;
+  KeFuStore _keFuStore = KeFuStore.getInstance;
 
   /// 是否显示表情面板
   bool _isShowEmoJiPanel = false;
@@ -952,8 +980,9 @@ class _KeFuState extends State<_KeFu> {
   }
 
   // _goToWprkOrder
-  void _goToWprkOrder(BuildContext context){
-    Navigator.push(context, MaterialPageRoute(builder: (context)=> WorkOrder()));
+  void _goToWprkOrder(BuildContext context) {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => WorkOrder()));
   }
 
   /// 点击发送按钮(发送消息)
@@ -1183,19 +1212,24 @@ class _KeFuState extends State<_KeFu> {
                 Offstage(
                   offstage: _keFuStore.imConfigs.openWorkorder == 0,
                   child: GestureDetector(
-                  child: Container(
-                    padding: EdgeInsets.all(3.0),
-                    child: Row(children: <Widget>[
-                      Icon(
-                        Icons.library_books,
-                        color: Colors.black26,
-                        size: 25,
+                      child: Container(
+                        padding: EdgeInsets.all(3.0),
+                        child: Row(
+                          children: <Widget>[
+                            Icon(
+                              Icons.library_books,
+                              color: Colors.black26,
+                              size: 25,
+                            ),
+                            Text("工单",
+                                style: TextStyle(
+                                  fontSize: 14.0,
+                                  color: Colors.grey,
+                                ))
+                          ],
+                        ),
                       ),
-                      Text("工单", style: TextStyle(fontSize: 14.0, color: Colors.grey,))
-                    ],),
-                  ),
-                  onTap: () => _goToWprkOrder(context)
-                ),
+                      onTap: () => _goToWprkOrder(context)),
                 ),
               ],
             ),
@@ -1407,6 +1441,10 @@ class _KeFuState extends State<_KeFu> {
                                     onCancel: () => _onCancelMessage(_msg),
                                     onOperation: () =>
                                         _onMessageOperation(_msg),
+                                  );
+                                case "workorder":
+                                  return WorkorderMessage(
+                                    message: _msg,
                                   );
                                 case "photo":
                                   return PhotoMessage(

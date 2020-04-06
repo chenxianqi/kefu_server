@@ -34,7 +34,7 @@
         <span :class="{'ed': source != ''}">{{source ? '已上传附件，重新上传可替换~' : '上传附件'}}</span>
         <input type="file" @change="uploadFile" />
       </div>
-      <div class="tips">温馨提示：由于工作时间原因，工单回复较慢，请您耐心等待~</div>
+      <div class="tips">温馨提示：由于客服值班时间原因，工单回复较慢，请您耐心等待~</div>
       <span class="sub-btn" @click="submit()">提交</span>
     </div>
 
