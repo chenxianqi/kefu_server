@@ -592,7 +592,7 @@ export default {
         setTimeout(() => {
           self.updateMessageHideCancel(localMessage)
         }, 10000);
-        self.messages.push(self.handlerMessage(localMessage));
+        self.messagesPushMemory(localMessage);
         var cacheMsg = Object.assign({}, localMessage);
         cacheMsg.payload = self.configs.upload_host + "/" + fileName;
         self.$previewRefresh();

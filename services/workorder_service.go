@@ -114,7 +114,7 @@ func (r *WorkOrderRepository) GetWorkOrders(request models.WorkOrderPaginationDt
 	del := strconv.Itoa(request.Del)
 	var workOrders []models.WorkOrderDto
 	SQLSUB := "SELECT w.*,u.nickname AS u_nickname,a.nickname  AS a_nickname,w.id AS i_d,w.uid AS u_i_d,w.tid AS t_i_d,w.cid AS c_i_d FROM work_order w LEFT JOIN (SELECT id, nickname FROM `user`) u ON w.uid = u.id LEFT JOIN (SELECT id, nickname FROM `admin`) a ON w.last_reply = a.id"
-	SQL := "SELECT * FROM (" + SQLSUB + ") w WHERE `delete` = " + del + statusSQL + tidSQL + " ORDER BY status ASC, create_at DESC"
+	SQL := "SELECT * FROM (" + SQLSUB + ") w WHERE `delete` = " + del + statusSQL + tidSQL + " ORDER BY create_at DESC, update_at DESC, status ASC"
 	_, err := r.o.Raw(SQL+" LIMIT ? OFFSET ?", request.PageSize, (request.PageOn-1)*request.PageSize).QueryRows(&workOrders)
 	if err != nil {
 		logs.Warn("GetWorkOrders get WorkOrders------------", err)

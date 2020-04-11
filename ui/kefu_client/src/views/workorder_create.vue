@@ -121,6 +121,7 @@ export default {
       const self = this;
       this.$uploadFile({
         file,
+        secret: this.configs.upload_secret,
         mode: this.configs.upload_mode,
         // 七牛才会执行
         percent() {},

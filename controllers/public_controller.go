@@ -343,7 +343,8 @@ func (c *PublicController) Configs() {
 
 		qiniuSetting := services.GetQiniuRepositoryInstance().GetQiniuConfigInfo()
 		putPolicy := storage.PutPolicy{
-			Scope: qiniuSetting.Bucket,
+			Scope:    qiniuSetting.Bucket,
+			FsizeMin: 1,
 		}
 
 		// 2 hours validity
