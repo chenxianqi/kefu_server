@@ -534,22 +534,22 @@ class _WorkOrderDetailState extends State<WorkOrderDetail> {
                                             "${_getTypeTitle(workOrder.tid)}"),
                                     _lineBox(
                                         label: "状态：",
-                                        content: workOrder.status == 1
+                                        content: workOrder.status == 2
                                             ? "已回复"
                                             : workOrder.status == 3
                                                 ? "已结束"
                                                 : workOrder.status == 0
                                                     ? "待处理"
-                                                    : workOrder.status == 2
+                                                    : workOrder.status == 1
                                                         ? "待回复"
                                                         : "未知状态",
-                                        contentColor: workOrder.status == 1
+                                        contentColor: workOrder.status == 2
                                             ? Color(0XFF8bc34a)
                                             : workOrder.status == 3
                                                 ? Color(0XFFcccCCC)
                                                 : workOrder.status == 0
                                                     ? Color(0XFFFF9800)
-                                                    : workOrder.status == 2
+                                                    : workOrder.status == 1
                                                         ? Color(0XFFFF9800)
                                                         : null),
                                   ],

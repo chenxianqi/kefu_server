@@ -171,23 +171,23 @@ class _WorkOrderState extends State<WorkOrder> {
                                   width: 10.0,
                                 ),
                                 Text(
-                                  workOrder.status == 1
+                                  workOrder.status == 2
                                       ? "已回复"
                                       : workOrder.status == 3
                                           ? "已结束"
                                           : workOrder.status == 0
                                               ? "待处理"
-                                              : workOrder.status == 2
+                                              : workOrder.status == 1
                                                   ? "待回复"
                                                   : "未知状态",
                                   style: TextStyle(
-                                      color: workOrder.status == 1
+                                      color: workOrder.status == 2
                                           ? Color(0XFF8bc34a)
                                           : workOrder.status == 3
                                               ? Color(0XFFcccCCC)
                                               : workOrder.status == 0
                                                   ? Color(0XFFFF9800)
-                                                  : workOrder.status == 2
+                                                  : workOrder.status == 1
                                                       ? Color(0XFFFF9800)
                                                       : Colors.amber,
                                       fontSize: 12.0),

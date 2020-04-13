@@ -6,14 +6,14 @@
         <i class="el-icon-tickets"></i>
         <span slot="title">工单管理</span>
         <span style="font-size:15px;margin-left: 30px;color:#e7a646">
-          <template v-if="workOrderCounts.status0 > 0 || workOrderCounts.status2">
+          <template v-if="workOrderCounts.status0 > 0 || workOrderCounts.status1">
              当前有： 
           </template>
           <template v-if="workOrderCounts.status0 > 0">
               <strong style="color: #f56c6c">{{workOrderCounts.status0}}</strong>条待处理 ，
           </template>
-          <template v-if="workOrderCounts.status2 > 0">
-             <strong style="color: #f56c6c"> {{workOrderCounts.status2}}</strong>条待回复工单 
+          <template v-if="workOrderCounts.status1 > 0">
+             <strong style="color: #f56c6c"> {{workOrderCounts.status1}}</strong>条待回复工单 
           </template>
         </span>
       </span>
@@ -54,8 +54,8 @@
            </template>
             <template v-else>
               <el-tag type="danger" v-if="scope.row.status == 0">待客服处理</el-tag>
-              <el-tag type="warning" v-if="scope.row.status == 2">待客服回复</el-tag>
-              <el-tag type="success" v-if="scope.row.status == 1">客服已回复</el-tag>
+              <el-tag type="warning" v-if="scope.row.status == 1">待客服回复</el-tag>
+              <el-tag type="success" v-if="scope.row.status == 2">客服已回复</el-tag>
               <el-tag type="info" v-if="scope.row.status == 3"> 工单已结束 </el-tag>
              </template>
           </template>

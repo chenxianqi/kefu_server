@@ -51,8 +51,8 @@
               <span class="lable">状态：</span>
               <div class="con">
                 <span style="color:#f56c6b" v-if="showData.status == 0">待客服处理</span>
-                <span style="color:#e6a23c;" v-if="showData.status == 2">待客服回复</span>
-                <span style="color:#67c23a;" v-if="showData.status == 1">客服已回复</span>
+                <span style="color:#e6a23c;" v-if="showData.status == 1">待客服回复</span>
+                <span style="color:#67c23a;" v-if="showData.status == 2">客服已回复</span>
                 <span style="color:#909399;" v-if="showData.status == 3">工单已结束</span>
               </div>
             </div>

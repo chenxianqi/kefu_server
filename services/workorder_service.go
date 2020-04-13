@@ -78,7 +78,7 @@ func (r *WorkOrderRepository) GetUserWorkOrders(uid int64) ([]models.WorkOrder, 
 // GetCounts get WorkOrder counts
 func (r *WorkOrderRepository) GetCounts() (models.WorkOrderCountDto, error) {
 	var workOrderCouns models.WorkOrderCountDto
-	err := r.o.Raw("SELECT * FROM ((SELECT count(*) AS status0 FROM work_order WHERE `status` = 0 AND `delete` = 0) w1,(SELECT count(*) AS status2 FROM work_order WHERE `status` = 2 AND `delete` = 0) w2,(SELECT count(*) AS status3 FROM work_order WHERE `status` = 3 AND `delete` = 0) w3,(SELECT count(*) AS delete_count FROM work_order WHERE `delete` = 1) w4)").QueryRow(&workOrderCouns)
+	err := r.o.Raw("SELECT * FROM ((SELECT count(*) AS status0 FROM work_order WHERE `status` = 0 AND `delete` = 0) w0,(SELECT count(*) AS status1 FROM work_order WHERE `status` = 1 AND `delete` = 0) w1,(SELECT count(*) AS status2 FROM work_order WHERE `status` = 2 AND `delete` = 0) w2,(SELECT count(*) AS status3 FROM work_order WHERE `status` = 3 AND `delete` = 0) w3,(SELECT count(*) AS delete_count FROM work_order WHERE `delete` = 1) w4)").QueryRow(&workOrderCouns)
 	if err != nil {
 		logs.Warn(" GetCounts get WorkOrder count", err)
 	}

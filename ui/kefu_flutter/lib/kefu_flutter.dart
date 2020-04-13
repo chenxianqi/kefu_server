@@ -285,9 +285,9 @@ class KeFuStore with ChangeNotifier {
   /// 实例化 FlutterMImc
   Future<void> _flutterMImcInstance() async {
     if (mImcTokenData != null) {
-      flutterMImc = FlutterMIMC.stringTokenInit(mImcTokenData);
+      flutterMImc = await FlutterMIMC.stringTokenInit(mImcTokenData);
     } else {
-      flutterMImc = FlutterMIMC.init(
+      flutterMImc = await FlutterMIMC.init(
           debug: mImcDebug,
           appId: mImcAppID,
           appKey: mImcAppKey,
