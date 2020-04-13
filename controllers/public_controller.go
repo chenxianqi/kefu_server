@@ -675,9 +675,9 @@ func (c *PublicController) ReplyWorkOrder() {
 	var params = orm.Params{}
 
 	// change status
-	status := 2
+	status := 1
 	if !isUser {
-		status = 1
+		status = 2
 		params["LastReply"] = workOrderComment.AID
 
 		// send email message

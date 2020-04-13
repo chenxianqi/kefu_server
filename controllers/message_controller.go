@@ -48,7 +48,6 @@ func messageList(c *MessageController, isHistory bool) {
 
 	// GetAdminAuthInfo
 	auth := c.GetAdminAuthInfo()
-	messagePaginationDto.Service = auth.UID
 
 	// Timestamp == 0
 	if messagePaginationDto.Timestamp == 0 {
