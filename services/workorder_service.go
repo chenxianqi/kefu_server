@@ -21,6 +21,8 @@ type WorkOrderRepositoryInterface interface {
 	Delete(id int64) (int64, error)
 	Close(id int64, cid int64, remark string) (int64, error)
 	GetCounts() (models.WorkOrderCountDto, error)
+	GetTimeOutWorkOrders(lastDateTime int64) []models.WorkOrder
+	ClearTimeOutWorkOrders(lastDateTime int64) int64
 }
 
 // WorkOrderRepository struct
@@ -35,6 +37,27 @@ func GetWorkOrderRepositoryInstance() *WorkOrderRepository {
 	instance.Init(new(models.WorkOrder))
 	instance.WorkOrderCommentRepository = GetWorkOrderCommentRepositoryInstance()
 	return instance
+}
+
+// GetTimeOutWorkOrders get TimeOut WorkOrders
+func (r *WorkOrderRepository) GetTimeOutWorkOrders(lastDateTime int64) []models.WorkOrder {
+	var workOrders []models.WorkOrder
+	_, err := r.o.Raw("SELECT * FROM work_order WHERE `status` = 2 AND `update_at` < ?", lastDateTime).QueryRows(&workOrders)
+	if err != nil {
+		logs.Warn("GetTimeOutWorkOrders Clear TimeOut WorkOrders-----------", err)
+	}
+	return workOrders
+}
+
+// ClearTimeOutWorkOrders Clear TimeOut WorkOrders
+func (r *WorkOrderRepository) ClearTimeOutWorkOrders(lastDateTime int64) int64 {
+	res, err := r.o.Raw("UPDATE work_order SET `status` = 3 WHERE `status` = 2 AND `update_at` < ?", lastDateTime).Exec()
+	if err != nil {
+		logs.Warn("ClearTimeOutWorkOrders Clear TimeOut WorkOrders-----------", err)
+		return 0
+	}
+	rows, _ := res.RowsAffected()
+	return rows
 }
 
 // Close close WorkOrder

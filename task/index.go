@@ -12,4 +12,7 @@ func Run() {
 	// moveMessage
 	moveMessage()
 
+	// clearWorkorder()
+	clearWorkorder()
+
 }
