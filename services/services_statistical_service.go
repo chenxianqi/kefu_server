@@ -4,6 +4,7 @@ import (
 	"errors"
 	"kefu_server/models"
 	"math"
+	"strconv"
 	"time"
 
 	"github.com/astaxie/beego/logs"
@@ -14,7 +15,6 @@ import (
 type StatisticalRepositoryInterface interface {
 	Add(servicesStatistical *models.ServicesStatistical) (int64, error)
 	GetStatisticals(startDate string, endDate string) (map[string]interface{}, error)
-	GetFlowStatistical(startDate string, endDate string) ([]orm.Params, error)
 	GetCustomerServiceList(request models.ServicesStatisticalPaginationDto) models.ServicesStatisticalPaginationDto
 	CheckIsReplyAndSetReply(uid int64, aid int64, platform int64)
 }
@@ -59,7 +59,12 @@ func (r *StatisticalRepository) GetCustomerServiceList(request models.ServicesSt
 		INReception = "0"
 	}
 
-	if err := r.o.Raw("SELECT "+addSQL+" AS `count` FROM services_statistical AS s INNER JOIN (SELECT * FROM `user`) AS u ON s.user_account = u.id AND s.service_account = ? AND s.create_at > ? AND s.create_at < ? AND is_reception IN("+INReception+")", request.Cid, startDate.Unix(), endDate.Unix()).QueryRow(&totalModel); err != nil {
+	serviceAccount := " "
+	if request.Cid != 0 {
+		serviceAccount = " s.service_account = " + strconv.FormatInt(request.Cid, 10) + " AND "
+	}
+
+	if err := r.o.Raw("SELECT "+addSQL+" AS `count` FROM services_statistical AS s INNER JOIN (SELECT * FROM `user`) AS u ON s.user_account = u.id AND "+serviceAccount+" s.create_at > ? AND s.create_at < ? AND is_reception IN("+INReception+")", startDate.Unix(), endDate.Unix()).QueryRow(&totalModel); err != nil {
 		logs.Warn("GetCustomerServiceList get Customer Service List1------------", err)
 	}
 	request.Total = totalModel.Count
@@ -70,7 +75,7 @@ func (r *StatisticalRepository) GetCustomerServiceList(request models.ServicesSt
 		addSQL1 = " GROUP BY `user_account` "
 	}
 
-	if counter, err := r.o.Raw("SELECT s.id, s.user_account, s.service_account,s.create_at,s.is_reception, s.transfer_account,s.platform,u.nickname FROM services_statistical AS s INNER JOIN (SELECT * FROM `user` ) AS u ON s.user_account = u.id AND s.service_account = ? AND s.create_at > ? AND s.create_at < ? AND is_reception IN("+INReception+") "+addSQL1+" ORDER BY s.create_at DESC LIMIT ?,?", request.Cid, startDate.Unix(), endDate.Unix(), (request.PageOn-1)*request.PageSize, request.PageSize).Values(&params); counter <= 0 {
+	if counter, err := r.o.Raw("SELECT s.id, s.user_account, s.service_account,s.create_at,s.is_reception, s.transfer_account,s.platform,u.nickname FROM services_statistical AS s INNER JOIN (SELECT * FROM `user` ) AS u ON s.user_account = u.id AND "+serviceAccount+" s.create_at > ? AND s.create_at < ? AND is_reception IN("+INReception+") "+addSQL1+" ORDER BY s.create_at DESC LIMIT ?,?", startDate.Unix(), endDate.Unix(), (request.PageOn-1)*request.PageSize, request.PageSize).Values(&params); counter <= 0 {
 		logs.Warn("GetCustomerServiceList get Customer Service List2------------", err)
 		request.List = []string{}
 		return request
@@ -142,25 +147,6 @@ func (r *StatisticalRepository) GetStatisticals(startDate string, endDate string
 	}
 	countsArr["statistical"] = statisticalData
 	return countsArr, nil
-}
-
-// GetFlowStatistical get Today Action Statistical
-func (r *StatisticalRepository) GetFlowStatistical(startDate string, endDate string) ([]orm.Params, error) {
-	// transform date
-	layoutDate := "2006-01-02 15:04:05"
-	loc, _ := time.LoadLocation("Local")
-	dateStartString := startDate + " 00:00:00"
-	dateEndString := endDate + " 23:59:59"
-	dateStart, _ := time.ParseInLocation(layoutDate, dateStartString, loc)
-	dateEnd, _ := time.ParseInLocation(layoutDate, dateEndString, loc)
-
-	var statisticalData []orm.Params
-	_, err := r.o.Raw("SELECT p.id platform,p.title, IFNULL(u.count,0) AS `count` FROM platform as p LEFT  JOIN (SELECT platform,COUNT(*) AS count FROM `user` WHERE last_activity BETWEEN ? AND ? GROUP BY platform) u ON p.id = u.platform", dateStart.Unix(), dateEnd.Unix()).Values(&statisticalData)
-	if err != nil {
-		logs.Warn("GetFlowStatistical get Today Action Statistical------------", err)
-		return nil, err
-	}
-	return statisticalData, nil
 }
 
 // CheckIsReplyAndSetReply cehck is reply and set reply

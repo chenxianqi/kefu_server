@@ -78,11 +78,10 @@ func (c *HomeController) GetFlowStatistical() {
 		}
 	}
 
-	statisticalData, err := c.StatisticalRepository.GetFlowStatistical(statisticalRequest.DateStart, statisticalRequest.DateEnd)
+	statisticalData, err := services.GetFlowStatisticalRepositoryInstance().GetCounter(statisticalRequest.DateStart, statisticalRequest.DateEnd)
 	if err != nil {
 		c.JSON(configs.ResponseFail, err.Error(), err.Error())
 	}
-
 	c.JSON(configs.ResponseSucess, "success", &statisticalData)
 
 }

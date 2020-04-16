@@ -38,7 +38,6 @@ func (c *ServicesStatisticalController) List() {
 	valid := validation.Validation{}
 	valid.Required(paginationDto.PageOn, "page_on").Message("page_on不能为空！")
 	valid.Required(paginationDto.PageSize, "page_size").Message("page_size不能为空！")
-	valid.Required(paginationDto.Cid, "cid").Message("cid不能为空！")
 	valid.Required(paginationDto.Date, "date").Message("date不能为空！")
 	if valid.HasErrors() {
 		for _, err := range valid.Errors {

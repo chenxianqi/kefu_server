@@ -151,7 +151,7 @@ export default {
         is_de_weighting: false,
         date: "",
       },
-      customerData: [],
+      customerData: [{id:0, nickname: "全部"}],
       selectCustomerId: null,
       selectUser: {},
       pickerOptions: {
@@ -240,7 +240,7 @@ export default {
     getAdmins(){
       axios.post('/admin/list', {page_on: 1, page_size: 100, "online": 3})
       .then(response => {
-          this.customerData = response.data.data.list
+           this.customerData = this.customerData.concat(response.data.data.list)
       })
       .catch(error => {
         this.$message.error(error.response.data.message)

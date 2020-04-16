@@ -161,6 +161,9 @@ func (c *PublicController) Register() {
 			}
 		}
 
+		// flow Statistical
+		services.GetFlowStatisticalRepositoryInstance().Increment(user.Platform, user.ID)
+
 	} else {
 
 		// GetAdminAuthInfo

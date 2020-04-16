@@ -41,6 +41,7 @@ func Run() {
 	orm.RegisterModel(new(models.WorkOrder))
 	orm.RegisterModel(new(models.WorkOrderType))
 	orm.RegisterModel(new(models.WorkOrderComment))
+	orm.RegisterModel(new(models.FlowStatistical))
 
 	// 创建表
 	_ = orm.RunSyncdb("default", false, true)
