@@ -206,7 +206,6 @@ export default {
   },
   mounted(){
     setTimeout(() =>{
-      this.selectCustomerId = this.adminInfo.id
       this.getRecord(1)
     }, 1000)
   },
