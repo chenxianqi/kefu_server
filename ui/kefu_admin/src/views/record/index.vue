@@ -152,7 +152,7 @@ export default {
         date: "",
       },
       customerData: [{id:0, nickname: "全部"}],
-      selectCustomerId: null,
+      selectCustomerId: 0,
       selectUser: {},
       pickerOptions: {
         disabledDate(time) {
