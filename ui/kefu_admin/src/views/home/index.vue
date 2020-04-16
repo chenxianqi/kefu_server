@@ -45,6 +45,7 @@
       <el-col :span="8">
         <div class="mini-im-home-title">客服<span style="color: #f44336">{{optionsDate[selectDateValue].label}}</span>接入量统计</div>
         <ve-funnel :data="membersChartData"></ve-funnel>
+        <div style="text-align: center;color: #f44336">{{optionsDate[selectDateValue].label}}总服务（{{membersChartServicesCounts}}人次）</div>
       </el-col>
     </el-row>
     <div>
@@ -144,6 +145,14 @@ export default {
         self.todayStatisticalTableData[0].count = parseInt(totalCount) + count
       }
       return count
+    },
+    membersChartServicesCounts(){
+      if(this.membersChartData.rows.length == 0) return 0;
+      var count = 0;
+      for(let i =0; i<this.membersChartData.rows.length; i++){
+        count += parseInt(this.membersChartData.rows[i]['数值'])
+      }
+      return count;
     }
   },
   methods: {
