@@ -25,7 +25,7 @@
             </el-badge>
         </el-menu-item>
         <el-menu-item index="/workorder">
-          <el-badge :hidden="$store.getters.workOrderCounts.status0 == 0" :value="$store.getters.workOrderCounts.status0" :max="99" style="width: 100%;">
+          <el-badge :hidden="$store.getters.workOrderCounts.status0 == 0" :value="$store.getters.workOrderCounts.status0 + $store.getters.workOrderCounts.status1" :max="99" style="width: 100%;">
             <div>
               <i class="el-icon-tickets"></i>
               <span slot="title">工单管理</span>
