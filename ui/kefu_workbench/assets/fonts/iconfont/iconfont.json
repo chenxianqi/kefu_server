@@ -1,0 +1,44 @@
+{
+  "id": "1598621",
+  "name": "客服APP",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "611345",
+      "name": "密码",
+      "font_class": "icon2",
+      "unicode": "e62a",
+      "unicode_decimal": 58922
+    },
+    {
+      "icon_id": "1212307",
+      "name": "在线客服",
+      "font_class": "zaixiankefu",
+      "unicode": "e674",
+      "unicode_decimal": 58996
+    },
+    {
+      "icon_id": "2325917",
+      "name": "客服",
+      "font_class": "kefu",
+      "unicode": "e637",
+      "unicode_decimal": 58935
+    },
+    {
+      "icon_id": "7977458",
+      "name": "Back",
+      "font_class": "Back",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "10281814",
+      "name": "账号",
+      "font_class": "zhanghao",
+      "unicode": "e60d",
+      "unicode_decimal": 58893
+    }
+  ]
+}

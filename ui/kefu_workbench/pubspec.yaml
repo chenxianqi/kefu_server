@@ -1,0 +1,58 @@
+name: kefu_workbench
+description: A new Flutter application.
+
+version: 2.0.0
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  cupertino_icons: ^0.1.2
+  permission_handler: '4.0.0'
+  dio: ^3.0.8
+  path_provider: ^1.5.1
+  shared_preferences: ^0.5.6
+  image_picker: ^0.6.2+3
+  flutter_advanced_networkimage: ^0.6.2
+  photo_view: ^0.9.0
+  provider: ^4.0.1
+  flutter_html: ^0.11.1
+  flutter_mimc: ^1.0.2
+  file_picker: ^1.6.3+1
+  connectivity: ^0.4.6+2
+  flutter_local_notifications: ^1.1.5+1
+  fluttertoast:
+    git: 'https://github.com/chenxianqi/FlutterToast.git'
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  # assets:
+  #  - images/a_dot_burr.jpeg
+  #  - images/a_dot_ham.jpeg
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/assets-and-images/#resolution-aware.
+
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/assets-and-images/#from-packages
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  fonts:
+    - family: IconFont
+      fonts:
+        - asset: assets/fonts/iconfont/iconfont.ttf
