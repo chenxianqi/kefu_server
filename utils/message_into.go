@@ -49,8 +49,14 @@ func MessageInto(message models.Message) {
 			if user.IsWindow == 0 {
 				message.Read = 1
 			}
+
 			// 处理是否已回复
-			services.GetStatisticalRepositoryInstance().CheckIsReplyAndSetReply(user.ID, message.FromAccount, user.Platform)
+			admin := services.GetAdminRepositoryInstance().GetAdmin(message.FromAccount)
+			payload, _ := base64.StdEncoding.DecodeString(message.Payload)
+			if admin != nil && admin.AutoReply != string(payload) {
+				services.GetStatisticalRepositoryInstance().CheckIsReplyAndSetReply(user.ID, message.FromAccount, user.Platform)
+			}
+
 		}
 
 	}

@@ -740,10 +740,7 @@ export default {
     sendTextMessage() {
       // 当前用户是否上线
       if (this.userInfo.online == 0) {
-        Toast({
-          message: "您貌似掉线了"
-        });
-        return;
+        this.userInfo.login();
       }
       var chatValue = this.chatValue.trim();
       if (chatValue == "") return;

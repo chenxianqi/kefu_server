@@ -33,7 +33,7 @@
       </el-col>
       <el-col :span="6.5">
         <div class="online-count">
-          当天累积访问用户<span>{{todayStatisticalTableDataCount}}</span> 当前在线用户<span>{{onlines}}</span>
+          {{optionsDate[selectDateValue].label}}累积访问用户<span>{{todayStatisticalTableDataCount}}</span> 当前在线用户<span>{{onlines}}</span>
         </div>
       </el-col>
     </el-row>

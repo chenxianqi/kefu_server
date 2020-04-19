@@ -156,7 +156,7 @@ func (r *StatisticalRepository) CheckIsReplyAndSetReply(userAccount int64, servi
 	err := r.q.Filter("user_account", userAccount).Filter("service_account", serviceAccount).Filter("is_reception", 0).Filter("platform", userPlatform).Filter("create_at__gte", maxTime).One(&servicesStatistical)
 	if err != nil {
 		logs.Warn("CheckIsReplyAndSetReply cehck is reply and set reply Filter------------", err)
-	} else {
+	} else if servicesStatistical.IsReception == 0 {
 		servicesStatistical.IsReception = 1
 		_, err := r.o.Update(&servicesStatistical)
 		if err != nil {
