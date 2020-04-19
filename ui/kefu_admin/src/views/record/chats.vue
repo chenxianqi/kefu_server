@@ -73,7 +73,7 @@
            <!-- 聊天超时 -->
           <template v-if="item.biz_type == 'timeout'">
             <div class="system">
-              <span>用户长时间无应答，会话结束</span>
+              <span>{{item.payload}}</span>
               <em>{{$formatFromNowDate(item.timestamp)}}</em>
             </div>
           </template>
