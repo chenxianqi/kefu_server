@@ -113,7 +113,7 @@
       <div class="record-modal-chat-box" ref="chatBody" id="chatBody">
         <ChatsComponent
           :isMessageEnd="isMessageEnd"
-          :seviceId="selectCustomerId+''"
+          :seviceId="serviceAccount"
           :seviceNickname="serviceNickname(selectUser.service_account)"
           :messages="messageRecord.list"
           :userId="selectUser.user_account"
@@ -153,6 +153,7 @@ export default {
       },
       customerData: [{id:0, nickname: "全部"}],
       selectCustomerId: 0,
+      serviceAccount: "0",
       selectUser: {},
       pickerOptions: {
         disabledDate(time) {
@@ -273,6 +274,7 @@ export default {
     },
     // 打开模态框
     openModal(scope){
+      this.serviceAccount = scope.row.service_account;
       this.selectUser = scope.row
       this.isMessageEnd = false
       this.isFirstRequestMessageEnd = false
@@ -291,7 +293,7 @@ export default {
       axios.post('/message/list', {
         "timestamp": timestamp,
         "page_size": this.getMessageRecordPageSize,
-        "service": parseInt(this.selectCustomerId),
+        "service": parseInt(this.serviceAccount),
         "account": parseInt(this.selectUser.user_account)
       })
       .then(response => {
@@ -327,7 +329,7 @@ export default {
       axios.post('/message/history', {
         "timestamp": timestamp,
         "page_size": this.getMessageRecordPageSize,
-        "service": parseInt(this.selectCustomerId),
+        "service": parseInt(this.serviceAccount),
         "account": parseInt(this.selectUser.user_account)
       })
       .then(response => {

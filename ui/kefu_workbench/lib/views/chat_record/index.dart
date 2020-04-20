@@ -126,7 +126,7 @@ class ChatReCordPage extends StatelessWidget {
                               onTap: () => Navigator.pushNamed(context, "/chat",arguments: {
                                 "isReadOnly": true,
                                 "accountId": int.parse(_servicesStatistical.userAccount),
-                                "serviceId": chatReCordState.selectedAdmin.id,
+                                "serviceId": int.parse(_servicesStatistical.serviceAccount),
                                 "title": "${chatReCordState.getAdminNickName(int.parse(_servicesStatistical.serviceAccount))} 与 ${_servicesStatistical.nickname} 的聊天记录",
                               }),
                               subtitle: Row(
