@@ -501,7 +501,7 @@ func (c *PublicController) Upload() {
 		c.JSON(configs.ResponseFail, "上传失败!", err.Error())
 	}
 
-	c.JSON(configs.ResponseSucess, "上传成功!", "/"+fpath)
+	c.JSON(configs.ResponseSucess, "上传成功!", fpath)
 }
 
 // CancelMessage cancel a message
