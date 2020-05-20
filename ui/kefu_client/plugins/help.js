@@ -53,46 +53,39 @@ Helps.install = function (Vue, options) {
         }
         // 七牛云
         else if (mode == 2) {
-            let options = {
-                quality: 0.92,
-                noCompressIfLarger: true,
-                maxWidth: 1500
-            };
-            qiniu.compressImage(file, options).then(data => {
-                const observable = qiniu.upload(
-                    data.dist,
-                    fileName,
-                    secret,
-                    {},
-                    {
-                        mimeType: null
-                    }
-                );
-                qiniuObservable = observable.subscribe({
-                    next: function (res) {
-                        if (percent) percent(res)
-                    },
-                    error: function () {
-                        // 失败后再次使用FormData上传
-                        var formData = new FormData();
-                        formData.append("fileType", "image");
-                        formData.append("fileName", "file");
-                        formData.append("key", fileName);
-                        formData.append("token", secret);
-                        formData.append("file", file);
-                        axios
-                            .post("https://upload.qiniup.com", formData)
-                            .then(() => {
-                                if (success) success(fileName);
-                            })
-                            .catch((e) => {
-                                if (fail) fail(e);
-                            });
-                    },
-                    complete: function (res) {
-                        if (success) success(res.key);
-                    }
-                });
+            const observable = qiniu.upload(
+                file,
+                fileName,
+                secret,
+                {},
+                {
+                    mimeType: null
+                }
+            );
+            qiniuObservable = observable.subscribe({
+                next: function (res) {
+                    if (percent) percent(res)
+                },
+                error: function () {
+                    // 失败后再次使用FormData上传
+                    var formData = new FormData();
+                    formData.append("fileType", "image");
+                    formData.append("fileName", "file");
+                    formData.append("key", fileName);
+                    formData.append("token", secret);
+                    formData.append("file", file);
+                    axios
+                        .post("https://upload.qiniup.com", formData)
+                        .then(() => {
+                            if (success) success(fileName);
+                        })
+                        .catch((e) => {
+                            if (fail) fail(e);
+                        });
+                },
+                complete: function (res) {
+                    if (success) success(res.key);
+                }
             });
         }
 
