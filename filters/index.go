@@ -25,9 +25,9 @@ var FilterToken = func(ctx *context.Context) {
 
 	// 地址白名单
 	whitelist := []string{
-		"/v1/auth/login",
-		"/v1/auth/logout",
-		"/v1/auth/token",
+		"/api/auth/login",
+		"/api/auth/logout",
+		"/api/auth/token",
 	}
 
 	oldToken := ctx.Input.Header("Authorization")

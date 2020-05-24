@@ -191,9 +191,6 @@ func init() {
 	// a new ns used /api
 	newNs := routers("/api")
 
-	// scrapped /v1
-	oldNs := routers("/v1")
-
-	beego.AddNamespace(newNs, oldNs)
+	beego.AddNamespace(newNs)
 
 }
