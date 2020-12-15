@@ -16,7 +16,8 @@ dependencies:
   flutter_html: ^0.11.1
   shared_preferences: ^0.5.6
   provider: ^4.0.1
-  flutter_advanced_networkimage: ^0.6.2
+  flutter_advanced_networkimage: 
+    git: https://github.com/mchome/flutter_advanced_networkimage
   file_picker: ^1.5.1
 
 dev_dependencies:
