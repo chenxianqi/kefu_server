@@ -142,7 +142,7 @@ func (r *MessageRepository) GetUserMessages(messagePaginationDto models.MessageP
 			logs.Warn("GetUserMessages get user messages1------------", err)
 			return nil, err
 		}
-		_, _ = r.q.Filter("from_account", uid).Update(orm.Params{"read": 0})
+		_, err = r.q.Filter("from_account", uid).Update(orm.Params{"read": 0})
 		if err != nil {
 			logs.Warn("GetUserMessages get user messages2------------", err)
 			return nil, err
