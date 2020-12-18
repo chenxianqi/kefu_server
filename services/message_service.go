@@ -37,6 +37,9 @@ func GetMessageRepositoryInstance() *MessageRepository {
 
 // DeleteWhiteMessage delete white user
 func (r *MessageRepository) DeleteWhiteMessage(uids orm.ParamsList) int {
+	if len(uids) == 0 {
+		return 0
+	}
 	_, err := r.q.Filter("from_account__in", uids).Delete()
 	if err != nil {
 		logs.Warn("DeleteWhiteMessage delete white user------------", err)
