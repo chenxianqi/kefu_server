@@ -167,8 +167,8 @@ func (c *AdminController) Post() {
 	m5.Write([]byte(newAdmin.Password))
 	newAdmin.Password = hex.EncodeToString(m5.Sum(nil))
 	newAdmin.CreateAt = time.Now().Unix()
-	if admin.AutoReply == "" {
-		admin.AutoReply = "您好，我是在线人工客服，有什么可以帮到你？"
+	if newAdmin.AutoReply == "" {
+		newAdmin.AutoReply = "您好，我是在线人工客服，有什么可以帮到你？"
 	}
 
 	// exist No ? create
