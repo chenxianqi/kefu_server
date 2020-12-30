@@ -236,7 +236,7 @@ func (c *PublicController) Window() {
 	}
 
 	// update
-	_, err := c.UserRepository.Update(user.UID, orm.Params{
+	_, err := c.UserRepository.Update(user.ID, orm.Params{
 		"IsWindow": wType.Window,
 	})
 	if err != nil {
