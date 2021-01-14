@@ -90,14 +90,9 @@ func DecodeToken(token string) (map[string]interface{}, error) {
 
 // GenerateToken 生成token
 func GenerateToken(jwtKeyDto models.JwtKeyDto) (tokenString string) {
-	var expiredSeconds int
-	expiredSeconds = 259200
-	if expiredSeconds == 0 {
-		expiredSeconds = DEFAULTEXPIRESECONDS
-	}
 	// Create the Claims
 	mySigningKey := []byte(KEY)
-	expireAt := time.Now().Add(time.Second * time.Duration(expiredSeconds)).Unix()
+	expireAt := time.Now().Add(time.Second * time.Duration(DEFAULTEXPIRESECONDS)).Unix()
 	// pass parameter to this func or not
 	claims := MyCustomClaims{
 		jwtKeyDto,

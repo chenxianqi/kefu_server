@@ -69,6 +69,7 @@ var FilterToken = func(ctx *context.Context) {
 			auth.Token = newToken
 			o.Update(&auth)
 			ctx.Output.Header("Authorization", newToken)
+			return
 		}
 	}
 	ctx.Output.Header("Authorization", oldToken)
