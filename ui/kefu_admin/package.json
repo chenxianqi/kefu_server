@@ -32,7 +32,7 @@
     "core-js": "^2.6.5",
     "echarts": "^4.2.1",
     "element-ui": "^2.10.1",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "push.js": "^1.0.12",
     "qiniu-js": "^2.5.5",
     "v-charts": "^1.19.0",
